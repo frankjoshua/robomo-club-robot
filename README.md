@@ -6,3 +6,7 @@ For more information on our project check out our formum at https://discourse.ro
 To see the todo list follow this link. https://github.com/frankjoshua/robomo-club-robot/projects/1
 
 Our website is at http://robomo.club
+
+Contributors:
+Mark Moran
+Joshua Frank
