@@ -1,0 +1,2 @@
+[robot]
+tx2 ansible_ssh_host=192.168.2.105
