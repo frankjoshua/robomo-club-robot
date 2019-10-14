@@ -1,0 +1,6 @@
+---
+
+- hosts: robot
+  tasks:
+    - name: Check that robot is online
+      ping:
