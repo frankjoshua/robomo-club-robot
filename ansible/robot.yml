@@ -1,6 +1,55 @@
 ---
 
 - hosts: robot
+  vars:
+    lsb_release: bionic
+
   tasks:
     - name: Check that robot is online
       ping:
+
+    - name: Instal Python and Pip for docker
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python-pip
+      become: true
+
+    - name: Install docker-py to manage docker containers
+      pip:
+        name: docker-py
+        state: latest
+      become: true
+
+    - name: Start ROS master docker container
+      docker_container:
+        name: ros_master
+        image: frankjoshua/ros-master:arm64
+        network_mode: "host"
+        restart_policy: "unless-stopped"
+        env:
+          ROS_MASTER_URI: "http://{{ ansible_ssh_host }}:11311"
+          ROS_IP: "{{ ansible_ssh_host }}"
+      become: true
+
+    - name: Add apt key for ROS
+      apt_key:
+        keyserver: hkp://keyserver.ubuntu.com:80
+        id: C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+      become: true
+
+    - name: Setup PPA for ROS
+      apt_repository:
+        repo: deb http://packages.ros.org/ros/ubuntu {{ lsb_release }} main
+        state: present
+      become: true
+
+    - name: Instal ROS from apt
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items:
+        - ros-melodic-desktop-full
+      become: true
