@@ -3,42 +3,21 @@
 - hosts: robot
   vars:
     lsb_release: bionic
+    pip_install_packages:
+      - name: docker
 
   roles:
     - { role: geerlingguy.docker, become: true}
+    - { role: geerlingguy.pip, become: true}
 
   tasks:
     - name: Check that robot is online
       ping:
 
-    - name: Instal Python and Pip for docker
-      apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - python-pip
-      become: true
-
-    - name: Instal Docker
-      apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-      become: true
-
-    - name: Install docker-py to manage docker containers
-      pip:
-        name: docker-py
-        state: latest
-      become: true
-
     - name: Start ROS master docker container
       docker_container:
         name: ros_master
-        image: frankjoshua/ros-master:arm64
+        image: "frankjoshua/ros-master:{{ cpu_arch }}"
         network_mode: "host"
         restart_policy: "unless-stopped"
         env:
