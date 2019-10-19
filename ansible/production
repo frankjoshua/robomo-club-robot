@@ -1,2 +1,6 @@
-[robot]
 tx2 ansible_ssh_host=192.168.2.105
+vagrant ansible_ssh_host=localhost ansible_ssh_port=2222 ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+
+[robot]
+tx2
+vagrant

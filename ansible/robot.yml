@@ -4,6 +4,9 @@
   vars:
     lsb_release: bionic
 
+  roles:
+    - { role: geerlingguy.docker, become: true}
+
   tasks:
     - name: Check that robot is online
       ping:
@@ -14,6 +17,16 @@
         state: latest
       with_items:
         - python-pip
+      become: true
+
+    - name: Instal Docker
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
       become: true
 
     - name: Install docker-py to manage docker containers
