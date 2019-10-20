@@ -1,0 +1,47 @@
+---
+
+- hosts: robot
+
+  tasks:
+  - name: Add user groups
+    group:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - wheel
+      - docker
+    become: yes
+
+  - name: Allow 'wheel' group to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+    become: yes
+
+  - name: Add Users
+    user:
+      name: operator
+      groups: wheel,docker
+      state: present
+    become: yes
+
+  - name: Install public key
+    authorized_key:
+      user: operator
+      state: present
+      key: "{{ lookup('file', 'files/ssh_keys/robot_id_rsa.pub') }}"
+    become: yes
+
+- hosts: testing-server
+
+  tasks:
+  - name: Copy private keys
+    copy:
+      src: "./files/ssh_keys/robot_id_rsa"
+      dest: "/home/{{ lookup('env','USER') }}/.ssh/robotid_rsa"
+      owner: "{{ lookup('env','USER') }}"
+      mode: 0600
+    become: yes

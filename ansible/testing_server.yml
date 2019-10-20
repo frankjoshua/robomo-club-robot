@@ -1,0 +1,9 @@
+---
+
+- hosts: testing-server
+
+  tasks:
+    - name: Install Infraspec
+      pip:
+        name: testinfra
+      become: yes
