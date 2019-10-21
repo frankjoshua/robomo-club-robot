@@ -45,3 +45,11 @@
       with_items:
         - ros-melodic-desktop-full
       become: true
+
+    - name: Source ROS from .bashrc
+      lineinfile:
+        dest: /home/operator/.bashrc
+        state: present
+        regexp: '^source /opt/ros/melodic/setup.bash'
+        line: 'source /opt/ros/melodic/setup.bash'
+      become: yes
