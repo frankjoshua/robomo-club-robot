@@ -1,5 +1,7 @@
 ---
 
+- include: ssh.yml
+
 - hosts: robot
   vars:
     lsb_release: bionic
