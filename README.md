@@ -14,7 +14,17 @@ Ansible is used to install and update software on the robot. You must have it in
 
 Run this command to install or update the robot
 cd ansible
-ansible-playbook -i ./production robot.yml -Kk
+ansible-playbook -i production ssh.yml -Kk
+ansible-playbook -i production robot.yml
+
+# Running Tests
+Testing uses Ansible, Vagrant and Infraspec.
+
+You can setup your workstation using:
+ansible-playbook -i production testing_server.yml
+
+Then run:
+./test.sh
 
 # Contributors:
 Mark Moran
