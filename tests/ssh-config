@@ -1,0 +1,11 @@
+Host default
+  HostName 127.0.0.1
+  User operator
+  Port 2222
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile ~/.ssh/robot_id_rsa
+  IdentitiesOnly yes
+  LogLevel FATAL
+
