@@ -1,0 +1,8 @@
+---
+
+  - hosts: all
+
+    roles:
+      - name: ansible-role-ros
+        ros_configuration: desktop-full
+        become: yes
