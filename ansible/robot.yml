@@ -1,5 +1,4 @@
 ---
-
 - include: ssh.yml
 
 - hosts: robot
@@ -9,8 +8,9 @@
       - name: docker
 
   roles:
-    - { role: geerlingguy.docker, become: true}
-    - { role: geerlingguy.pip, become: true}
+    # Jetson Nano already has Docker installed
+    # - { role: geerlingguy.docker, become: true}
+    - { role: geerlingguy.pip, become: true }
 
   tasks:
     - name: Check that robot is online
@@ -19,12 +19,12 @@
     - name: Start ROS master docker container
       docker_container:
         name: ros_master
-        image: "frankjoshua/ros-master:{{ cpu_arch }}"
-        network_mode: "host"
-        restart_policy: "unless-stopped"
+        image: 'frankjoshua/ros-master:{{ cpu_arch }}'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
         env:
-          ROS_MASTER_URI: "http://{{ ansible_ssh_host }}:11311"
-          ROS_IP: "{{ ansible_ssh_host }}"
+          ROS_MASTER_URI: 'http://{{ ansible_ssh_host }}:11311'
+          ROS_IP: '{{ ansible_ssh_host }}'
       become: true
 
     - name: Add apt key for ROS
@@ -41,11 +41,9 @@
 
     - name: Instal ROS from apt
       apt:
-        name: "{{ item }}"
+        name: ros-melodic-desktop-full
         state: latest
         update_cache: yes
-      with_items:
-        - ros-melodic-desktop-full
       become: true
 
     - name: Source ROS from .bashrc
