@@ -1,48 +1,56 @@
 ---
-
 - hosts: robot
 
-  tasks:
-  - name: Add user groups
-    group:
-      name: "{{ item }}"
-      state: present
-    with_items:
+  vars:
+    jetson_groups:
       - wheel
       - docker
-    become: yes
-
-  - name: Allow 'wheel' group to have passwordless sudo
-    lineinfile:
-      dest: /etc/sudoers
-      state: present
-      regexp: '^%wheel'
-      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-      validate: 'visudo -cf %s'
-    become: yes
-
-  - name: Add Users
-    user:
-      name: operator
-      groups: wheel,docker
-      shell: /bin/bash
-      state: present
-    become: yes
-
-  - name: Install public key
-    authorized_key:
-      user: operator
-      state: present
-      key: "{{ lookup('file', 'files/ssh_keys/robot_id_rsa.pub') }}"
-    become: yes
-
-- hosts: testing-server
+      - adm
+      - cdrom
+      - sudo
+      - audio
+      - dip
+      - video
+      - plugdev
+      - i2c
+      - lpadmin
+      - gdm
+      - gpio
+      - crypto
+      - trusty
+      - weston-launch
 
   tasks:
-  - name: Copy private keys
-    copy:
-      src: "./files/ssh_keys/robot_id_rsa"
-      dest: "/home/{{ lookup('env','USER') }}/.ssh/robot_id_rsa"
-      owner: "{{ lookup('env','USER') }}"
-      mode: 0600
-    become: yes
+    - name: Add user groups
+      group:
+        name: '{{ item }}'
+        state: present
+      with_items: '{{ jetson_groups }}'
+      become: yes
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+      become: yes
+
+    - name: Add Users
+      user:
+        name: operator
+        group: operator
+        groups: '{{ jetson_groups }}'
+        shell: /bin/bash
+        state: present
+        # Password created with `mkpasswd --method=sha-512`
+        password: '$6$tnCrhxZ/8n8lp0g$WJR6rvSL9gjTzNh06EOrE2lAAZvhT18HE1gYsNA1pTxCiec1S0WvHRwFmJc0C7iBN.qAZUpSDoH6TO4KwI4a61'
+      become: yes
+
+    - name: Install public key
+      authorized_key:
+        user: operator
+        state: present
+        key: "{{ lookup('file', 'files/ssh_keys/robot_id_rsa.pub') }}"
+      become: yes

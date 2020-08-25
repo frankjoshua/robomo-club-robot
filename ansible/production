@@ -1,9 +1,9 @@
 #cpu_arch should be amd64 for desktops arm64 for jetson tx2 or nano and armhf for Raspberry Pi
-tx2 ansible_ssh_host=192.168.2.103 cpu_arch=arm64
+jeston_nano ansible_ssh_host=192.168.2.104 cpu_arch=arm64
 vagrant ansible_ssh_host=localhost ansible_ssh_port=2222 ansible_ssh_user=vagrant ansible_ssh_pass=vagrant cpu_arch=amd64
 
 [robot]
-tx2
+jeston_nano
 #vagrant
 
 [testing-server]
