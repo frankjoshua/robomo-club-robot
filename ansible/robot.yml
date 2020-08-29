@@ -1,6 +1,4 @@
 ---
-- include: ssh.yml
-
 - hosts: robot
   vars:
     lsb_release: bionic
@@ -15,17 +13,6 @@
   tasks:
     - name: Check that robot is online
       ping:
-
-    - name: Start ROS master docker container
-      docker_container:
-        name: ros_master
-        image: 'frankjoshua/ros-master:{{ cpu_arch }}'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        env:
-          ROS_MASTER_URI: 'http://{{ ansible_ssh_host }}:11311'
-          ROS_IP: '{{ ansible_ssh_host }}'
-      become: true
 
     - name: Add apt key for ROS
       apt_key:
