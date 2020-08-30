@@ -1,0 +1,10 @@
+---
+- hosts: robot
+  vars:
+    ros_ip: '127.0.0.1'
+    ros_master_uri: 'http://127.0.0.1:11311'
+
+  roles:
+    - { role: ansible-role-ros-master, become: yes }
+    - { role: ansible-role-ros-bridge-suite, become: yes }
+    - { role: ansible-role-ros-jviz, become: yes }
