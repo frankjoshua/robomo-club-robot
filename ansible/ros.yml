@@ -8,3 +8,4 @@
     - { role: ansible-role-ros-master, become: yes }
     - { role: ansible-role-ros-bridge-suite, become: yes }
     - { role: ansible-role-ros-jviz, become: yes }
+    - { role: ansible-role-ros-webviz, become: yes }

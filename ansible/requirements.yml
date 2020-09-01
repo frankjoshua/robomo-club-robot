@@ -11,3 +11,5 @@
 - src: https://github.com/frankjoshua/ansible-role-ros-bridge-suite
 
 - src: https://github.com/frankjoshua/ansible-role-ros-jviz.git
+
+- src: https://github.com/frankjoshua/ansible-role-ros-webviz.git
