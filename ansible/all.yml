@@ -1,4 +1,6 @@
 ---
-- import_playbook: robot.yml
 - import_playbook: ssh.yml
+
+- import_playbook: robot.yml
+
 - import_playbook: ros.yml

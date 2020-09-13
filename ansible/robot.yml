@@ -6,13 +6,15 @@
       - name: docker
 
   roles:
-    # Jetson Nano already has Docker installed
-    # - { role: geerlingguy.docker, become: true}
-    - { role: geerlingguy.pip, become: true }
+    - { role: geerlingguy.pip, pip_package: 'python-pip', become: true }
 
   tasks:
     - name: Check that robot is online
       ping:
+
+    - name: Install docker
+      script: get-docker.sh
+      become: yes
 
     - name: Add apt key for ROS
       apt_key:
