@@ -52,6 +52,10 @@ Then run:
 ./test.sh
 ```
 
+# Links
+
+[https://www.dimensionengineering.com/datasheets/KangarooManual.pdf](https://www.dimensionengineering.com/datasheets/KangarooManual.pdf)
+
 # Contributors:
 
 Mark Moran<br>
