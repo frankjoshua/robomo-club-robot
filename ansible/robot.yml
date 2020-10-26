@@ -7,6 +7,12 @@
 
   roles:
     - { role: geerlingguy.pip, pip_package: 'python-pip', become: true }
+    - {
+        role: ansible-role-kiosk,
+        kiosk_user: kiosk,
+        website_url: 'http://localhost:8080/?rosbridge-websocket-url=ws://localhost:9090',
+        become: true,
+      }
 
   tasks:
     - name: Check that robot is online

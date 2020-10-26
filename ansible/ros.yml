@@ -3,6 +3,7 @@
   vars:
     ros_ip: '{{ ansible_default_ipv4.address }}'
     ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    pull_image: true
 
   roles:
     - { role: ansible-role-ros-master, become: yes }
