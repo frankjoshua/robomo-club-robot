@@ -10,6 +10,7 @@
     - { role: ansible-role-ros-bridge-suite, become: yes }
     - { role: ansible-role-ros-jviz, become: yes }
     - { role: ansible-role-ros-webviz, become: yes }
+    - { role: ansible-role-ros-sabertooth-usb, become: yes }
 
   tasks:
     - name: export ros_master_uri
