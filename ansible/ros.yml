@@ -28,3 +28,13 @@
         regexp: '^export ROS_IP='
         line: 'export ROS_IP={{ ros_ip }}'
       become: yes
+
+    - name: Publish URDF
+      docker_container:
+        name: 'ros_urdf'
+        image: 'frankjoshua/ros-urdf'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
