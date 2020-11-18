@@ -6,11 +6,15 @@
     pull_image: true
 
   roles:
-    - { role: ansible-role-ros-master, become: yes }
+    - role: ansible-role-ros-master
+      docker_users:
+        - operator
+        - vagrant
+      become: yes
     - { role: ansible-role-ros-bridge-suite, become: yes }
     - { role: ansible-role-ros-jviz, become: yes }
     - { role: ansible-role-ros-webviz, become: yes }
-    - { role: ansible-role-ros-sabertooth-usb, become: yes }
+    # - { role: ansible-role-ros-sabertooth-usb, become: yes }
 
   tasks:
     - name: export ros_master_uri
