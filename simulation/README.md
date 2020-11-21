@@ -24,7 +24,7 @@ Launch Gazebo with:
 
 ```
 cd /vagrant
-roslaunch ./simulation.launch
+roslaunch --wait ./simulation.launch
 ```
 
 # SSH Setup
@@ -53,7 +53,7 @@ ssh robot
 
 # Install Robot Software on Simulation
 
-Once ssh is setup just install as normal.
+Once ssh is setup just install as normal. Gazebo needs to be running before you start the other ROS nodes. When Gazebo starts it sets /use_sim
 
 ```
 ./install.sh

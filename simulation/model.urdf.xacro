@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
-<robot name="efim"
-       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
-       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
-       xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="efim" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- BASE-FOOTPRINT -->
   <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin -->
@@ -11,42 +7,39 @@
     <inertial>
       <mass value="0.0001" />
       <origin xyz="0 0 0" />
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
-          iyy="0.0001" iyz="0.0" 
-          izz="0.0001" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
     </inertial>
     <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-            <box size="0.001 0.001 0.001" />
-        </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
     </visual>
   </link>
 
   <joint name="base_footprint_joint" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0" />
-    <parent link="base_footprint"/>
+    <parent link="base_footprint" />
     <child link="base_link" />
   </joint>
-  
+
   <link name="base_link">
     <visual>
       <geometry>
-        <box size="0.41148 0.30988 0.05588"/>
+        <box size="0.41148 0.30988 0.05588" />
       </geometry>
       <material name="grey">
-	<color rgba="0.5 0.5 0.5 1"/>
+        <color rgba="0.5 0.5 0.5 1" />
       </material>
     </visual>
     <collision>
       <geometry>
-        <box size="0.41148 0.30988 0.05588"/>
+        <box size="0.41148 0.30988 0.05588" />
       </geometry>
     </collision>
-   <inertial>
-      <mass value="20.0"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+    <inertial>
+      <mass value="20.0" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
@@ -57,10 +50,10 @@
   <link name="body_link">
     <visual>
       <geometry>
-        <cylinder length="1.04775" radius="0.2032"/>
+        <cylinder length="1.04775" radius="0.2032" />
       </geometry>
       <material name="clear">
-        <color rgba="0.75 0.75 0.75 0.4"/>
+        <color rgba="0.75 0.75 0.75 0.4" />
       </material>
     </visual>
     <!--<collision>
@@ -69,27 +62,26 @@
       </geometry>
     </collision>-->
     <inertial>
-      <mass value="10.0"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="10.0" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="center_joint" type="fixed">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="body_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0.551815"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="body_link" />
+    <origin rpy="0 0 0" xyz="0 0 0.551815" />
   </joint>
 
   <link name="camera_link">
     <visual>
-      <origin rpy="0 0 0"/>
+      <origin rpy="0 0 0" />
       <geometry>
-        <box size="0.0762 0.2794 0.0762"/>
+        <box size="0.0762 0.2794 0.0762" />
       </geometry>
       <material name="red">
-	<color rgba="1 0.1 0.1 1"/>
+        <color rgba="1 0.1 0.1 1" />
       </material>
     </visual>
     <!--<collision>
@@ -97,44 +89,43 @@
         <box size="0.0762 0.2794 0.0762"/>
       </geometry>
     </collision>-->
-   <inertial>
-      <mass value="0.25"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+    <inertial>
+      <mass value="0.25" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="camera_joint" type="fixed">
-    <axis xyz="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="camera_link"/>
-    <origin rpy="0 0 0" xyz="0.15 0 0.48"/>
+    <axis xyz="0 0 0" />
+    <parent link="base_link" />
+    <child link="camera_link" />
+    <origin rpy="0 0 0" xyz="0.15 0 0.48" />
   </joint>
 
-    <!-- The fixed joints & links below are usually published by static_transformers launched by the OpenNi launch
+  <!-- The fixed joints & links below are usually published by static_transformers launched by the OpenNi launch
          files. However, for Gazebo simulation we need them, so we add them here.
          (Hence, don't publish them additionally!) -->
-	<joint name="camera_depth_joint" type="fixed">
-	  <origin xyz="0 0 0" rpy="0 0 0" />
-	  <parent link="camera_link" />
-	  <child link="camera_depth_frame" />
-	</joint>
-	<link name="camera_depth_frame"/>
+  <joint name="camera_depth_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="camera_link" />
+    <child link="camera_depth_frame" />
+  </joint>
+  <link name="camera_depth_frame" />
 
-	<joint name="camera_depth_optical_joint" type="fixed">
-	  <origin xyz="0 0 0" rpy="0 0 0" />
-	  <parent link="camera_link" />
-	  <child link="camera_depth_optical_frame" />
-	</joint>
-	<link name="camera_depth_optical_frame"/>
+  <joint name="camera_depth_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="camera_link" />
+    <child link="camera_depth_optical_frame" />
+  </joint>
+  <link name="camera_depth_optical_frame" />
 
   <link name="laser">
     <visual>
       <geometry>
-        <box size="0.0762 0.0762 0.0762"/>
+        <box size="0.0762 0.0762 0.0762" />
       </geometry>
       <material name="blue">
-	<color rgba="0.1 0.1 1 1"/>
+        <color rgba="0.1 0.1 1 1" />
       </material>
     </visual>
     <!--<collision>
@@ -142,27 +133,26 @@
         <box size="0.0762 0.2794 0.0762"/>
       </geometry>
     </collision>-->
-   <inertial>
-      <mass value="0.25"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+    <inertial>
+      <mass value="0.25" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="laser_joint" type="fixed">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="laser"/>
-    <origin rpy="0 0 0" xyz="0.0 0 1.23"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="laser" />
+    <origin rpy="0 0 0" xyz="0.0 0 1.23" />
   </joint>
 
   <link name="pocketbot">
     <visual>
       <geometry>
-        <box size="0.1080 0.1920 0.005"/>
+        <box size="0.1080 0.1920 0.005" />
       </geometry>
       <material name="red">
-	<color rgba="0.1 0.1 1 1"/>
+        <color rgba="0.1 0.1 1 1" />
       </material>
     </visual>
     <!--<collision>
@@ -170,144 +160,138 @@
         <box size="0.0762 0.2794 0.0762"/>
       </geometry>
     </collision>-->
-   <inertial>
-      <mass value="0.25"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+    <inertial>
+      <mass value="0.25" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="pocketbot_joint" type="continuous">
-    <axis xyz="0 0 1"/>
-    <parent link="body_link"/>
-    <child link="pocketbot"/>
-    <origin rpy="0 0 0" xyz="0.0 0.2 0.5"/>
+    <axis xyz="0 0 1" />
+    <parent link="body_link" />
+    <child link="pocketbot" />
+    <origin rpy="0 0 0" xyz="0.0 0.2 0.5" />
   </joint>
 
   <link name="hitch_front_link">
     <visual>
       <geometry>
-        <cylinder length="0.1524" radius="0.01"/>
+        <cylinder length="0.1524" radius="0.01" />
       </geometry>
       <material name="silver">
-	<color rgba="0.75 0.75 0.75 1"/>
+        <color rgba="0.75 0.75 0.75 1" />
       </material>
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.1524" radius="0.01"/>
+        <cylinder length="0.1524" radius="0.01" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="hitch_joint" type="fixed">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="hitch_front_link"/>
-    <origin rpy="0 0 0" xyz="0.18 0 0.0762"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="hitch_front_link" />
+    <origin rpy="0 0 0" xyz="0.18 0 0.0762" />
   </joint>
 
   <link name="wheel_front_left">
     <visual>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
       <material name="black">
-        <color rgba="0 0 0 1"/>
+        <color rgba="0 0 0 1" />
       </material>
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="axis_front_left" type="continuous">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="wheel_front_left"/>
-    <origin rpy="-1.5708 0 0" xyz="0.165862 0.18034 0"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="wheel_front_left" />
+    <origin rpy="-1.5708 0 0" xyz="0.165862 0.18034 0" />
   </joint>
 
- <link name="wheel_front_right">
+  <link name="wheel_front_right">
     <visual>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
-      <material name="black"/>
+      <material name="black" />
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="axis_front_right" type="continuous">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="wheel_front_right"/>
-    <origin rpy="-1.5708 0 0" xyz="0.165862 -0.18034 0"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="wheel_front_right" />
+    <origin rpy="-1.5708 0 0" xyz="0.165862 -0.18034 0" />
   </joint>
 
   <link name="wheel_rear_right">
     <visual>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
-      <material name="black"/>
+      <material name="black" />
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
   </link>
 
   <joint name="axis_rear_right" type="continuous">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="wheel_rear_right"/>
-    <origin rpy="-1.5708 0 0" xyz="-0.165862 -0.18034 0"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="wheel_rear_right" />
+    <origin rpy="-1.5708 0 0" xyz="-0.165862 -0.18034 0" />
   </joint>
 
   <link name="wheel_rear_left">
     <visual>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
-      <material name="black"/>
+      <material name="black" />
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.0508" radius="0.0762"/>
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="1.0" iyy="1.0" izz="1.0"
-               ixy="0" ixz="0" iyz="0"/>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
     </inertial>
     <gazebo reference="wheel_rear_left">
       <material>Gazebo/Black</material>
@@ -315,10 +299,10 @@
   </link>
 
   <joint name="axis_rear_left" type="continuous">
-    <axis xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="wheel_rear_left"/>
-    <origin rpy="-1.5708 0 0" xyz="-0.165862 0.18034 0"/>
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="wheel_rear_left" />
+    <origin rpy="-1.5708 0 0" xyz="-0.165862 0.18034 0" />
   </joint>
 
   <gazebo>
@@ -330,14 +314,14 @@
       <wheelSeparation>0.254</wheelSeparation>
       <wheelDiameter>0.1524</wheelDiameter>
       <torque>20</torque>
-      <commandTopic>pocketbot/cmd_vel</commandTopic>
+      <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>base_link</robotBaseFrame>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
     </plugin>
   </gazebo>
 
-<!--<gazebo>
+  <!--<gazebo>
   <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
     <updateRate>100.0</updateRate>
     <robotNamespace></robotNamespace>
@@ -362,7 +346,7 @@
   </plugin>-->
 
 
-<gazebo reference="laser">
+  <gazebo reference="laser">
     <material>Gazebo/Blue</material>
     <sensor type="ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -402,43 +386,41 @@
   <gazebo reference="camera_link">
     <material>Gazebo/Blue</material>
     <sensor type="depth" name="camera">
-        <always_on>true</always_on>
-        <update_rate>20.0</update_rate>
-        <visualize>true</visualize>
-        <camera>
-            <horizontal_fov>1.046666667</horizontal_fov>
-            <image>
-                <width>640</width>
-                <height>480</height>
-                <format>B8G8R8</format>
-            </image>
-            <depth_camera>
-
-            </depth_camera>
-            <clip>
-                <near>0.05</near>
-                <far>8.0</far>
-            </clip>
-        </camera>
-        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
-            <cameraName>camera</cameraName>
-            <alwaysOn>true</alwaysOn>
-            <updateRate>10.0</updateRate>
-            <frameName>camera_link</frameName>
-            <imageTopicName>rgb/image_rect_color</imageTopicName>
-            <depthImageTopicName>depth_registered/image_raw</depthImageTopicName>
-            <pointCloudTopicName>depth/points</pointCloudTopicName>
-            <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-            <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-          <baseline>0.1</baseline>
-          <distortion_k1>0.0</distortion_k1>
-          <distortion_k2>0.0</distortion_k2>
-          <distortion_k3>0.0</distortion_k3>
-          <distortion_t1>0.0</distortion_t1>
-          <distortion_t2>0.0</distortion_t2>
-          <pointCloudCutoff>0.4</pointCloudCutoff>
-        </plugin>
+      <always_on>true</always_on>
+      <update_rate>20.0</update_rate>
+      <visualize>true</visualize>
+      <camera>
+        <horizontal_fov>1.046666667</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>B8G8R8</format>
+        </image>
+        <depth_camera></depth_camera>
+        <clip>
+          <near>0.05</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+        <cameraName>camera</cameraName>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>10.0</updateRate>
+        <frameName>camera_link</frameName>
+        <imageTopicName>rgb/image_rect_color</imageTopicName>
+        <depthImageTopicName>depth_registered/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.0</distortion_k1>
+        <distortion_k2>0.0</distortion_k2>
+        <distortion_k3>0.0</distortion_k3>
+        <distortion_t1>0.0</distortion_t1>
+        <distortion_t2>0.0</distortion_t2>
+        <pointCloudCutoff>0.4</pointCloudCutoff>
+      </plugin>
     </sensor>
-</gazebo>
+  </gazebo>
 
 </robot>

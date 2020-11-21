@@ -42,3 +42,13 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+
+    - name: Start Map Server with Static Map
+      docker_container:
+        name: 'ros_map_server'
+        image: 'frankjoshua/ros-map-server'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
