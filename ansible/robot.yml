@@ -1,5 +1,5 @@
 ---
-- hosts: robot
+- hosts: robots
   vars:
     lsb_release: bionic
     pip_install_packages:

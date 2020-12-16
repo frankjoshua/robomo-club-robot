@@ -1,0 +1,19 @@
+---
+- hosts: robot_hardware
+  vars:
+    ros_ip: '{{ ansible_default_ipv4.address }}'
+    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311' #'http://192.168.33.58:11311'
+
+  tasks:
+    - name: Start ROS Serial Node
+      docker_container:
+        name: 'ros_serial'
+        image: 'frankjoshua/ros-serial'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        devices:
+          - '/dev/ttyACM0:/dev/arduino'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+      become: yes

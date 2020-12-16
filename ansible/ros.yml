@@ -54,3 +54,14 @@
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
       become: yes
+
+    - name: Start ROS Move Base node
+      docker_container:
+        name: 'ros_move_base'
+        image: 'frankjoshua/ros-move-base'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+      become: yes

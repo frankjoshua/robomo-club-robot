@@ -4,3 +4,5 @@
 - import_playbook: robot.yml
 
 - import_playbook: ros.yml
+
+- import_playbook: ros_hardware.yml
