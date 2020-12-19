@@ -65,3 +65,22 @@
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
       become: yes
+
+    - name: Create Volume for Jupyter Notebooks
+      docker_volume:
+        name: jupyter
+
+    - name: Start ROS Jupyter Notebook
+      docker_container:
+        name: 'ros_jupyter'
+        image: 'frankjoshua/ros-jupyter'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - 'jupyter:/home/jovyan'
+        ports:
+          - '8088:8888'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+      become: yes
