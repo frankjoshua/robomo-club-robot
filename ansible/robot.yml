@@ -12,9 +12,14 @@
     - name: Check that robot is online
       ping:
 
+    - name: Check if docker is installed
+      command: /bin/bash -c command -v docker
+      register: docker_check
+
     - name: Install docker
       script: get-docker.sh
       become: yes
+      when: docker_check.rc != 0
 
     - name: Add apt key for ROS
       apt_key:

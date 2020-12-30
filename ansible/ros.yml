@@ -1,6 +1,8 @@
 ---
 - hosts: robot
   vars:
+    # ros_ip: '192.168.33.58'
+    # ros_master_uri: 'http://192.168.33.58:11311'
     ros_ip: '{{ ansible_default_ipv4.address }}'
     ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
@@ -12,11 +14,20 @@
         - vagrant
       become: yes
     - { role: ansible-role-ros-bridge-suite, become: yes }
-    - { role: ansible-role-ros-jviz, become: yes }
     - { role: ansible-role-ros-webviz, become: yes }
-    # - { role: ansible-role-ros-sabertooth-usb, become: yes }
 
   tasks:
+    - name: Start Jviz docker container
+      docker_container:
+        name: 'ros_jviz'
+        image: 'frankjoshua/ros-jviz'
+        ports:
+          - '8088:3000'
+        restart_policy: 'unless-stopped'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+
     - name: export ros_master_uri
       lineinfile:
         dest: /home/operator/.bashrc
@@ -33,12 +44,23 @@
         line: 'export ROS_IP={{ ros_ip }}'
       become: yes
 
+    - name: Create Volumes for ROS persistent storage
+      docker_volume:
+        name: '{{ item }}'
+      with_items:
+        - 'ros_move_base'
+        - 'ros_jupyter'
+        - 'ros_urdf'
+        - 'ros_map_server'
+
     - name: Publish URDF
       docker_container:
         name: 'ros_urdf'
         image: 'frankjoshua/ros-urdf'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_urdf:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -50,6 +72,8 @@
         image: 'frankjoshua/ros-map-server'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_map_server:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -61,14 +85,16 @@
         image: 'frankjoshua/ros-move-base'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_move_base:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
       become: yes
-
-    - name: Create Volume for Jupyter Notebooks
-      docker_volume:
-        name: jupyter
 
     - name: Start ROS Jupyter Notebook
       docker_container:
@@ -77,10 +103,32 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'jupyter:/home/jovyan'
-        ports:
-          - '8088:8888'
+          - 'ros_move_base:/home/jovyan/jupyter/ros_move_base'
+          - 'ros_urdf:/home/jovyan/jupyter/ros_urdf'
+          - 'ros_jupyter:/home/jovyan/jupyter'
+          - 'ros_map_server:/home/jovyan/jupyter/ros_map_server'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+          JUPYTER_ENABLE_LAB: 'true'
+          GRANT_SUDO: 'true'
+        # Starts Jupyter so it does not require token or password to login
+        command: "start-notebook.sh --ip='*' --NotebookApp.token='' --NotebookApp.password=''"
+        user: root
+      become: yes
+
+    - name: Setup vscode sever to edit ROS config files
+      docker_container:
+        name: 'vs_code'
+        image: 'codercom/code-server:latest'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_move_base:/home/coder/project/ros_move_base'
+          - 'ros_urdf:/home/coder/project/ros_urdf'
+        ports:
+          - '8880:8080'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+        user: root
       become: yes

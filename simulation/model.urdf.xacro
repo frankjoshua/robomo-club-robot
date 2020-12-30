@@ -146,45 +146,16 @@
     <origin rpy="0 0 0" xyz="0.0 0 1.23" />
   </joint>
 
-  <link name="pocketbot">
+  <link name="wheel_right">
     <visual>
       <geometry>
-        <box size="0.1080 0.1920 0.005" />
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
-      <material name="red">
-        <color rgba="0.1 0.1 1 1" />
-      </material>
-    </visual>
-    <!--<collision>
-      <geometry>
-        <box size="0.0762 0.2794 0.0762"/>
-      </geometry>
-    </collision>-->
-    <inertial>
-      <mass value="0.25" />
-      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-  </link>
-
-  <joint name="pocketbot_joint" type="continuous">
-    <axis xyz="0 0 1" />
-    <parent link="body_link" />
-    <child link="pocketbot" />
-    <origin rpy="0 0 0" xyz="0.0 0.2 0.5" />
-  </joint>
-
-  <link name="hitch_front_link">
-    <visual>
-      <geometry>
-        <cylinder length="0.1524" radius="0.01" />
-      </geometry>
-      <material name="silver">
-        <color rgba="0.75 0.75 0.75 1" />
-      </material>
+      <material name="black" />
     </visual>
     <collision>
       <geometry>
-        <cylinder length="0.1524" radius="0.01" />
+        <cylinder length="0.0508" radius="0.0762" />
       </geometry>
     </collision>
     <inertial>
@@ -193,11 +164,38 @@
     </inertial>
   </link>
 
-  <joint name="hitch_joint" type="fixed">
+  <joint name="axis_right" type="continuous">
     <axis xyz="0 0 1" />
     <parent link="base_link" />
-    <child link="hitch_front_link" />
-    <origin rpy="0 0 0" xyz="0.18 0 0.0762" />
+    <child link="wheel_right" />
+    <origin rpy="-1.5708 0 0" xyz="0 -0.18034 0" />
+  </joint>
+
+  <link name="wheel_left">
+    <visual>
+      <geometry>
+        <cylinder length="0.0508" radius="0.0762" />
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.0508" radius="0.0762" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+  </link>
+
+  <joint name="axis_left" type="continuous">
+    <axis xyz="0 0 1" />
+    <parent link="base_link" />
+    <child link="wheel_left" />
+    <origin rpy="-1.5708 0 0" xyz="0 0.18034 0" />
   </joint>
 
   <link name="wheel_front_left">
@@ -305,45 +303,45 @@
     <origin rpy="-1.5708 0 0" xyz="-0.165862 0.18034 0" />
   </joint>
 
-  <gazebo>
+  <!-- <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
       <alwaysOn>true</alwaysOn>
       <updateRate>20</updateRate>
-      <leftJoint>axis_front_left</leftJoint>
-      <rightJoint>axis_front_right</rightJoint>
+      <leftJoint>axis_left</leftJoint>
+      <rightJoint>axis_right</rightJoint>
       <wheelSeparation>0.254</wheelSeparation>
       <wheelDiameter>0.1524</wheelDiameter>
       <torque>20</torque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
+    </plugin>
+  </gazebo> -->
+
+  <gazebo>
+    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+      <updateRate>100.0</updateRate>
+      <robotNamespace></robotNamespace>
+      <leftFrontJoint>axis_front_left</leftFrontJoint>
+      <rightFrontJoint>axis_front_right</rightFrontJoint>
+      <leftRearJoint>axis_rear_left</leftRearJoint>
+      <rightRearJoint>axis_rear_right</rightRearJoint>
+      <wheelSeparation>0.254</wheelSeparation>
+      <wheelDiameter>0.1524</wheelDiameter>
       <robotBaseFrame>base_footprint</robotBaseFrame>
+      <torque>10</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <broadcastTF>1</broadcastTF>
+      <odometryFrame>odom</odometryFrame>
+      <odometryTopic>odom</odometryTopic>
     </plugin>
   </gazebo>
 
-  <!--<gazebo>
-  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-    <updateRate>100.0</updateRate>
-    <robotNamespace></robotNamespace>
-    <leftFrontJoint>axis_front_left</leftFrontJoint>
-    <rightFrontJoint>axis_front_right</rightFrontJoint>
-    <leftRearJoint>axis_rear_left</leftRearJoint>
-    <rightRearJoint>axis_rear_right</rightRearJoint>
-    <wheelSeparation>0.254</wheelSeparation>
-    <wheelDiameter>0.1524</wheelDiameter>
-    <robotBaseFrame>base_link</robotBaseFrame>
-    <torque>10</torque>
-    <commandTopic>pocketbot/cmd_vel</commandTopic>
-    <broadcastTF>0</broadcastTF>
-    <odometryFrame>odom</odometryFrame>
-    <odometryTopic>odom</odometryTopic>
-  </plugin>
-</gazebo> -->
-
-  <!--<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+  <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
     <jointName>axis_front_left, axis_front_right, axis_rear_left, axis_rear_right</jointName>
     <updateRate>100</updateRate>
-  </plugin>-->
+  </plugin>
 
 
   <gazebo reference="laser">

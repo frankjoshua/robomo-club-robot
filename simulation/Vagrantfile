@@ -11,8 +11,8 @@ Vagrant.configure("2") do |config|
       # Display the VirtualBox GUI when booting the machine
       vb.gui = true
       # Customize the amount of memory on the VM:
-      vb.memory = "4096"
-      vb.cpus = 6
+      vb.memory = "8192"
+      vb.cpus = 8
     end
     workstation.vm.box = "ubuntu/bionic64"
     workstation.vm.provision "shell", inline: <<-SHELL
