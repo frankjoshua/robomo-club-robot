@@ -18,6 +18,13 @@ Launch the VM. This will take a long time when first run. It has to download the
 ./start.sh
 ```
 
+The first time after running start.sh you will need to reboot the vm to start the GUI.
+
+```
+vagrant halt
+vagrant up
+```
+
 ## SSH Setup
 
 It makes everything easier if you setup your ssh config in ~/.ssh/config.
@@ -52,6 +59,7 @@ Launch Gazebo with:
 cd /vagrant
 roslaunch --wait ./simulation.launch
 ```
+
 You should see this output:<br>
 roscore/master is not yet running, will wait for it to start
 <br>

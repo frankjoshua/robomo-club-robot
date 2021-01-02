@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    # ros_ip: '192.168.33.58'
-    # ros_master_uri: 'http://192.168.33.58:11311'
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    ros_ip: '192.168.33.58'
+    ros_master_uri: 'http://192.168.33.58:11311'
+    # ros_ip: '{{ ansible_default_ipv4.address }}'
+    # ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -27,6 +27,7 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+      become: yes
 
     - name: export ros_master_uri
       lineinfile:
@@ -52,6 +53,7 @@
         - 'ros_jupyter'
         - 'ros_urdf'
         - 'ros_map_server'
+      become: yes
 
     - name: Publish URDF
       docker_container:
@@ -110,7 +112,7 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
-          JUPYTER_ENABLE_LAB: 'true'
+          # JUPYTER_ENABLE_LAB: 'true'
           GRANT_SUDO: 'true'
         # Starts Jupyter so it does not require token or password to login
         command: "start-notebook.sh --ip='*' --NotebookApp.token='' --NotebookApp.password=''"
