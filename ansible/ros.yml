@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    ros_ip: '192.168.33.58'
-    ros_master_uri: 'http://192.168.33.58:11311'
-    # ros_ip: '{{ ansible_default_ipv4.address }}'
-    # ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    # ros_ip: '192.168.33.58'
+    # ros_master_uri: 'http://192.168.33.58:11311'
+    ros_ip: '{{ ansible_default_ipv4.address }}'
+    os_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -13,7 +13,6 @@
         - operator
         - vagrant
       become: yes
-    - { role: ansible-role-ros-bridge-suite, become: yes }
     - { role: ansible-role-ros-webviz, become: yes }
 
   tasks:
@@ -53,6 +52,20 @@
         - 'ros_jupyter'
         - 'ros_urdf'
         - 'ros_map_server'
+        - 'ros_bridge_suite'
+      become: yes
+
+    - name: Start ROS Webbridge Suite
+      docker_container:
+        name: 'ros_bridge_suite'
+        image: 'frankjoshua/ros-bridge-suite'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_bridge_suite:/app'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
       become: yes
 
     - name: Publish URDF
@@ -109,6 +122,7 @@
           - 'ros_urdf:/home/jovyan/jupyter/ros_urdf'
           - 'ros_jupyter:/home/jovyan/jupyter'
           - 'ros_map_server:/home/jovyan/jupyter/ros_map_server'
+          - 'ros_bridge_suite:/home/jovyan/jupyter/ros_bridge_suite'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'

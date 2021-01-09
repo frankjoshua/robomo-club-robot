@@ -57,7 +57,7 @@ Launch Gazebo with:
 
 ```
 cd /vagrant
-roslaunch --wait ./simulation.launch
+./launch_simulation.sh
 ```
 
 You should see this output:<br>
