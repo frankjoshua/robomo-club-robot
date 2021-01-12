@@ -1,6 +1,8 @@
-# robomo-club-robot
+# Robomo.club Robot 2021
 
-Code and documentation for Robomo.club 2019 club robot
+Code and documentation for Robomo.club 2019-2021 club robot.
+
+The current robot is living at Arch Reactor in St. Louis, MO (http://archreactor.org).
 
 For more information on our project check out our forum at https://discourse.robomo.club/t/robomo-club-robot-project/82
 
