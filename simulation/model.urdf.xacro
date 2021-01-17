@@ -334,7 +334,7 @@
       <commandTopic>cmd_vel</commandTopic>
       <broadcastTF>1</broadcastTF>
       <odometryFrame>odom</odometryFrame>
-      <odometryTopic>odom</odometryTopic>
+      <odometryTopic>odom_gazebo</odometryTopic>
     </plugin>
   </gazebo>
 

@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    # ros_ip: '192.168.33.58'
-    # ros_master_uri: 'http://192.168.33.58:11311'
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    os_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    ros_ip: '192.168.33.58'
+    ros_master_uri: 'http://192.168.33.58:11311'
+    #ros_ip: '{{ ansible_default_ipv4.address }}'
+    #ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -79,6 +79,17 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+      become: yes
+
+    - name: Serve URDF for Jupyter Notebook
+      docker_container:
+        name: 'nginx_urdf'
+        image: 'nginx'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_urdf:/usr/share/nginx/html'
+        ports:
+          - '3080:80'
       become: yes
 
     - name: Start Map Server with Static Map
