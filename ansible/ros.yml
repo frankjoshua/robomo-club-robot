@@ -51,8 +51,8 @@
         - 'ros_move_base'
         - 'ros_jupyter'
         - 'ros_urdf'
-        - 'ros_map_server'
         - 'ros_bridge_suite'
+        - 'ros_gmapping'
       become: yes
 
     - name: Start ROS Webbridge Suite
@@ -92,17 +92,35 @@
           - '3080:80'
       become: yes
 
-    - name: Start Map Server with Static Map
+    ## Exmaple of Static map
+    # - name: Start Map Server with Static Map
+    #   docker_container:
+    #     name: 'ros_map_server'
+    #     image: 'frankjoshua/ros-map-server'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - 'ros_map_server:/app'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #   become: yes
+
+    - name: Start ROS gmapping node
       docker_container:
-        name: 'ros_map_server'
-        image: 'frankjoshua/ros-map-server'
+        name: 'ros_gmapping'
+        image: 'frankjoshua/ros-gmapping'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_map_server:/app'
+          - 'ros_gmapping:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
       become: yes
 
     - name: Start ROS Move Base node
@@ -132,8 +150,8 @@
           - 'ros_move_base:/home/jovyan/jupyter/ros_move_base'
           - 'ros_urdf:/home/jovyan/jupyter/ros_urdf'
           - 'ros_jupyter:/home/jovyan/jupyter'
-          - 'ros_map_server:/home/jovyan/jupyter/ros_map_server'
           - 'ros_bridge_suite:/home/jovyan/jupyter/ros_bridge_suite'
+          - 'ros_gmapping:/home/jovyan/jupyter/ros_gmapping'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
