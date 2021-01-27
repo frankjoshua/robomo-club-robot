@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    ros_ip: '192.168.33.58'
-    ros_master_uri: 'http://192.168.33.58:11311'
-    #ros_ip: '{{ ansible_default_ipv4.address }}'
-    #ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    # ros_ip: '192.168.33.58'
+    # ros_master_uri: 'http://192.168.33.58:11311'
+    ros_ip: '{{ ansible_default_ipv4.address }}'
+    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -147,18 +147,15 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_move_base:/home/jovyan/jupyter/ros_move_base'
-          - 'ros_urdf:/home/jovyan/jupyter/ros_urdf'
-          - 'ros_jupyter:/home/jovyan/jupyter'
-          - 'ros_bridge_suite:/home/jovyan/jupyter/ros_bridge_suite'
-          - 'ros_gmapping:/home/jovyan/jupyter/ros_gmapping'
+          - 'ros_move_base:/home/jovyan/ros-jupyter/ros_move_base'
+          - 'ros_urdf:/home/jovyan/ros-jupyter/ros_urdf'
+          - 'ros_jupyter:/home/jovyan/ros-jupyter'
+          - 'ros_bridge_suite:/home/jovyan/ros-jupyter/ros_bridge_suite'
+          - 'ros_gmapping:/home/jovyan/ros-jupyter/ros_gmapping'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
-          JUPYTER_ENABLE_LAB: 'false'
-          GRANT_SUDO: 'true'
-        # Starts Jupyter so it does not require token or password to login
-        command: "start-notebook.sh --ip='*' --NotebookApp.token='' --NotebookApp.password=''"
+        command: "jupyter notebook --no-browser --ip=0.0.0.0 --NotebookApp.token='' --allow-root"
         user: root
       become: yes
 
