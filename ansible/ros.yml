@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    # ros_ip: '192.168.33.58'
-    # ros_master_uri: 'http://192.168.33.58:11311'
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    ros_ip: '192.168.33.58'
+    ros_master_uri: 'http://192.168.33.58:11311'
+    # ros_ip: '{{ ansible_default_ipv4.address }}'
+    # ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
