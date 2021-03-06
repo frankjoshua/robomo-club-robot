@@ -55,19 +55,6 @@
         - 'ros_gmapping'
       become: yes
 
-    - name: Start ROS Webbridge Suite
-      docker_container:
-        name: 'ros_bridge_suite'
-        image: 'frankjoshua/ros-bridge-suite'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        volumes:
-          - 'ros_bridge_suite:/app'
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
-      become: yes
-
     - name: Publish URDF
       docker_container:
         name: 'ros_urdf'
@@ -91,6 +78,19 @@
         ports:
           - '3080:80'
       become: yes
+
+    # - name: Start ROS Webbridge Suite
+    #   docker_container:
+    #     name: 'ros_bridge_suite'
+    #     image: 'frankjoshua/ros-bridge-suite'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - 'ros_bridge_suite:/app'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #   become: yes
 
     ## Exmaple of Static map
     # - name: Start Map Server with Static Map
@@ -155,8 +155,6 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
-        command: "jupyter notebook --no-browser --ip=0.0.0.0 --NotebookApp.token='' --allow-root"
-        user: root
       become: yes
 
     - name: Setup vscode sever to edit ROS config files
