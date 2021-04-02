@@ -1,10 +1,10 @@
 ---
 - hosts: robot
   vars:
-    ros_ip: '192.168.33.58'
-    ros_master_uri: 'http://192.168.33.58:11311'
-    # ros_ip: '{{ ansible_default_ipv4.address }}'
-    # ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+    # ros_ip: '192.168.33.58'
+    # ros_master_uri: 'http://192.168.33.58:11311'
+    ros_ip: '{{ ansible_default_ipv4.address }}'
+    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -79,18 +79,18 @@
           - '3080:80'
       become: yes
 
-    # - name: Start ROS Webbridge Suite
-    #   docker_container:
-    #     name: 'ros_bridge_suite'
-    #     image: 'frankjoshua/ros-bridge-suite'
-    #     network_mode: 'host'
-    #     restart_policy: 'unless-stopped'
-    #     volumes:
-    #       - 'ros_bridge_suite:/app'
-    #     env:
-    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
-    #       ROS_IP: '{{ ros_ip }}'
-    #   become: yes
+    - name: Start ROS Webbridge Suite
+      docker_container:
+        name: 'ros_bridge_suite'
+        image: 'frankjoshua/ros-bridge-suite'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - 'ros_bridge_suite:/app'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+      become: yes
 
     ## Exmaple of Static map
     # - name: Start Map Server with Static Map
@@ -155,6 +155,7 @@
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+        user: root
       become: yes
 
     - name: Setup vscode sever to edit ROS config files

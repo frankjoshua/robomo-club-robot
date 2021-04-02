@@ -13,5 +13,5 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder model.urdf.xacro" />
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
   <node output="screen" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file /vagrant/model.urdf.xacro -urdf -z 1 -model robot" />
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file /home/operator/robomo-club-robot/simulation/model.urdf.xacro -urdf -z 1 -model robot" />
 </launch>

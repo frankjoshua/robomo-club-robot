@@ -25,7 +25,10 @@ ansible-playbook -i production robot.yml
 
 # SSH setup
 
-`cp ./ansible/files/ssh_keys/robot_id_rsa ~/.ssh/`
+```
+cp ./ansible/files/ssh_keys/robot_id_rsa ~/.ssh/
+chmod 400 ~/.ssh/robot_id_rsa
+```
 
 Then edit the file ~/.ssh/config (create if it doesn't exist).
 Add the following lines to the file replacing <IP_OF_JETSON_NANO> with the address of the Jetson nano
