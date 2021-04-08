@@ -25,6 +25,9 @@ ansible-playbook -i production robot.yml
 
 # SSH setup
 
+***Do not follow these instructions if your robot is in production or is accessible from the internet. This is for convenience in a shared project.**
+
+First copy the ssh key and fix the file permissions.
 ```
 cp ./ansible/files/ssh_keys/robot_id_rsa ~/.ssh/
 chmod 400 ~/.ssh/robot_id_rsa

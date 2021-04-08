@@ -140,6 +140,24 @@
           max-file: '3'
       become: yes
 
+    - name: Start ROS Velocity Muxer node
+      docker_container:
+        name: 'ros_vel_muxer'
+        image: 'frankjoshua/ros-vel-muxer'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+          X_SPEED_MULTIPLE: '0.3'
+          Y_SPEED_MULTIPLE: '0.3'
+          MANUAL_TOPIC: '/pocketbot/cmd_vel'
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
+      become: yes
+
     - name: Start ROS Jupyter Notebook
       docker_container:
         name: 'ros_jupyter'
