@@ -1,0 +1,28 @@
+controller_frequency: 10
+# base_local_planner: teb_local_planner/TebLocalPlannerROS
+# TebLocalPlannerROS:
+#   odom_frame: map
+#   map_frame: map
+#   max_vel_x: 0.35
+#   max_vel_x_backwards: 0.35
+#   max_vel_theta: 1.0
+#   weight_kinematics_forward_drive: 10.0
+  
+TrajectoryPlannerROS:
+  global_frame_id: base_footprint
+  holonomic_robot: false
+  pdist_scale: 2.8
+  gdist_scale: 0.4
+  occdist_scale: 0.01
+  #max_vel_theta: 0.3 #1.0
+  #min_vel_theta: -0.3 #-1.0
+  min_in_place_vel_theta: 0.3 #0.4
+  # acc_lim_x: 0.05
+  # acc_lim_theta: 0.05
+  max_vel_x: 0.35
+  escape_vel: -0.1
+  meter_scoring: false
+  oscillation_reset_dist: 0.1
+  yaw_goal_tolerance: 0.2
+  xy_goal_tolerance: 0.2
+  planner_frequency: 1.0

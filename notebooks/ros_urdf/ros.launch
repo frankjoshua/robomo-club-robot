@@ -1,0 +1,13 @@
+<launch>
+    <!-- Load URDF file -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder model.urdf.xacro" />
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node output="screen" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <!-- Transform for Tango device -->
+    <!--  <node pkg="tf" type="static_transform_publisher" name="scanmatcher_to_base"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 /map /area_description 100"/> -->
+    <!--  <node pkg="tf" type="static_transform_publisher" name="laser"
+    args="0.0 -1.0 0.0 0.0 0.0 -1.57 /device /laser 100"/> -->
+    <!--  <node pkg="tf" type="static_transform_publisher" name="odom"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /odom 100"/> -->
+</launch>

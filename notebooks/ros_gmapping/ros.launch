@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
+    <remap from="scan" to="scan" />
+    <remap from="base_link" to="base_link" />
+    <remap from="odom" to="odom" />
+    <param name="maxRange" value="10.0"/>
+    <param name="maxURange" value="10.0"/>
+  </node>
+
+</launch>
