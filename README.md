@@ -12,6 +12,8 @@ Our website is at http://robomo.club
 
 # Getting started
 
+These instructions assume you are installing from a linux computer. And that you are on the same network as your robot.
+
 Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
 /ansible/production --> Has hostname and ip address of the robot
 /ansible/robot.yml --> Playbook for robot software
@@ -34,7 +36,7 @@ chmod 400 ~/.ssh/robot_id_rsa
 ```
 
 Then edit the file ~/.ssh/config (create if it doesn't exist).
-Add the following lines to the file replacing <IP_OF_JETSON_NANO> with the address of the Jetson nano
+Add the following lines to the file replacing <IP_OF_JETSON_NANO> with the address of the Jetson nano or whatever computer you use. Or use 127.0.0.1 if you are installing on the local system.
 
 ```
 Host robot
@@ -43,9 +45,11 @@ User operator
 IdentityFile ~/.ssh/robot_id_rsa
 ```
 
-Then you should be able to ssh into the nano with
+Then you should be able to ssh into the nano with. If not fix it.
 
-`ssh robot`
+```
+ssh robot
+```
 
 # Running Tests
 
