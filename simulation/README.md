@@ -25,6 +25,15 @@ vagrant halt
 vagrant up
 ```
 
+Note: If you are testing on a virtual machine it may be helpfull to install Ansible on the VM in addition to your local computer. (Optional)
+
+```
+sudo apt update
+sudo apt install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt install -y ansible
+```
+
 ## SSH Setup
 
 It makes everything easier if you setup your ssh config in ~/.ssh/config.
