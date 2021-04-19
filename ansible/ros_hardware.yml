@@ -1,8 +1,6 @@
 ---
 - hosts: robot_hardware
-  vars:
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+
   tasks:
     - name: Start ROS Serial Node
       docker_container:

@@ -1,10 +1,6 @@
 ---
 - hosts: robot
   vars:
-    # ros_ip: '192.168.33.58'
-    # ros_master_uri: 'http://192.168.33.58:11311'
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
     pull_image: true
 
   roles:
@@ -62,7 +58,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_urdf:/app'
+          - '/home/operator/robomo-club-robot/notebooks/ros_urdf:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -86,7 +82,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_bridge_suite:/app'
+          - '/home/operator/robomo-club-robot/notebooks/ros_bridge_suite:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -113,7 +109,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_gmapping:/app'
+          - '/home/operator/robomo-club-robot/notebooks/ros_gmapping:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -130,7 +126,8 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - 'ros_move_base:/app'
+          # - 'ros_move_base:/app'
+          - '/home/operator/robomo-club-robot/notebooks/ros_move_base:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -158,36 +155,18 @@
           max-file: '3'
       become: yes
 
-    - name: Start ROS Jupyter Notebook
-      docker_container:
-        name: 'ros_jupyter'
-        image: 'frankjoshua/ros-jupyter'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        volumes:
-          - 'ros_move_base:/home/jovyan/ros-jupyter/ros_move_base'
-          - 'ros_urdf:/home/jovyan/ros-jupyter/ros_urdf'
-          - 'ros_jupyter:/home/jovyan/ros-jupyter'
-          - 'ros_bridge_suite:/home/jovyan/ros-jupyter/ros_bridge_suite'
-          - 'ros_gmapping:/home/jovyan/ros-jupyter/ros_gmapping'
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
-        user: root
-      become: yes
-
-    - name: Setup vscode sever to edit ROS config files
-      docker_container:
-        name: 'vs_code'
-        image: 'codercom/code-server:latest'
-        restart_policy: 'unless-stopped'
-        volumes:
-          - 'ros_move_base:/home/coder/project/ros_move_base'
-          - 'ros_urdf:/home/coder/project/ros_urdf'
-        ports:
-          - '8880:8080'
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
-        user: root
-      become: yes
+    # - name: Setup vscode sever to edit ROS config files
+    #   docker_container:
+    #     name: 'vs_code'
+    #     image: 'codercom/code-server:latest'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - 'ros_move_base:/home/coder/project/ros_move_base'
+    #       - 'ros_urdf:/home/coder/project/ros_urdf'
+    #     ports:
+    #       - '8880:8080'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #     user: root
+    #   become: yes

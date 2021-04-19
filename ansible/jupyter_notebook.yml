@@ -1,0 +1,22 @@
+---
+- hosts: jupyter_notebook
+
+  vars:
+    NOTEBOOK_LOCATION: "/home/operator/robomo-club-robot/notebooks"
+  tasks:
+    - name: Start ROS Jupyter Notebook
+      docker_container:
+        name: 'ros_jupyter'
+        image: 'frankjoshua/ros-jupyter'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - '{{ NOTEBOOK_LOCATION }}/ros_move_base:/home/jovyan/ros-jupyter/ros_move_base'
+          - '{{ NOTEBOOK_LOCATION }}/ros_urdf:/home/jovyan/ros-jupyter/ros_urdf'
+          - '{{ NOTEBOOK_LOCATION }}/apps:/home/jovyan/ros-jupyter/apps'
+          - '{{ NOTEBOOK_LOCATION }}/ros_bridge_suite:/home/jovyan/ros-jupyter/ros_bridge_suite'
+          - '{{ NOTEBOOK_LOCATION }}/ros_gmapping:/home/jovyan/ros-jupyter/ros_gmapping'
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+      become: yes
