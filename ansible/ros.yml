@@ -64,17 +64,6 @@
           ROS_IP: '{{ ros_ip }}'
       become: yes
 
-    - name: Serve URDF for Jupyter Notebook
-      docker_container:
-        name: 'nginx_urdf'
-        image: 'nginx'
-        restart_policy: 'unless-stopped'
-        volumes:
-          - 'ros_urdf:/usr/share/nginx/html'
-        ports:
-          - '3080:80'
-      become: yes
-
     - name: Start ROS Webbridge Suite
       docker_container:
         name: 'ros_bridge_suite'

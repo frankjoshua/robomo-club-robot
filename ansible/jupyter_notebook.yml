@@ -1,9 +1,19 @@
 ---
 - hosts: jupyter_notebook
-
-  vars:
-    NOTEBOOK_LOCATION: "/home/operator/robomo-club-robot/notebooks"
+  
   tasks:
+
+    - name: Serve URDF for Jupyter Notebook
+      docker_container:
+        name: 'nginx_urdf'
+        image: 'nginx'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - '{{ NOTEBOOK_LOCATION }}/ros_urdf:/usr/share/nginx/html'
+        ports:
+          - '3080:80'
+      become: yes
+
     - name: Start ROS Jupyter Notebook
       docker_container:
         name: 'ros_jupyter'
@@ -16,7 +26,9 @@
           - '{{ NOTEBOOK_LOCATION }}/apps:/home/jovyan/ros-jupyter/apps'
           - '{{ NOTEBOOK_LOCATION }}/ros_bridge_suite:/home/jovyan/ros-jupyter/ros_bridge_suite'
           - '{{ NOTEBOOK_LOCATION }}/ros_gmapping:/home/jovyan/ros-jupyter/ros_gmapping'
+          - '{{ NOTEBOOK_LOCATION }}/ros_realsense:/home/jovyan/ros-jupyter/ros_realsense'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
+        user: root
       become: yes

@@ -45,7 +45,8 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          "/dev:/dev"
+          - '/dev:/dev'
+          - '{{ NOTEBOOK_LOCATION }}/ros_realsense:/app'
         privileged: yes
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
