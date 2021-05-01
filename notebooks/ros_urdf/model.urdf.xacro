@@ -387,10 +387,10 @@
       <rightFrontJoint>axis_front_right</rightFrontJoint>
       <leftRearJoint>axis_rear_left</leftRearJoint>
       <rightRearJoint>axis_rear_right</rightRearJoint>
-      <wheelSeparation>0.254</wheelSeparation>
+      <wheelSeparation>0.454</wheelSeparation>
       <wheelDiameter>0.1524</wheelDiameter>
       <robotBaseFrame>base_footprint</robotBaseFrame>
-      <torque>10</torque>
+      <torque>5</torque>
       <commandTopic>cmd_vel</commandTopic>
       <broadcastTF>1</broadcastTF>
       <odometryFrame>odom</odometryFrame>

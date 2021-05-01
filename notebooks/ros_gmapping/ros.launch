@@ -10,7 +10,7 @@
     <param name="odom_frame" value="odom_gmapping"/>
     <param name="maxRange" value="10.0"/>
     <param name="maxURange" value="10.0"/>
+    <param name="map_update_interval" value="1.0"/>
   </node>
 
 </launch>
-r

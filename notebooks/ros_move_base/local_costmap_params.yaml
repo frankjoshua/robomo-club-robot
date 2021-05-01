@@ -1,10 +1,10 @@
 local_costmap:
-  global_frame: odom
-  update_frequency: 2.0
-  publish_frequency: 2.0
-  static_map: false
+  global_frame: base_footprint
+  update_frequency: 10.0
+  publish_frequency: 10.0
   rolling_window: true
-  inflation_radius: 0.07
+  inflation_radius: 0.05
+  resolution: 0.025 #0.05
   
 plugins:
   - {name: range_sensor, type: "range_sensor_layer::RangeSensorLayer"}
