@@ -1,4 +1,12 @@
+[all:vars]
+ros_ip='{{ ansible_default_ipv4.address }}'
+ros_master_uri='http://{{ ansible_default_ipv4.address }}:11311'
+NOTEBOOK_LOCATION='/home/operator/robomo-club-robot/notebooks'
+
 [robots]
+robot
+
+[jupyter_notebook]
 robot
 
 [robot_hardware]

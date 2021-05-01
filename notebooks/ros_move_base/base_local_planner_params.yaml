@@ -1,0 +1,36 @@
+controller_frequency: 10
+
+# base_local_planner: teb_local_planner/TebLocalPlannerROS
+# TebLocalPlannerROS:
+#   holonomic_robot: false
+#   odom_frame: base_footprint
+#   map_frame: map
+#   max_vel_x: 1.35
+#   max_vel_x_backwards: 1.35
+#   max_vel_theta: 5.0
+#   min_vel_theta: -5.0
+#   weight_kinematics_forward_drive: 1.0
+  
+base_local_planner: base_local_planner/TrajectoryPlannerROS
+TrajectoryPlannerROS:
+  global_frame_id: map
+  holonomic_robot: false
+  pdist_scale: 2.8 #0.8
+  gdist_scale: 0.6 #0.6
+  occdist_scale: 0.01
+  #max_vel_theta: 0.3 #1.0
+  #min_vel_theta: -0.3 #-1.0
+  min_in_place_vel_theta: 0.3 #0.4
+  # acc_lim_x: 0.05
+  # acc_lim_theta: 0.05
+  max_vel_x: 0.35
+  escape_vel: -0.1
+  meter_scoring: false
+  oscillation_reset_dist: 0.1
+  yaw_goal_tolerance: 0.2
+  xy_goal_tolerance: 0.2
+  planner_frequency: 2.0
+  # < 2 is fast but not accurate > 5 is accurate but slow
+  sim_time: 3.0
+  # For debugging
+  publish_cost_grid_pc: true

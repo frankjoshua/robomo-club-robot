@@ -1,0 +1,14 @@
+global_costmap:
+  global_frame: map
+  rolling_window: false
+  update_frequency: 0.5
+  publish_frequency: 0.5
+  inflation_radius: 0.3
+  origin_x: -50
+  origin_y: -50
+  width: 100
+  height: 100
+  resolution: 0.02
+  
+plugins:
+  - {name: range_sensor, type: "range_sensor_layer::RangeSensorLayer"}

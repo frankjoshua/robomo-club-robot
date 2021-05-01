@@ -1,8 +1,6 @@
 ---
 - hosts: robot_hardware
-  vars:
-    ros_ip: '{{ ansible_default_ipv4.address }}'
-    ros_master_uri: 'http://{{ ansible_default_ipv4.address }}:11311'
+
   tasks:
     - name: Start ROS Serial Node
       docker_container:
@@ -20,6 +18,7 @@
           max-size: 10m
           max-file: 3
       become: yes
+      ignore_errors: yes
 
     - name: Start ydlidar_x4 laser Node
       docker_container:
@@ -37,3 +36,24 @@
           max-size: 10m
           max-file: 3
       become: yes
+      ignore_errors: yes
+
+    - name: Start ROS Realsense node
+      docker_container:
+        name: 'ros_realsense'
+        image: 'frankjoshua/ros-realsense'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        volumes:
+          - '/dev:/dev'
+          - '{{ NOTEBOOK_LOCATION }}/ros_realsense:/app'
+        privileged: yes
+        env:
+          ROS_MASTER_URI: '{{ ros_master_uri }}'
+          ROS_IP: '{{ ros_ip }}'
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
+      become: yes
+      ignore_errors: yes

@@ -1,0 +1,24 @@
+footprint: [[0.2, 0.2], [0.2, -0.2], [-0.2, -0.2], [-0.2, 0.2]]
+robot_base_frame: base_footprint
+min_obstacle_height: 0.0
+# observation_sources: laser_scan_sensor depth_scan_sensor
+observation_sources: laser_scan_sensor range_sensor
+laser_scan_sensor:
+  sensor_frame: laser
+  data_type: LaserScan
+  topic: scan
+  marking: true
+  clearing: true
+range_sensor:
+  topics: ["/sonar"]
+  enable: true
+  no_readings_timeout: 0.0
+  clear_threshold: 0.20
+  mark_threshold: 0.80
+  clear_on_max_reading: true
+# depth_scan_sensor:
+#   sensor_frame: camera_depth_frame
+#   data_type: LaserScan
+#   topic: /depth_scan
+#   marking: true
+#   clearing: true
