@@ -17,8 +17,8 @@ These instructions assume you are installing from a linux computer. And that you
 Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
 /ansible/production --> Has hostname and ip address of the robot
 /ansible/robot.yml --> Playbook for robot software
-/ansible/ssh.yml --> Installs ssh keys for user "operator"
-/ansible/files/ssh_keys --> Public and private keys for user "operator"
+/ansible/ssh.yml --> Installs ssh keys for user "robot"
+/ansible/files/ssh_keys --> Public and private keys for user "robot"
 
 Run this command to install or update the robot
 cd ansible
@@ -42,7 +42,7 @@ Add the following lines to the file replacing <IP_OF_JETSON_NANO> with the addre
 ```
 Host robot
 HostName <IP_OF_JETSON_NANO>
-User operator
+User robot
 IdentityFile ~/.ssh/robot_id_rsa
 ```
 

@@ -42,7 +42,7 @@
 
     - name: Source ROS from .bashrc
       lineinfile:
-        dest: /home/operator/.bashrc
+        dest: '/home/{{ local_user }}/.bashrc'
         state: present
         regexp: '^source /opt/ros/melodic/setup.bash'
         line: 'source /opt/ros/melodic/setup.bash'

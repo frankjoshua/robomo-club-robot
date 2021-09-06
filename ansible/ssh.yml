@@ -39,8 +39,8 @@
 
     - name: Add Users
       user:
-        name: operator
-        group: operator
+        name: '{{ local_user }}'
+        group: '{{ local_user }}'
         groups: '{{ jetson_groups }}'
         shell: /bin/bash
         state: present
@@ -50,7 +50,7 @@
 
     - name: Install public key
       authorized_key:
-        user: operator
+        user: '{{ local_user }}'
         state: present
         key: "{{ lookup('file', 'files/ssh_keys/robot_id_rsa.pub') }}"
       become: yes
