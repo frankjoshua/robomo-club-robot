@@ -6,7 +6,7 @@
   roles:
     - role: ansible-role-ros-master
       docker_users:
-        - operator
+        - '{{ local_user }}'
         - vagrant
       become: yes
     - { role: ansible-role-ros-webviz, become: yes }
@@ -26,7 +26,7 @@
 
     - name: export ros_master_uri
       lineinfile:
-        dest: /home/operator/.bashrc
+        dest: '/home/{{ local_user }}/.bashrc'
         state: present
         regexp: '^export ROS_MASTER_URI='
         line: 'export ROS_MASTER_URI={{ ros_master_uri }}'
@@ -34,7 +34,7 @@
 
     - name: export ros_ip
       lineinfile:
-        dest: /home/operator/.bashrc
+        dest: '/home/{{ local_user }}/.bashrc'
         state: present
         regexp: '^export ROS_IP='
         line: 'export ROS_IP={{ ros_ip }}'
@@ -58,7 +58,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - '/home/operator/robomo-club-robot/notebooks/ros_urdf:/app'
+          - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_urdf:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -71,7 +71,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - '/home/operator/robomo-club-robot/notebooks/ros_bridge_suite:/app'
+          - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_bridge_suite:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -98,7 +98,7 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         volumes:
-          - '/home/operator/robomo-club-robot/notebooks/ros_gmapping:/app'
+          - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_gmapping:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
@@ -116,7 +116,7 @@
         restart_policy: 'unless-stopped'
         volumes:
           # - 'ros_move_base:/app'
-          - '/home/operator/robomo-club-robot/notebooks/ros_move_base:/app'
+          - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_move_base:/app'
         env:
           ROS_MASTER_URI: '{{ ros_master_uri }}'
           ROS_IP: '{{ ros_ip }}'
