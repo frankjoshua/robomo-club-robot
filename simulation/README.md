@@ -47,7 +47,7 @@ Host robot
   UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
   PasswordAuthentication no
-  IdentityFile /home/josh/development/workspace/robomo-club-robot/simulation/.vagrant/machines/workstation/virtualbox/private_key
+  IdentityFile ~/development/workspace/robomo-club-robot/simulation/.vagrant/machines/workstation/virtualbox/private_key
   IdentitiesOnly yes
   LogLevel FATAL
 ```

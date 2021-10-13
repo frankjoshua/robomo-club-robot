@@ -40,7 +40,6 @@
     - name: Add Users
       user:
         name: '{{ local_user }}'
-        group: '{{ local_user }}'
         groups: '{{ jetson_groups }}'
         shell: /bin/bash
         state: present
