@@ -1,6 +1,8 @@
 [all:vars]
-ros_ip='{{ ansible_default_ipv4.address }}'
-ros_master_uri='http://{{ ansible_default_ipv4.address }}:11311'
+#ros_ip='{{ ansible_default_ipv4.address }}'
+#ros_master_uri='http://{{ ansible_default_ipv4.address }}:11311'
+ros_ip='192.168.33.58'
+ros_master_uri='http://{{ ros_ip }}:11311'
 NOTEBOOK_LOCATION='/home/robot/robomo-club-robot/notebooks'
 local_user='robot'
 ansible_ssh_user=robot

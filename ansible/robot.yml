@@ -44,6 +44,7 @@
       lineinfile:
         dest: '/home/{{ local_user }}/.bashrc'
         state: present
+        create: yes
         regexp: '^source /opt/ros/melodic/setup.bash'
         line: 'source /opt/ros/melodic/setup.bash'
       become: yes
