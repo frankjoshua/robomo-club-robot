@@ -2,58 +2,49 @@
 - hosts: robot_hardware
 
   tasks:
-    - name: Start ROS Serial Node
-      docker_container:
-        name: 'ros_serial'
-        image: 'frankjoshua/ros-serial'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        devices:
-          - '/dev/ttyACM0:/dev/arduino'
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
-        log_driver: json-file
-        log_options:
-          max-size: 10m
-          max-file: 3
-      become: yes
-      ignore_errors: yes
 
-    - name: Start ydlidar_x4 laser Node
+    - name: Start Micro-ROS2 Agent
       docker_container:
-        name: 'ros_ydlidar_x4'
-        image: 'frankjoshua/ros-ydlidar-x4'
+        name: 'ros2_micro_ros_agent'
+        image: 'frankjoshua/ros2-micro-ros-agent'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
-        devices:
-          - '/dev/ttyUSB0:/dev/ydlidar'
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
-        log_driver: json-file
-        log_options:
-          max-size: 10m
-          max-file: 3
-      become: yes
-      ignore_errors: yes
-
-    - name: Start ROS Realsense node
-      docker_container:
-        name: 'ros_realsense'
-        image: 'frankjoshua/ros-realsense'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        volumes:
-          - '/dev:/dev'
-          - '{{ NOTEBOOK_LOCATION }}/ros_realsense:/app'
         privileged: yes
-        env:
-          ROS_MASTER_URI: '{{ ros_master_uri }}'
-          ROS_IP: '{{ ros_ip }}'
         log_driver: json-file
         log_options:
           max-size: '10m'
           max-file: '3'
       become: yes
-      ignore_errors: yes
+
+    - name: Start ydlidar_x4 laser Node
+      docker_container:
+        name: 'ros2_ydlidar_x4'
+        image: 'frankjoshua/ros2-ydlidar-x4'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        privileged: yes
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
+      become: yes
+
+    # - name: Start ROS Realsense node
+    #   docker_container:
+    #     name: 'ros_realsense'
+    #     image: 'frankjoshua/ros-realsense'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - '/dev:/dev'
+    #       - '{{ NOTEBOOK_LOCATION }}/ros_realsense:/app'
+    #     privileged: yes
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
+    #   ignore_errors: yes
