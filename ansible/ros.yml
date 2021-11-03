@@ -70,10 +70,18 @@
     #       ROS_IP: '{{ ros_ip }}'
     #   become: yes
 
-    - name: Start ROS Webbridge Suite
+    - name: Start ROS2 Webbridge Suite
       docker_container:
         name: 'ros2_bridge_suite'
         image: 'frankjoshua/ros2-bridge-suite'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+      become: yes
+
+    - name: Start ROS2 Robot state publisher URDF
+      docker_container:
+        name: 'ros2_urdf'
+        image: 'frankjoshua/ros2-urdf'
         network_mode: 'host'
         restart_policy: 'unless-stopped'
       become: yes
