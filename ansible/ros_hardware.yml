@@ -3,6 +3,14 @@
 
   tasks:
 
+    - name: Start ROS2 Robot state publisher URDF
+      docker_container:
+        name: 'ros2_urdf'
+        image: 'frankjoshua/ros2-urdf'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+      become: yes
+      
     - name: Start Micro-ROS2 Agent
       docker_container:
         name: 'ros2_micro_ros_agent'
