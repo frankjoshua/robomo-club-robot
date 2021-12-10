@@ -3,12 +3,13 @@
 
   tasks:
 
-    - name: Start ROS2 Robot state publisher URDF
-      docker_container:
-        name: 'ros2_urdf'
-        image: 'frankjoshua/ros2-urdf'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
+    - name: Set permissions for teensy
+      ansible.builtin.copy:
+        src: files/udev/00-teensy.rules
+        dest: /etc/udev/rules.d/00-teensy.rules
+        owner: root
+        group: root
+        mode: '0644'
       become: yes
       
     - name: Start Micro-ROS2 Agent
@@ -18,6 +19,8 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         privileged: yes
+        devices:
+          - "/dev/ttyACM0:/dev/ttyACM0"
         log_driver: json-file
         log_options:
           max-size: '10m'
@@ -35,6 +38,27 @@
         log_options:
           max-size: '10m'
           max-file: '3'
+      become: yes
+
+    - name: Start Diff drive controller
+      docker_container:
+        name: 'ros2_diff_drive_controller'
+        image: 'frankjoshua/ros2-diff-drive-controller'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
+        privileged: yes
+        log_driver: json-file
+        log_options:
+          max-size: '10m'
+          max-file: '3'
+      become: yes
+
+    - name: Start ROS2 Robot state publisher URDF
+      docker_container:
+        name: 'ros2_urdf'
+        image: 'frankjoshua/ros2-urdf'
+        network_mode: 'host'
+        restart_policy: 'unless-stopped'
       become: yes
 
     # - name: Start ROS Realsense node
