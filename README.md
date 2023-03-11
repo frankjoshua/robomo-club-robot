@@ -25,7 +25,7 @@ cd ansible
 ansible-playbook -i production ssh.yml -Kk
 ansible-playbook -i production robot.yml
 
-# SSH setup
+# SSH setup (Assuming you are working from a Linux computer)
 
 **\*Do not follow these instructions if your robot is in production or is accessible from the internet. This is for convenience in a shared project.**
 
