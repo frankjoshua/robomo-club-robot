@@ -65,6 +65,26 @@ Then run:
 ./test.sh
 ```
 
+# Simulating the robot
+
+```bash
+docker run -it \
+    --network="host" \
+    frankjoshua/ros2-bridge-suite
+```
+
+```bash
+docker run -it \
+    --network="host" \
+    frankjoshua/ros2-diff-drive-controller
+```
+
+```bash
+docker run -it \
+    --network="host" \
+    frankjoshua/ros2-urdf
+```
+
 # Links
 
 [https://www.dimensionengineering.com/datasheets/KangarooManual.pdf](https://www.dimensionengineering.com/datasheets/KangarooManual.pdf)
