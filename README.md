@@ -17,13 +17,15 @@ These instructions assume you are installing from a linux computer. And that you
 Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
 /ansible/production --> Has hostname and ip address of the robot
 /ansible/robot.yml --> Playbook for robot software
-/ansible/ssh.yml --> Installs ssh keys for user "robot"
-/ansible/files/ssh_keys --> Public and private keys for user "robot"
+/ansible/ssh.yml --> Installs ssh keys for user "robomo"
+/ansible/files/ssh_keys --> Public and private keys for user "robomo"
 
 Run this command to install or update the robot
+```
 cd ansible
 ansible-playbook -i production ssh.yml -Kk
 ansible-playbook -i production robot.yml
+```
 
 # SSH setup (Assuming you are working from a Linux computer)
 
@@ -46,7 +48,7 @@ User robot
 IdentityFile ~/.ssh/robot_id_rsa
 ```
 
-Then you should be able to ssh into the nano with. If not fix it.
+Then you should be able to ssh into the nano with out a password and run sudo commands. If not fix it.
 
 ```
 ssh robot
