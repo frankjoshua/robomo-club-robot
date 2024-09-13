@@ -1,6 +1,6 @@
-# Robomo.club Robot 2021
+# Robomo.club Robot 2024
 
-Code and documentation for Robomo.club 2019-2021 club robot.
+Code and documentation for Robomo.club 2019-2024 club robot.
 
 The current robot is living at Arch Reactor in St. Louis, MO (http://archreactor.org).
 
@@ -9,6 +9,8 @@ For more information on our project check out our forum at https://discourse.rob
 To see the todo list follow this link. https://github.com/frankjoshua/robomo-club-robot/projects/1
 
 Our website is at http://robomo.club
+
+![Club robot](https://robomo.club/d8938d3ade5b99f15ff5d4e3a885581931a0de5a_1_375x500.jpeg)
 
 # Getting started
 
@@ -54,36 +56,29 @@ Then you should be able to ssh into the nano with out a password and run sudo co
 ssh robot
 ```
 
-# Running Tests
-
-Testing uses Ansible, Vagrant and Infraspec.
-
-You can setup your workstation using:
-ansible-playbook -i production testing_server.yml
-
-Then run:
-
-```
-./test.sh
-```
-
 # Simulating the robot
 
 ```bash
 docker run -it \
     --network="host" \
+    --pid="host" \
+    --ipc="host" \
     frankjoshua/ros2-bridge-suite
 ```
 
 ```bash
 docker run -it \
     --network="host" \
+    --pid="host" \
+    --ipc="host" \
     frankjoshua/ros2-diff-drive-controller
 ```
 
 ```bash
 docker run -it \
     --network="host" \
+    --pid="host" \
+    --ipc="host" \
     frankjoshua/ros2-urdf
 ```
 

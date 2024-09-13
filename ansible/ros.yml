@@ -13,12 +13,63 @@
 
   tasks:
 
-    # - name: Clone club robot repo
-    #   ansible.builtin.git:
-    #     repo: 'https://github.com/frankjoshua/robomo-club-robot.git'
-    #     dest: '/home/{{ local_user }}/robomo-club-robot'
+    - name: Clone club robot repo
+      ansible.builtin.git:
+        repo: 'https://github.com/frankjoshua/robomo-club-robot.git'
+        dest: '/home/{{ local_user }}/robomo-club-robot'
 
-    # - name: Start Jviz docker container
+    - name: ROS Software
+      community.docker.docker_compose:
+        project_src: '/home/{{ local_user }}/robomo-club-robot'
+        files:
+          - docker-compose-ros.yml
+        state: present
+        project_name: ros_software
+
+    # - name: Create Volumes for ROS persistent storage
+    #   docker_volume:
+    #     name: '{{ item }}'
+    #   with_items:
+    #     - 'ros_move_base'
+    #     - 'ros_jupyter'
+    #     - 'ros_urdf'
+    #     - 'ros_bridge_suite'
+    #     - 'ros_gmapping'
+    #   become: yes
+
+    # - name: Start ROS2 Webbridge Suite
+    #   docker_container:
+    #     name: 'ros2_bridge_suite'
+    #     image: 'frankjoshua/ros2-bridge-suite'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #   become: yes
+
+    # - name: Start ROS2 Slam Toolbox node
+    #   docker_container:
+    #     name: 'ros2_slam_toolbox'
+    #     image: 'frankjoshua/ros2-slamtoolbox'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
+
+    # - name: Start ROS2 Nav2 node
+    #   docker_container:
+    #     name: 'ros2_nav'
+    #     image: 'frankjoshua/ros2-nav2'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
+
+        # - name: Start Jviz docker container
     #   docker_container:
     #     name: 'ros_jviz'
     #     image: 'frankjoshua/ros-jviz'
@@ -45,110 +96,6 @@
     #     regexp: '^export ROS_IP='
     #     line: 'export ROS_IP={{ ros_ip }}'
     #   become: yes
-
-    - name: Create Volumes for ROS persistent storage
-      docker_volume:
-        name: '{{ item }}'
-      with_items:
-        - 'ros_move_base'
-        - 'ros_jupyter'
-        - 'ros_urdf'
-        - 'ros_bridge_suite'
-        - 'ros_gmapping'
-      become: yes
-
-    - name: Start ROS2 Webbridge Suite
-      docker_container:
-        name: 'ros2_bridge_suite'
-        image: 'frankjoshua/ros2-bridge-suite'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-      become: yes
-
-    ## Exmaple of Static map
-    # - name: Start Map Server with Static Map
-    #   docker_container:
-    #     name: 'ros_map_server'
-    #     image: 'frankjoshua/ros-map-server'
-    #     network_mode: 'host'
-    #     restart_policy: 'unless-stopped'
-    #     volumes:
-    #       - 'ros_map_server:/app'
-    #     env:
-    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
-    #       ROS_IP: '{{ ros_ip }}'
-    #   become: yes
-
-    # - name: Start ROS gmapping node
-    #   docker_container:
-    #     name: 'ros_gmapping'
-    #     image: 'frankjoshua/ros-gmapping'
-    #     network_mode: 'host'
-    #     restart_policy: 'unless-stopped'
-    #     volumes:
-    #       - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_gmapping:/app'
-    #     env:
-    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
-    #       ROS_IP: '{{ ros_ip }}'
-    #     log_driver: json-file
-    #     log_options:
-    #       max-size: '10m'
-    #       max-file: '3'
-    #   become: yes
-
-    - name: Start ROS2 Slam Toolbox node
-      docker_container:
-        name: 'ros2_slam_toolbox'
-        image: 'frankjoshua/ros2-slamtoolbox'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        log_driver: json-file
-        log_options:
-          max-size: '10m'
-          max-file: '3'
-      become: yes
-
-    # - name: Start ROS Move Base node
-    #   docker_container:
-    #     name: 'ros_move_base'
-    #     image: 'frankjoshua/ros-move-base'
-    #     network_mode: 'host'
-    #     restart_policy: 'unless-stopped'
-    #     volumes:
-    #       # - 'ros_move_base:/app'
-    #       - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_move_base:/app'
-    #     env:
-    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
-    #       ROS_IP: '{{ ros_ip }}'
-    #     log_driver: json-file
-    #     log_options:
-    #       max-size: '10m'
-    #       max-file: '3'
-    #   become: yes
-
-    # - name: Start ROS2 ROS1 Bridge
-    #   docker_container:
-    #     name: 'ros2_ros1_bridge'
-    #     image: 'frankjoshua/ros2-ros1-bridge'
-    #     network_mode: 'host'
-    #     restart_policy: 'unless-stopped'
-    #     log_driver: json-file
-    #     log_options:
-    #       max-size: '10m'
-    #       max-file: '3'
-    #   become: yes
-
-    - name: Start ROS2 Nav2 node
-      docker_container:
-        name: 'ros2_nav'
-        image: 'frankjoshua/ros2-nav2'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        log_driver: json-file
-        log_options:
-          max-size: '10m'
-          max-file: '3'
-      become: yes
 
     # - name: Start ROS2 Unity TCP Endpoint node for simulation
     #   docker_container:
@@ -207,4 +154,65 @@
     #       ROS_MASTER_URI: '{{ ros_master_uri }}'
     #       ROS_IP: '{{ ros_ip }}'
     #     user: root
+    #   become: yes
+
+    ## Exmaple of Static map
+    # - name: Start Map Server with Static Map
+    #   docker_container:
+    #     name: 'ros_map_server'
+    #     image: 'frankjoshua/ros-map-server'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - 'ros_map_server:/app'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #   become: yes
+
+    # - name: Start ROS gmapping node
+    #   docker_container:
+    #     name: 'ros_gmapping'
+    #     image: 'frankjoshua/ros-gmapping'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_gmapping:/app'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
+
+        # - name: Start ROS Move Base node
+    #   docker_container:
+    #     name: 'ros_move_base'
+    #     image: 'frankjoshua/ros-move-base'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     volumes:
+    #       # - 'ros_move_base:/app'
+    #       - '/home/{{ local_user }}/robomo-club-robot/notebooks/ros_move_base:/app'
+    #     env:
+    #       ROS_MASTER_URI: '{{ ros_master_uri }}'
+    #       ROS_IP: '{{ ros_ip }}'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
+
+    # - name: Start ROS2 ROS1 Bridge
+    #   docker_container:
+    #     name: 'ros2_ros1_bridge'
+    #     image: 'frankjoshua/ros2-ros1-bridge'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
     #   become: yes

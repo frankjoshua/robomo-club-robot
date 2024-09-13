@@ -11,6 +11,14 @@
         group: root
         mode: '0644'
       become: yes
+
+    - name: ROS Hardware
+      community.docker.docker_compose:
+        project_src: '/home/{{ local_user }}/robomo-club-robot'
+        files:
+          - docker-compose-ros-hardware.yml
+        state: present
+        project_name: ros_hardware
       
     - name: Start Micro-ROS2 Agent
       docker_container:
@@ -40,26 +48,26 @@
           max-file: '3'
       become: yes
 
-    - name: Start Diff drive controller
-      docker_container:
-        name: 'ros2_diff_drive_controller'
-        image: 'frankjoshua/ros2-diff-drive-controller'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        privileged: yes
-        log_driver: json-file
-        log_options:
-          max-size: '10m'
-          max-file: '3'
-      become: yes
+    # - name: Start Diff drive controller
+    #   docker_container:
+    #     name: 'ros2_diff_drive_controller'
+    #     image: 'frankjoshua/ros2-diff-drive-controller'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     privileged: yes
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
 
-    - name: Start ROS2 Robot state publisher URDF
-      docker_container:
-        name: 'ros2_urdf'
-        image: 'frankjoshua/ros2-urdf'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-      become: yes
+    # - name: Start ROS2 Robot state publisher URDF
+    #   docker_container:
+    #     name: 'ros2_urdf'
+    #     image: 'frankjoshua/ros2-urdf'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #   become: yes
 
     # - name: Start ROS Realsense node
     #   docker_container:
