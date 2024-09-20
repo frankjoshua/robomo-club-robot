@@ -11,6 +11,19 @@
         group: root
         mode: '0644'
       become: yes
+  
+    - name: Deploy udev rule for USB devices
+      copy:
+        dest: /etc/udev/rules.d/99-usb-permissions.rules
+        content: |
+          # Set permissions for USB block devices to 0777
+          SUBSYSTEM=="block", SUBSYSTEMS=="usb", MODE="0777"
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Reload udev rules
+        - Trigger udev
 
     - name: ROS Hardware
       community.docker.docker_compose:
@@ -88,3 +101,13 @@
     #       max-file: '3'
     #   become: yes
     #   ignore_errors: yes
+
+
+  handlers:
+    - name: Reload udev rules
+      command: udevadm control --reload-rules
+      become: yes
+
+    - name: Trigger udev to apply new rules
+      command: udevadm trigger
+      become: yes
