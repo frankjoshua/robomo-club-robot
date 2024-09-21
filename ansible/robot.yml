@@ -4,6 +4,7 @@
     lsb_release: bionic
     pip_install_packages:
       - name: docker
+      # - name: docker-compose
 
   roles:
     - { role: geerlingguy.pip, pip_package: 'python-pip', become: true }

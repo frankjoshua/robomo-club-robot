@@ -17,13 +17,11 @@
         dest: /etc/udev/rules.d/99-usb-permissions.rules
         content: |
           # Set permissions for USB block devices to 0777
-          SUBSYSTEM=="block", SUBSYSTEMS=="usb", MODE="0777"
+          SUBSYSTEMS=="usb", MODE="0777"
         owner: root
         group: root
         mode: '0644'
-      notify:
-        - Reload udev rules
-        - Trigger udev
+      become: yes
 
     - name: ROS Hardware
       community.docker.docker_compose:
@@ -40,6 +38,9 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         privileged: yes
+        ipc_mode: host
+        pid_mode: host
+        pull: true
         devices:
           - "/dev/ttyACM0:/dev/ttyACM0"
         log_driver: json-file
@@ -55,6 +56,9 @@
         network_mode: 'host'
         restart_policy: 'unless-stopped'
         privileged: yes
+        ipc_mode: host
+        pid_mode: host
+        pull: true
         log_driver: json-file
         log_options:
           max-size: '10m'
@@ -101,13 +105,3 @@
     #       max-file: '3'
     #   become: yes
     #   ignore_errors: yes
-
-
-  handlers:
-    - name: Reload udev rules
-      command: udevadm control --reload-rules
-      become: yes
-
-    - name: Trigger udev to apply new rules
-      command: udevadm trigger
-      become: yes

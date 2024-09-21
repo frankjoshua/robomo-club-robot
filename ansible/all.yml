@@ -5,6 +5,6 @@
 
 - import_playbook: ros.yml
 
-- import_playbook: jupyter_notebook.yml
+# - import_playbook: jupyter_notebook.yml
 
 - import_playbook: ros_hardware.yml
