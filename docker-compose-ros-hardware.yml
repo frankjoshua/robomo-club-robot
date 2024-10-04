@@ -18,6 +18,22 @@ services:
         max-size: '10m'
         max-file: '3'
 
+  ros2_gps:
+    container_name: ros2_gps
+    image: frankjoshua/ros2-gps
+    network_mode: host
+    ipc: host
+    pid: host
+    privileged: true
+    devices:
+      - "/dev/ttyACM2:/dev/ttyACM0"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   ros2_ydlidar_x4:
     container_name: ros2_ydlidar_x4
     image: frankjoshua/ros2-ydlidar-x4
