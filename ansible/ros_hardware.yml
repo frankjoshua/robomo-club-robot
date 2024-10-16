@@ -11,6 +11,24 @@
         group: root
         mode: '0644'
       become: yes
+
+    - name: Deploy udev rule for Pico IMU
+      ansible.builtin.copy:
+        src: files/udev/99-pico-imu.rules
+        dest: /etc/udev/rules.d/99-pico-imu.rules
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+
+    - name: Deploy udev rule for GPS
+      ansible.builtin.copy:
+        src: files/udev/99-usb-gps.rules
+        dest: /etc/udev/rules.d/99-usb-gps.rules
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
   
     - name: Deploy udev rule for USB devices
       copy:
@@ -31,39 +49,39 @@
         state: present
         project_name: ros_hardware
       
-    - name: Start Micro-ROS2 Agent
-      docker_container:
-        name: 'ros2_micro_ros_agent'
-        image: 'frankjoshua/ros2-micro-ros-agent'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        privileged: yes
-        ipc_mode: host
-        pid_mode: host
-        pull: true
-        devices:
-          - "/dev/ttyACM0:/dev/ttyACM0"
-        log_driver: json-file
-        log_options:
-          max-size: '10m'
-          max-file: '3'
-      become: yes
+    # - name: Start Micro-ROS2 Agent
+    #   docker_container:
+    #     name: 'ros2_micro_ros_agent'
+    #     image: 'frankjoshua/ros2-micro-ros-agent'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     privileged: yes
+    #     ipc_mode: host
+    #     pid_mode: host
+    #     pull: true
+    #     devices:
+    #       - "/dev/ttyACM0:/dev/ttyACM0"
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
 
-    - name: Start ydlidar_x4 laser Node
-      docker_container:
-        name: 'ros2_ydlidar_x4'
-        image: 'frankjoshua/ros2-ydlidar-x4'
-        network_mode: 'host'
-        restart_policy: 'unless-stopped'
-        privileged: yes
-        ipc_mode: host
-        pid_mode: host
-        pull: true
-        log_driver: json-file
-        log_options:
-          max-size: '10m'
-          max-file: '3'
-      become: yes
+    # - name: Start ydlidar_x4 laser Node
+    #   docker_container:
+    #     name: 'ros2_ydlidar_x4'
+    #     image: 'frankjoshua/ros2-ydlidar-x4'
+    #     network_mode: 'host'
+    #     restart_policy: 'unless-stopped'
+    #     privileged: yes
+    #     ipc_mode: host
+    #     pid_mode: host
+    #     pull: true
+    #     log_driver: json-file
+    #     log_options:
+    #       max-size: '10m'
+    #       max-file: '3'
+    #   become: yes
 
     # - name: Start Diff drive controller
     #   docker_container:
