@@ -9,7 +9,7 @@ services:
     ipc: host
     pid: host
     devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
+      - "/dev/teensy:/dev/ttyACM0"
     restart: unless-stopped
     logging:
       driver: json-file
