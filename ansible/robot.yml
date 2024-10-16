@@ -22,30 +22,30 @@
       become: yes
       when: docker_check.rc != 0
 
-    - name: Add apt key for ROS
-      apt_key:
-        keyserver: hkp://keyserver.ubuntu.com:80
-        id: C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-      become: true
+    # - name: Add apt key for ROS
+    #   apt_key:
+    #     keyserver: hkp://keyserver.ubuntu.com:80
+    #     id: C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    #   become: true
 
-    - name: Setup PPA for ROS
-      apt_repository:
-        repo: deb http://packages.ros.org/ros/ubuntu {{ lsb_release }} main
-        state: present
-      become: true
+    # - name: Setup PPA for ROS
+    #   apt_repository:
+    #     repo: deb http://packages.ros.org/ros/ubuntu {{ lsb_release }} main
+    #     state: present
+    #   become: true
 
-    - name: Instal ROS from apt
-      apt:
-        name: ros-melodic-desktop-full
-        state: latest
-        update_cache: yes
-      become: true
+    # - name: Instal ROS from apt
+    #   apt:
+    #     name: ros-melodic-desktop-full
+    #     state: latest
+    #     update_cache: yes
+    #   become: true
 
-    - name: Source ROS from .bashrc
-      lineinfile:
-        dest: '/home/{{ local_user }}/.bashrc'
-        state: present
-        create: yes
-        regexp: '^source /opt/ros/melodic/setup.bash'
-        line: 'source /opt/ros/melodic/setup.bash'
-      become: yes
+    # - name: Source ROS from .bashrc
+    #   lineinfile:
+    #     dest: '/home/{{ local_user }}/.bashrc'
+    #     state: present
+    #     create: yes
+    #     regexp: '^source /opt/ros/melodic/setup.bash'
+    #     line: 'source /opt/ros/melodic/setup.bash'
+    #   become: yes

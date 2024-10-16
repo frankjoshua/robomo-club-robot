@@ -12,6 +12,15 @@
         mode: '0644'
       become: yes
 
+    - name: Deploy udev rule for Teensy
+      ansible.builtin.copy:
+        src: files/udev/99-teensy-usb.rules
+        dest: /etc/udev/rules.d/99-teensy-usb.rules
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+
     - name: Deploy udev rule for Pico IMU
       ansible.builtin.copy:
         src: files/udev/99-pico-imu.rules
@@ -48,6 +57,7 @@
           - docker-compose-ros-hardware.yml
         state: present
         project_name: ros_hardware
+      ignore_errors: yes
       
     # - name: Start Micro-ROS2 Agent
     #   docker_container:
