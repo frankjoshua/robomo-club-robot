@@ -34,21 +34,21 @@ services:
         max-size: '10m'
         max-file: '3'
 
-    ros2_imu:
-      container_name: ros2_imu
-      image: frankjoshua/ros2-imu
-      network_mode: host
-      ipc: host
-      pid: host
-      privileged: true
-      devices:
-        - "/dev/imu:/dev/ttyACM0"
-      restart: unless-stopped
-      logging:
-        driver: json-file
-        options:
-          max-size: '10m'
-          max-file: '3'
+  ros2_imu:
+    container_name: ros2_imu
+    image: frankjoshua/ros2-imu
+    network_mode: host
+    ipc: host
+    pid: host
+    privileged: true
+    devices:
+      - "/dev/imu:/dev/ttyACM0"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   ros2_ydlidar_x4:
     container_name: ros2_ydlidar_x4
