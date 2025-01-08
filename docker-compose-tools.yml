@@ -1,0 +1,20 @@
+# docker-compose.yml
+version: '3'
+
+services:
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+      - "127.0.0.1:8884:8884"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:8884/
+      - GENERIC_TIMEZONE=CST
+    volumes:
+      - ./n8n:/home/node/.n8n
