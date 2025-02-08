@@ -31,7 +31,7 @@ class EncoderTestNode(Node):
         
         # Create a timer to periodically call the 'move_robot()' function.
         # This determines how often we check and update movement commands.
-        self.timer = self.create_timer(1.0, self.move_robot)
+        self.timer = self.create_timer(0.5, self.move_robot)
 
     def velocity_callback(self, msg):
         # This callback function processes the Twist messages received from '/vel'.
@@ -47,7 +47,7 @@ class EncoderTestNode(Node):
             # Set the -- linear velocity -- to move the robot forward or backward.
             # Forward motion will have a positive linear x velocity.
             # Backward motion will have a negative linear x velocity.
-            self.move_cmd.linear.x = 1.0 if self.forward else -1.0
+            self.move_cmd.linear.x = 0.2 if self.forward else -0.2
 
             # Set the -- angular velocity -- to zero as we don't want any rotation here.
             self.move_cmd.angular.z = 0.0
