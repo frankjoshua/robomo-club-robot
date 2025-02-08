@@ -1,0 +1,101 @@
+ROS 2 System Info
+===========================================
+
+Node: //robot_state_publisher
+  Publishes: /parameter_events, /robot_description, /rosout, /tf, /tf_static
+  Subscribes: /joint_states, /parameter_events
+  Services: /robot_state_publisher/describe_parameters, /robot_state_publisher/get_parameter_types, /robot_state_publisher/get_parameters, /robot_state_publisher/get_type_description, /robot_state_publisher/list_parameters, /robot_state_publisher/set_parameters, /robot_state_publisher/set_parameters_atomically
+
+Node: //imu_node
+  Publishes: /heading, /parameter_events, /rosout
+  Services: /imu_node/describe_parameters, /imu_node/get_parameter_types, /imu_node/get_parameters, /imu_node/get_type_description, /imu_node/list_parameters, /imu_node/set_parameters, /imu_node/set_parameters_atomically
+
+Node: //launch_ros_9255
+  Publishes: /parameter_events, /rosout
+  Subscribes: /slam_toolbox/transition_event
+  Services: /launch_ros_9255/describe_parameters, /launch_ros_9255/get_parameter_types, /launch_ros_9255/get_parameters, /launch_ros_9255/get_type_description, /launch_ros_9255/list_parameters, /launch_ros_9255/set_parameters, /launch_ros_9255/set_parameters_atomically
+
+Node: //slam_toolbox
+  Publishes: /map, /map_metadata, /parameter_events, /pose, /rosout, /slam_toolbox/graph_visualization, /slam_toolbox/scan_visualization, /slam_toolbox/transition_event, /slam_toolbox/update, /tf
+  Subscribes: /clock, /map, /parameter_events, /scan, /slam_toolbox/feedback
+  Services: /slam_toolbox/change_state, /slam_toolbox/clear_changes, /slam_toolbox/describe_parameters, /slam_toolbox/deserialize_map, /slam_toolbox/dynamic_map, /slam_toolbox/get_available_states, /slam_toolbox/get_available_transitions, /slam_toolbox/get_interactive_markers, /slam_toolbox/get_parameter_types, /slam_toolbox/get_parameters, /slam_toolbox/get_state, /slam_toolbox/get_transition_graph, /slam_toolbox/get_type_description, /slam_toolbox/list_parameters, /slam_toolbox/manual_loop_closure, /slam_toolbox/pause_new_measurements, /slam_toolbox/reset, /slam_toolbox/save_map, /slam_toolbox/serialize_map, /slam_toolbox/set_parameters, /slam_toolbox/set_parameters_atomically, /slam_toolbox/toggle_interactive_mode
+
+Node: //transform_listener_impl_55a606afa0
+  Publishes: /rosout
+  Subscribes: /parameter_events, /tf, /tf_static
+  Services: /transform_listener_impl_55a606afa0/get_type_description
+
+Node: //ydlidar_ros2_driver_node
+  Publishes: /parameter_events, /point_cloud, /rosout, /scan
+  Subscribes: /parameter_events
+  Services: /start_scan, /stop_scan, /ydlidar_ros2_driver_node/describe_parameters, /ydlidar_ros2_driver_node/get_parameter_types, /ydlidar_ros2_driver_node/get_parameters, /ydlidar_ros2_driver_node/get_type_description, /ydlidar_ros2_driver_node/list_parameters, /ydlidar_ros2_driver_node/set_parameters, /ydlidar_ros2_driver_node/set_parameters_atomically
+
+Node: //static_tf_pub_laser
+  Publishes: /parameter_events, /rosout, /tf_static
+  Subscribes: /parameter_events
+  Services: /static_tf_pub_laser/describe_parameters, /static_tf_pub_laser/get_parameter_types, /static_tf_pub_laser/get_parameters, /static_tf_pub_laser/get_type_description, /static_tf_pub_laser/list_parameters, /static_tf_pub_laser/set_parameters, /static_tf_pub_laser/set_parameters_atomically
+
+Node: //behavior_server
+  Publishes: /assisted_teleop/_action/feedback, /assisted_teleop/_action/status, /backup/_action/feedback, /backup/_action/status, /behavior_server/transition_event, /cmd_vel_nav, /drive_on_heading/_action/feedback, /drive_on_heading/_action/status, /parameter_events, /rosout, /spin/_action/feedback, /spin/_action/status, /wait/_action/feedback, /wait/_action/status
+  Subscribes: /cmd_vel_teleop, /local_costmap/costmap_raw, /local_costmap/costmap_raw_updates, /local_costmap/published_footprint, /parameter_events, /preempt_teleop
+  Services: /assisted_teleop/_action/cancel_goal, /assisted_teleop/_action/get_result, /assisted_teleop/_action/send_goal, /backup/_action/cancel_goal, /backup/_action/get_result, /backup/_action/send_goal, /behavior_server/change_state, /behavior_server/describe_parameters, /behavior_server/get_available_states, /behavior_server/get_available_transitions, /behavior_server/get_parameter_types, /behavior_server/get_parameters, /behavior_server/get_state, /behavior_server/get_transition_graph, /behavior_server/get_type_description, /behavior_server/list_parameters, /behavior_server/set_parameters, /behavior_server/set_parameters_atomically, /drive_on_heading/_action/cancel_goal, /drive_on_heading/_action/get_result, /drive_on_heading/_action/send_goal, /spin/_action/cancel_goal, /spin/_action/get_result, /spin/_action/send_goal, /wait/_action/cancel_goal, /wait/_action/get_result, /wait/_action/send_goal
+
+Node: //transform_listener_impl_557b71c630
+  Publishes: /rosout
+  Subscribes: /parameter_events, /tf, /tf_static
+  Services: /transform_listener_impl_557b71c630/get_type_description
+
+Node: //velocity_smoother
+  Publishes: /cmd_vel_smoothed, /parameter_events, /rosout, /velocity_smoother/transition_event
+  Subscribes: /cmd_vel_nav, /parameter_events
+  Services: /velocity_smoother/change_state, /velocity_smoother/describe_parameters, /velocity_smoother/get_available_states, /velocity_smoother/get_available_transitions, /velocity_smoother/get_parameter_types, /velocity_smoother/get_parameters, /velocity_smoother/get_state, /velocity_smoother/get_transition_graph, /velocity_smoother/get_type_description, /velocity_smoother/list_parameters, /velocity_smoother/set_parameters, /velocity_smoother/set_parameters_atomically
+
+Node: //collision_monitor
+  Publishes: /cmd_vel, /collision_monitor/collision_points_marker, /collision_monitor/transition_event, /collision_monitor_state, /parameter_events, /rosout
+  Subscribes: /cmd_vel_smoothed, /local_costmap/published_footprint, /parameter_events, /scan
+  Services: /collision_monitor/change_state, /collision_monitor/describe_parameters, /collision_monitor/get_available_states, /collision_monitor/get_available_transitions, /collision_monitor/get_parameter_types, /collision_monitor/get_parameters, /collision_monitor/get_state, /collision_monitor/get_transition_graph, /collision_monitor/get_type_description, /collision_monitor/list_parameters, /collision_monitor/set_parameters, /collision_monitor/set_parameters_atomically
+
+Node: //transform_listener_impl_55bd7b60b0
+  Publishes: /rosout
+  Subscribes: /parameter_events, /tf, /tf_static
+  Services: /transform_listener_impl_55bd7b60b0/get_type_description
+
+Node: //docking_server
+  Publishes: /cmd_vel, /dock_pose, /dock_robot/_action/feedback, /dock_robot/_action/status, /docking_server/transition_event, /filtered_dock_pose, /parameter_events, /rosout, /staging_pose, /undock_robot/_action/feedback, /undock_robot/_action/status
+  Subscribes: /detected_dock_pose, /parameter_events
+  Services: /dock_robot/_action/cancel_goal, /dock_robot/_action/get_result, /dock_robot/_action/send_goal, /docking_server/change_state, /docking_server/describe_parameters, /docking_server/get_available_states, /docking_server/get_available_transitions, /docking_server/get_parameter_types, /docking_server/get_parameters, /docking_server/get_state, /docking_server/get_transition_graph, /docking_server/get_type_description, /docking_server/list_parameters, /docking_server/reload_database, /docking_server/set_parameters, /docking_server/set_parameters_atomically, /undock_robot/_action/cancel_goal, /undock_robot/_action/get_result, /undock_robot/_action/send_goal
+
+Node: //vel_to_odom_publisher
+  Publishes: /odom, /parameter_events, /rosout, /tf
+  Subscribes: /vel
+  Services: /vel_to_odom_publisher/describe_parameters, /vel_to_odom_publisher/get_parameter_types, /vel_to_odom_publisher/get_parameters, /vel_to_odom_publisher/get_type_description, /vel_to_odom_publisher/list_parameters, /vel_to_odom_publisher/set_parameters, /vel_to_odom_publisher/set_parameters_atomically
+
+Node: //lifecycle_manager_navigation
+  Publishes: /bond, /diagnostics, /parameter_events, /rosout
+  Subscribes: /bond, /parameter_events
+  Services: /lifecycle_manager_navigation/describe_parameters, /lifecycle_manager_navigation/get_parameter_types, /lifecycle_manager_navigation/get_parameters, /lifecycle_manager_navigation/get_type_description, /lifecycle_manager_navigation/is_active, /lifecycle_manager_navigation/list_parameters, /lifecycle_manager_navigation/manage_nodes, /lifecycle_manager_navigation/set_parameters, /lifecycle_manager_navigation/set_parameters_atomically
+
+Node: //rosbridge_websocket
+  Publishes: /client_count, /connected_clients, /parameter_events, /rosout
+  Services: /rosbridge_websocket/describe_parameters, /rosbridge_websocket/get_parameter_types, /rosbridge_websocket/get_parameters, /rosbridge_websocket/get_type_description, /rosbridge_websocket/list_parameters, /rosbridge_websocket/set_parameters, /rosbridge_websocket/set_parameters_atomically
+
+Node: //rosapi
+  Publishes: /parameter_events, /rosout
+  Services: /rosapi/action_servers, /rosapi/delete_param, /rosapi/describe_parameters, /rosapi/get_param, /rosapi/get_param_names, /rosapi/get_parameter_types, /rosapi/get_parameters, /rosapi/get_ros_version, /rosapi/get_time, /rosapi/get_type_description, /rosapi/has_param, /rosapi/list_parameters, /rosapi/message_details, /rosapi/node_details, /rosapi/nodes, /rosapi/publishers, /rosapi/service_node, /rosapi/service_providers, /rosapi/service_request_details, /rosapi/service_response_details, /rosapi/service_type, /rosapi/services, /rosapi/services_for_type, /rosapi/set_param, /rosapi/set_parameters, /rosapi/set_parameters_atomically, /rosapi/subscribers, /rosapi/topic_type, /rosapi/topics, /rosapi/topics_and_raw_types, /rosapi/topics_for_type
+
+Node: //rosapi_params
+  Publishes: /parameter_events, /rosout
+  Services: /rosapi_params/describe_parameters, /rosapi_params/get_parameter_types, /rosapi_params/get_parameters, /rosapi_params/get_type_description, /rosapi_params/list_parameters, /rosapi_params/set_parameters, /rosapi_params/set_parameters_atomically
+
+Node: //launch_ros_9441
+  Publishes: /parameter_events, /rosout
+  Subscribes: /ydlidar_ros2_driver_node/transition_event
+  Services: /launch_ros_9441/describe_parameters, /launch_ros_9441/get_parameter_types, /launch_ros_9441/get_parameters, /launch_ros_9441/get_type_description, /launch_ros_9441/list_parameters, /launch_ros_9441/set_parameters, /launch_ros_9441/set_parameters_atomically
+
+Node: //joint_state_publisher
+  Publishes: /joint_states, /parameter_events, /rosout
+  Subscribes: /robot_description
+  Services: /joint_state_publisher/describe_parameters, /joint_state_publisher/get_parameter_types, /joint_state_publisher/get_parameters, /joint_state_publisher/get_type_description, /joint_state_publisher/list_parameters, /joint_state_publisher/set_parameters, /joint_state_publisher/set_parameters_atomically
+
+Node: //_ros2cli_daemon_0_df3190cd47834c739bce25ebbed14d81
+  Publishes: /parameter_events, /rosout

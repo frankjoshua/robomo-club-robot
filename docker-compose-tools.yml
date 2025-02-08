@@ -5,16 +5,43 @@ services:
 
   n8n:
     image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
     restart: always
     ports:
-      - "127.0.0.1:5678:5678"
-      - "127.0.0.1:8884:8884"
+      - "5678:5678"
+      - "8884:8884"
     environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - N8N_HOST=localhost
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
       - NODE_ENV=production
-      - WEBHOOK_URL=http://localhost:8884/
+      - WEBHOOK_URL=https://lpfmdvxhct.a.pinggy.link/
       - GENERIC_TIMEZONE=CST
     volumes:
       - ./n8n:/home/node/.n8n
+
+#  localtunnel:
+#    image: localtunnel-arm
+#    container_name: localtunnel
+#    restart: unless-stopped
+#    network_mode: host
+#    command: --port 5678 --subdomain tx2-robot
+
+  # This should be run from start-tools.sh so the UID are set correctly
+  code-server:
+    image: linuxserver/code-server:latest
+    container_name: code-server
+    restart: unless-stopped
+    ports:
+      - "8443:8443" # Expose Code Server on port 8080
+    environment:
+      - PUID=${PUID:-1000}  # Default to 1000 if not set
+      - PGID=${PGID:-1000}  # Default to 1000 if not set
+      - TZ=Etc/UTC
+      - PASSWORD=12345678 # Password for accessing Code Server
+    volumes:
+    # - ./code-server:/config
+      - ./:/config/workspace
