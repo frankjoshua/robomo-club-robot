@@ -58,29 +58,13 @@ ssh robot
 
 # Simulating the robot
 
-```bash
-docker run -it \
-    --network="host" \
-    --pid="host" \
-    --ipc="host" \
-    frankjoshua/ros2-bridge-suite
-```
+The simulation containers can be launched using docker compose.
 
 ```bash
-docker run -it \
-    --network="host" \
-    --pid="host" \
-    --ipc="host" \
-    frankjoshua/ros2-diff-drive-controller
+./start_simulation.sh
 ```
 
-```bash
-docker run -it \
-    --network="host" \
-    --pid="host" \
-    --ipc="host" \
-    frankjoshua/ros2-urdf
-```
+This script starts the services defined in `docker-compose-simulation.yml`.
 
 # Links
 
