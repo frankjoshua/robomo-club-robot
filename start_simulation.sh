@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose -f docker-compose-simulation.yml up
+docker compose -f docker-compose-simulation.yml up
