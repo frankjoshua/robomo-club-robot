@@ -1,0 +1,24 @@
+# docker-compose-simulation.yml
+version: '3'
+
+services:
+  ros2_bridge_suite:
+    container_name: ros2_bridge_suite
+    image: frankjoshua/ros2-bridge-suite
+    network_mode: host
+    ipc: host
+    pid: host
+
+  ros2_diff_drive_controller:
+    container_name: ros2_diff_drive_controller
+    image: frankjoshua/ros2-diff-drive-controller
+    network_mode: host
+    ipc: host
+    pid: host
+
+  ros2_urdf:
+    container_name: ros2_urdf
+    image: frankjoshua/ros2-urdf
+    network_mode: host
+    ipc: host
+    pid: host
