@@ -1,5 +1,4 @@
 # docker-compose.yml
-version: '3'
 
 services:
   ros2_bridge_suite:

@@ -63,8 +63,7 @@ The simulation containers can be launched using docker compose.
 ```bash
 ./start_simulation.sh
 ```
-
-This script starts the services defined in `docker-compose-simulation.yml`.
+![sim](images/sim.svg)
 
 # Links
 

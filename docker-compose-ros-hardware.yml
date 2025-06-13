@@ -1,6 +1,4 @@
 # docker-compose-hardware.yml
-version: '3'
-
 services:
   ros2_micro_ros_agent:
     container_name: ros2_micro_ros_agent
