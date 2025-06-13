@@ -9,4 +9,5 @@ docker compose -f docker-compose-tools.yml up -d
 docker compose -f docker-compose-ros.yml up -d
 
 # Launch the simulation stack in the foreground
+xhost +local:docker # Allow local docker to connect to X server for Gazebo
 docker compose -f docker-compose-simulation.yml up

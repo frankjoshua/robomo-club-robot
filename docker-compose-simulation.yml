@@ -21,3 +21,21 @@ services:
     network_mode: host
     ipc: host
     pid: host
+
+  gazebo:
+    build:
+      context: ./simulation
+      dockerfile: Dockerfile
+    container_name: ros2_gazebo
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    devices:
+      - /dev/dri # For integrated GPU or required GPU devices
+    runtime: nvidia
+    working_dir: /home/ros/ros2_ws
