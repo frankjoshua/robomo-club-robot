@@ -12,12 +12,39 @@ Our website is at http://robomo.club
 
 ![Club robot](https://robomo.club/d8938d3ade5b99f15ff5d4e3a885581931a0de5a_1_375x500.jpeg)
 
+## Quick start (simulation)
+
+If you just want to see the robot in action without any hardware you can run the
+simulation stack on your own computer.
+
+1. Install [Docker](https://docs.docker.com/get-docker/) and
+   [Docker Compose](https://docs.docker.com/compose/).
+2. Clone this repository and start the containers:
+
+   ```bash
+   git clone https://github.com/frankjoshua/robomo-club-robot.git
+   cd robomo-club-robot
+   ./start_simulation.sh
+   ```
+
+   Code Server will be available at <https://localhost:8443> with the password
+   `12345678`. Press `Ctrl+C` in the terminal to stop the simulation.
+
+Continue with the steps below if you want to install the software on a real
+robot.
+
 # Getting started
 
 These instructions assume you are installing from a linux computer. And that you are on the same network as your robot.
 
-Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
-/ansible/production --> Has hostname and ip address of the robot
+### Prerequisites
+
+- [Ansible](https://docs.ansible.com/) installed on your workstation
+- Ability to `ssh` into the robot as the `robot` user
+
+Ansible is used to install and update software on the robot. The `ansible`
+directory contains the playbooks and configuration files:
+/ansible/production --> Hostname and IP address of the robot
 /ansible/robot.yml --> Playbook for robot software
 /ansible/ssh.yml --> Installs ssh keys for user "robomo"
 /ansible/files/ssh_keys --> Public and private keys for user "robomo"
