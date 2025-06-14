@@ -41,9 +41,13 @@ ENV GZ_SIM_RESOURCE_PATH=/root/.ignition/fuel
 
 # Pre-download a world from Gazebo Fuel
 RUN ign fuel download -u "https://fuel.gazebosim.org/1.0/RichardTops/worlds/tugbot_depot"
+RUN ign fuel download -u "https://fuel.gazebosim.org/1.0/yohatad/worlds/living_room"
 
 # Always source ROS Humble setup in bash
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
+COPY willowgarage.world /root/
+
 # Launch Gazebo by default
 CMD ["ign", "gazebo", "/root/.ignition/fuel/fuel.gazebosim.org/richardtops/worlds/tugbot_depot/1/tugbot_depot.sdf"]
+# CMD ["ign", "gazebo", "/root/.ignition/fuel/fuel.gazebosim.org/yohatad/worlds/living_room/1/living_room.sdf"]
