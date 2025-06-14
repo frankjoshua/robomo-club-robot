@@ -1,14 +1,10 @@
-# Robomo.club Robot 2024
+# Robomo.club Robot 2025
 
-Code and documentation for Robomo.club 2019-2024 club robot.
+Code and documentation for Robomo.club 2019-2025 club robot.
 
-The current robot is living at Arch Reactor in St. Louis, MO (http://archreactor.org).
+Our website is at [http://robomo.club](http://robomo.club)
 
-For more information on our project check out our forum at https://discourse.robomo.club/t/robomo-club-robot-project/82
-
-To see the todo list follow this link. https://github.com/frankjoshua/robomo-club-robot/projects/1
-
-Our website is at http://robomo.club
+The current robot is living at Arch Reactor in St. Louis, MO [http://archreactor.org](http://archreactor.org).
 
 ![Club robot](https://robomo.club/d8938d3ade5b99f15ff5d4e3a885581931a0de5a_1_375x500.jpeg)
 
@@ -27,8 +23,10 @@ simulation stack on your own computer.
    ./start_simulation.sh
    ```
 
-   Code Server will be available at <https://localhost:8443> with the password
+   Code Server will be available at [https://localhost:8443](https://localhost:8443) with the password
    `12345678`. Press `Ctrl+C` in the terminal to stop the simulation.
+
+   n8n will be available at [https://localhost:5678](https://localhost:5678)
 
 Continue with the steps below if you want to install the software on a real
 robot.
@@ -91,10 +89,6 @@ The simulation containers can be launched using docker compose.
 ./start_simulation.sh
 ```
 ![sim](images/sim.svg)
-
-# Links
-
-[https://www.dimensionengineering.com/datasheets/KangarooManual.pdf](https://www.dimensionengineering.com/datasheets/KangarooManual.pdf)
 
 # Contributors:
 
