@@ -9,6 +9,8 @@ docker run --rm -it \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   -v "$(pwd):/app" \
   -w /app \
+  --ipc=host \
+  --pid=host \
   --network=host \
-  ghcr.io/sloretz/ros:jazzy-desktop-full \
+  ghcr.io/sloretz/ros:humble-desktop-full \
   bash

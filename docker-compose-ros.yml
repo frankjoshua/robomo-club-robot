@@ -9,10 +9,14 @@ services:
     ipc: host
     pid: host
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4g
 
   ros2_mcp_server:
-    container_name: ros2_mcp_server
-    image: frankjoshua/ros2-mcp-server
+    container_name: ros_mcp_server
+    image: frankjoshua/ros-mcp-server
     network_mode: host
     ipc: host
     pid: host
@@ -30,6 +34,10 @@ services:
       options:
         max-size: '10m'
         max-file: '3'
+    deploy:
+      resources:
+        limits:
+          memory: 4g
 
   ros2_nav:
     container_name: ros2_nav
