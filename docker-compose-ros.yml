@@ -10,6 +10,14 @@ services:
     pid: host
     restart: unless-stopped
 
+  ros2_mcp_server:
+    container_name: ros2_mcp_server
+    image: frankjoshua/ros2-mcp-server
+    network_mode: host
+    ipc: host
+    pid: host
+    restart: unless-stopped
+
   ros2_slam_toolbox:
     container_name: ros2_slam_toolbox
     image: frankjoshua/ros2-slamtoolbox
