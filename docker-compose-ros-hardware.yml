@@ -61,3 +61,17 @@ services:
       options:
         max-size: '10m'
         max-file: '3'
+
+  ros2_realsense:
+    container_name: ros2_realsense
+    image: frankjoshua/ros2-realsense
+    network_mode: host
+    ipc: host
+    pid: host
+    privileged: true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
