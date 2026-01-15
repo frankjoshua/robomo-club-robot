@@ -1,75 +1,49 @@
-# docker-compose.yml
 version: '3'
+
+x-common: &common
+  # network_mode: host
+  # ipc: host
+  # pid: host
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+  deploy:
+    resources:
+      limits:
+        memory: 4g
+  shm_size: 1g
 
 services:
   ros2_bridge_suite:
+    <<: *common
     container_name: ros2_bridge_suite
     image: frankjoshua/ros2-bridge-suite
-    network_mode: host
-    ipc: host
-    pid: host
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 4g
 
   ros2_mcp_server:
+    <<: *common
     container_name: ros_mcp_server
     image: frankjoshua/ros-mcp-server
-    network_mode: host
-    ipc: host
-    pid: host
-    restart: unless-stopped
 
   ros2_slam_toolbox:
+    <<: *common
     container_name: ros2_slam_toolbox
     image: frankjoshua/ros2-slamtoolbox
-    network_mode: host
-    ipc: host
-    pid: host
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
-    deploy:
-      resources:
-        limits:
-          memory: 4g
 
   ros2_nav:
+    <<: *common
     container_name: ros2_nav
     image: frankjoshua/ros2-nav2
-    network_mode: host
-    ipc: host
-    pid: host
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_diff_drive_controller:
+    <<: *common
     container_name: ros2_diff_drive_controller
     image: frankjoshua/ros2-diff-drive-controller
-    network_mode: host
-    ipc: host
-    pid: host
     privileged: true
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_urdf:
+    <<: *common
     container_name: ros2_urdf
     image: frankjoshua/ros2-urdf
-    network_mode: host
-    ipc: host
-    pid: host
-    restart: unless-stopped
