@@ -58,6 +58,14 @@ ssh robot
 
 # Simulating the robot
 
+Run the full ROS 2 software stack against lightweight mock hardware — a fake Teensy that echoes `/cmd_vel` back as `/vel`, and a world-locked fake YDLidar that publishes a box-shaped room on `/scan`. No physical robot and no Gazebo required: slam_toolbox maps the room and nav2 can navigate it. See [`mock/`](mock/) for details and tunables.
+
+```bash
+./start_mock.sh          # 'up' (default), 'down', or 'logs'
+```
+
+Or bring up individual software containers by hand:
+
 ```bash
 docker run -it \
     --network="host" \

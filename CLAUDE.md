@@ -26,6 +26,7 @@ ansible-playbook -i production ros_hardware.yml  # Deploy hardware services only
 ```bash
 docker compose -f docker-compose-ros.yml up -d           # Start ROS software services
 docker compose -f docker-compose-ros-hardware.yml up -d  # Start hardware interface services
+./start_mock.sh                                          # Run software stack against mock hardware (no robot/Gazebo); takes up|down|logs. See mock/
 ./start_tools.sh                                         # Start n8n + Code-Server dev tools
 ```
 
@@ -41,6 +42,7 @@ cd simulation
 ### Docker Service Organization
 - **docker-compose-ros.yml**: Core ROS 2 software (bridge_suite, slam_toolbox, nav2, diff_drive_controller, urdf, mcp_server)
 - **docker-compose-ros-hardware.yml**: Hardware interfaces (micro_ros_agent for Teensy, gps, imu, ydlidar_x4, realsense)
+- **docker-compose-mock-hardware.yml**: Mock hardware for testing without a robot — `mock_micro_ros` (echoes `/cmd_vel`→`/vel`) and a world-locked `mock_ydlidar` (box-room `/scan`). See `mock/`.
 - **docker-compose-tools.yml**: Development tools (n8n on port 5678, Code-Server on port 8443)
 
 ### Hardware Stack
@@ -52,9 +54,18 @@ cd simulation
 
 ### ROS 2 Data Flow
 ```
-Sensors → Docker containers → ROS topics
-/scan (LIDAR) → slam_toolbox → /map
-/map + /tf → nav2 → /cmd_vel → diff_drive_controller → Sabertooth
+# Sensing, mapping, planning
+/scan (ydlidar_x4)  -->  slam_toolbox  -->  /map  +  map->odom TF
+/map + TF + /scan   -->  nav2          -->  /cmd_vel
+
+# Actuation: the Teensy (via micro_ros_agent) runs the motors
+/cmd_vel  -->  micro_ros_agent (Teensy)  -->  Sabertooth motors
+
+# Odometry feedback: the encoders close the loop
+Teensy encoders  -->  /vel  -->  diff_drive_controller  -->  /odom  +  odom->base_link TF
+#   (/odom and the odom->base_link TF feed back into slam_toolbox and nav2)
+
+# urdf publishes the static base_link->sensor TF tree
 ```
 
 ### Ansible Structure

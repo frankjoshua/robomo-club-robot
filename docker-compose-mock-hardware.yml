@@ -1,0 +1,51 @@
+# docker-compose-mock-hardware.yml
+#
+# Lightweight stand-ins for the physical hardware, so the rest of the ROS 2 stack
+# (bridge_suite, slam_toolbox, nav2, diff_drive_controller, urdf, mcp_server) can be
+# brought up and exercised on any machine - no robot, no Gazebo. These exist purely
+# to confirm the containers come up, discover each other over DDS, and exchange the
+# expected topics; they are not a physics simulator.
+#
+# Drop-in replacements for the two hardware services that matter for plumbing tests:
+#   ros2_micro_ros_agent  ->  mock_micro_ros_agent  (echoes /cmd_vel back as /vel)
+#   ros2_ydlidar_x4       ->  mock_ydlidar_x4        (static LaserScan of a box room on /scan)
+# GPS / IMU / Realsense are simply absent - the nav/SLAM stack does not need them to run.
+#
+# No image build required: vanilla ros:humble-ros-base runs the bind-mounted scripts.
+# First run pulls ros:humble-ros-base once; after that, up/down is instant.
+#
+# Run the full software stack against the mocks:
+#   docker compose -f docker-compose-ros.yml -f docker-compose-mock-hardware.yml up
+# Or just the mocks (e.g. to poke at /vel and /scan by hand):
+#   docker compose -f docker-compose-mock-hardware.yml up
+#
+# Do NOT run this alongside docker-compose-ros-hardware.yml - the mocks and the real
+# drivers would publish the same topics. Uses the same host/ipc/pid networking as the
+# real hardware compose so DDS discovery and the container networking are exercised for real.
+
+version: '3'
+
+x-mock-common: &mock-common
+  image: ros:humble-ros-base
+  network_mode: host
+  ipc: host
+  pid: host
+  restart: unless-stopped
+  volumes:
+    - ./mock:/mock:ro
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+
+services:
+  mock_micro_ros_agent:
+    <<: *mock-common
+    container_name: mock_micro_ros_agent
+    command: bash -c "source /opt/ros/humble/setup.bash && exec python3 -u /mock/mock_micro_ros.py"
+
+  mock_ydlidar_x4:
+    <<: *mock-common
+    container_name: mock_ydlidar_x4
+    command: bash -c "source /opt/ros/humble/setup.bash && exec python3 -u /mock/mock_ydlidar.py"
