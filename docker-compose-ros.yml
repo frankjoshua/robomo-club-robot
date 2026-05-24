@@ -1,9 +1,9 @@
 version: '3'
 
 x-common: &common
-  # network_mode: host
-  # ipc: host
-  # pid: host
+  network_mode: host
+  ipc: host
+  pid: host
   restart: unless-stopped
   logging:
     driver: json-file
@@ -13,8 +13,8 @@ x-common: &common
   deploy:
     resources:
       limits:
-        memory: 4g
-  shm_size: 1g
+        memory: 3g
+  shm_size: 3g
 
 services:
   ros2_bridge_suite:
