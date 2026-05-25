@@ -37,6 +37,31 @@ cd simulation
 ./launch_simulation.sh  # Start Gazebo simulator (inside VM)
 ```
 
+## LLM Access via ros-mcp
+
+Claude Code (and any MCP client) can observe and control the robot in natural language through
+[`ros-mcp-server`](https://github.com/robotmcp/ros-mcp-server) — already deployed as the
+`ros_mcp_server` container and cloned at `~/development/workspace/ros-mcp-server`. It talks to ROS 2
+over the **rosbridge WebSocket (port 9090)** provided by the `ros2_bridge_suite` container — no robot
+code changes needed. Tools: list/inspect topics, services & message types, publish/subscribe, call
+services, get/set params, and read camera images.
+
+```bash
+# One-time: register the MCP server with Claude Code (writes .mcp.json at project scope).
+# Runs from the local clone so the robot spec (utils/robot_specifications/robomo.yaml) resolves.
+claude mcp add ros-mcp -s project -- uv run --no-sync \
+  --directory /home/josh/development/workspace/ros-mcp-server ros-mcp
+```
+
+Then bring up a target and connect:
+- **Mock / local (safe, no motion):** `./start_mock.sh up`, then ask Claude to *"connect to robomo on 127.0.0.1:9090"*.
+- **Physical robot:** target `192.168.33.58:9090` — only after explicitly confirming you want real motion.
+
+The `robomo` robot spec (`utils/robot_specifications/robomo.yaml` in the clone) pre-loads the topic map
+(`/cmd_vel`, `/scan`, `/odom`, `/map`, Realsense), Twist control examples, and safety rules.
+⚠️ On the real robot, publishing `/cmd_vel` drives the Sabertooth motors — develop against the mock stack
+first and always end motion sequences with a zero Twist.
+
 ## Architecture
 
 ### Docker Service Organization
@@ -84,8 +109,13 @@ Teensy encoders  -->  /vel  -->  diff_drive_controller  -->  /odom  +  odom->bas
 
 ## Container Configuration
 
-All ROS containers use:
-- Memory limit: 4GB per container
-- Shared memory: 1GB
+The `docker-compose-ros.yml` software containers share a common config (`x-common` anchor):
+- Memory limit: 3GB per container
+- Shared memory (`shm_size`): 3GB
 - Log rotation: 10MB max, 3 files
-- Hardware containers use `network_mode: host`, `ipc: host`, `pid: host` for ROS 2 DDS discovery and device access
+- `network_mode: host`, `ipc: host`, `pid: host` for ROS 2 DDS discovery
+
+Hardware containers (`docker-compose-ros-hardware.yml`) also use host networking/ipc/pid for device access and DDS discovery.
+
+### nav2 runs composed (memory)
+The `frankjoshua/ros2-nav2` image launches nav2 as a single composable container by default (its baked-in `nav2_composed.launch.py`; see the docker-ros2-nav2 repo). The stock separate-process bringup makes each of nav2's ~8 nodes its own Fast DDS participant, each independently building discovery state for the whole graph — together they balloon to multiple GB and OOM-kill the container at any limit. Composed, all nodes share one DDS participant: startup stays low (~88 MB), fully activates, and fits the common 3 GB cap with no override.

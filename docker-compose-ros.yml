@@ -35,6 +35,8 @@ services:
   ros2_nav:
     <<: *common
     container_name: ros2_nav
+    # The image launches nav2 composed (one process / one DDS participant) by default;
+    # separate-process bringup OOMs the cap, composed it settles ~88 MB. See docker-ros2-nav2.
     image: frankjoshua/ros2-nav2
 
   ros2_diff_drive_controller:
