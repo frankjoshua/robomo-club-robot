@@ -69,6 +69,7 @@ first and always end motion sequences with a zero Twist.
 - **docker-compose-ros-hardware.yml**: Hardware interfaces (micro_ros_agent for Teensy, gps, imu, ydlidar_x4, realsense)
 - **docker-compose-mock-hardware.yml**: Mock hardware for testing without a robot — `mock_micro_ros` (echoes `/cmd_vel`→`/vel`) and a world-locked `mock_ydlidar` (box-room `/scan`). See `mock/`.
 - **docker-compose-tools.yml**: Development tools (n8n on port 5678, Code-Server on port 8443)
+- **docker-compose-dds-clean.yml**: Shared one-shot `dds_shm_clean` service, pulled into the ROS compose files via `include:`. Before any node starts it purges *orphaned* Fast DDS segments from the host `/dev/shm` (left behind because `ipc: host` containers don't clean up on `down`). Stale segments otherwise OOM-kill a starting node — typically rosbridge, so port 9090 never opens. It deletes only segments no live process maps (checked via `/proc/*/maps`, hence `pid: host`), so it's safe to run while another stack is up (e.g. `ros_hardware` after `ros`).
 
 ### Hardware Stack
 - **Teensy Microcontroller**: Motor control and encoder feedback via micro-ROS

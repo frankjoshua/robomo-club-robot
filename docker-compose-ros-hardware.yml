@@ -1,77 +1,57 @@
-# docker-compose-hardware.yml
+# docker-compose-ros-hardware.yml
 version: '3'
+
+# Purge orphaned Fast DDS /dev/shm segments before any node starts. Safe to run even
+# while the ros stack is already up (orphan-only), which is the robot's normal case:
+# all.yml deploys ros first, then ros_hardware. See docker-compose-dds-clean.yml.
+include:
+  - docker-compose-dds-clean.yml
+
+x-hw-common: &hw-common
+  network_mode: host
+  ipc: host
+  pid: host
+  restart: unless-stopped
+  depends_on:
+    dds_shm_clean:
+      condition: service_completed_successfully
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
 
 services:
   ros2_micro_ros_agent:
+    <<: *hw-common
     container_name: ros2_micro_ros_agent
     image: frankjoshua/ros2-micro-ros-agent
-    network_mode: host
-    ipc: host
-    pid: host
     devices:
       - "/dev/teensy:/dev/ttyACM0"
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_gps:
+    <<: *hw-common
     container_name: ros2_gps
     image: frankjoshua/ros2-gps
-    network_mode: host
-    ipc: host
-    pid: host
     devices:
       - "/dev/gps:/dev/ttyACM0"
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_imu:
+    <<: *hw-common
     container_name: ros2_imu
     image: frankjoshua/ros2-imu
-    network_mode: host
-    ipc: host
-    pid: host
     devices:
       - "/dev/imu:/dev/ttyACM0"
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_ydlidar_x4:
+    <<: *hw-common
     container_name: ros2_ydlidar_x4
     image: frankjoshua/ros2-ydlidar-x4
-    network_mode: host
-    ipc: host
-    pid: host
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
 
   ros2_realsense:
+    <<: *hw-common
     container_name: ros2_realsense
     image: frankjoshua/ros2-realsense
-    network_mode: host
-    ipc: host
-    pid: host
     privileged: true
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'

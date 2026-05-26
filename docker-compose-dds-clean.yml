@@ -1,0 +1,50 @@
+# docker-compose-dds-clean.yml
+#
+# Shared one-shot helper that purges ORPHANED Fast DDS shared-memory segments from
+# the host's /dev/shm. It is pulled into every ROS compose file via `include:`, so
+# all launch paths get it automatically: ./start_mock.sh, a bare `docker compose -f ...`,
+# and Ansible's community.docker.docker_compose (ros.yml / ros_hardware.yml).
+#
+# Why it's needed: the ROS containers run with `ipc: host`, so their Fast DDS segments
+# live in the host /dev/shm and are NOT cleaned up on `down`. They accumulate; a starting
+# node that reads a stale/corrupt one allocates a garbage-sized buffer and gets OOM-killed
+# (notably rosbridge -> port 9090 never opens, so Foxglove/ros-mcp can't connect).
+#
+# Safe under concurrency: it removes ONLY segments that no running process is holding
+# (checked via /proc/*/maps, hence `pid: host`). So deploying ros_hardware while ros is
+# already up — the robot's normal split deploy — never disturbs the live stack's segments.
+# Services that include this file should depend on it with
+#   depends_on: { dds_shm_clean: { condition: service_completed_successfully } }
+# so cleanup finishes before any DDS node starts.
+
+services:
+  dds_shm_clean:
+    image: ros:humble-ros-base
+    container_name: dds_shm_clean
+    pid: host                 # see which host PIDs still hold a segment
+    network_mode: none        # touches files only; no network needed
+    restart: "no"             # one-shot: run, report, exit
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      driver: json-file
+      options:
+        max-size: '1m'
+        max-file: '1'
+    # NOTE: shell `$` is doubled to `$$` so Docker Compose's own variable
+    # interpolation passes it through to the container instead of eating it.
+    command:
+      - bash
+      - -c
+      - |
+        shopt -s nullglob
+        removed=0; kept=0
+        for f in /dev/shm/fastrtps_* /dev/shm/sem.fastrtps_*; do
+          # /dev/null sentinel so grep always has a file arg (never reads stdin)
+          if grep -qF "$$f" /proc/[0-9]*/maps /dev/null 2>/dev/null; then
+            kept=$$((kept + 1))           # a live process maps it -> leave it alone
+          else
+            rm -f "$$f" && removed=$$((removed + 1))
+          fi
+        done
+        echo "[dds_shm_clean] removed $$removed orphaned DDS segment(s); kept $$kept in-use."

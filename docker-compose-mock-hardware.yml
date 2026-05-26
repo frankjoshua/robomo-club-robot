@@ -25,12 +25,20 @@
 
 version: '3'
 
+# Share the orphaned-DDS-segment cleanup (see docker-compose-dds-clean.yml) so the
+# mocks get it too when run on their own, not only layered under docker-compose-ros.yml.
+include:
+  - docker-compose-dds-clean.yml
+
 x-mock-common: &mock-common
   image: ros:humble-ros-base
   network_mode: host
   ipc: host
   pid: host
   restart: unless-stopped
+  depends_on:
+    dds_shm_clean:
+      condition: service_completed_successfully
   volumes:
     - ./mock:/mock:ro
   logging:
