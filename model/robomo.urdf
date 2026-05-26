@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!--
+  robomo.club robot - visual URDF built from the Blender model (model/meshes/robomo.dae).
+
+  Scope: this is the VISUAL + TF model used to see the robot in Foxglove/RViz. The body is a
+  single mesh on base_link; the drive wheels are part of that mesh (not yet articulated). The
+  articulated, physics-ready version (separate wheel links, <collision>, <inertial>, Gazebo
+  plugins) is the next step - see model/README.md.
+
+  Frames match the live stack:
+    - base_link            : root; diff_drive_controller publishes odom->base_link
+    - laser_frame          : /scan frame, at the lidar on top of the pole (~1.23 m)
+    - camera_link          : Realsense on the front of the base
+    - imu_link / gps_link  : on the pole electronics shelf
+
+  Mesh is referenced over HTTP because the bridge is rosbridge (no package:// asset
+  resolution); model_meshes (docker-compose-model.yml) serves model/meshes/ on :8100.
+-->
+<robot name="robomo">
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="http://localhost:8100/robomo.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- ground projection frame -->
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- YDLidar X4 on top of the pole, above the monitor: /scan frame -->
+  <link name="laser_frame"/>
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_frame"/>
+    <origin xyz="0.03 0 1.23" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Intel Realsense on the front of the base, facing forward -->
+  <link name="camera_link"/>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.31 0 0.28" rpy="0 0 0"/>
+  </joint>
+  <!-- optical frame (REP-103: z forward, x right, y down) -->
+  <link name="camera_optical_frame"/>
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+  <!-- IMU on the pole electronics shelf -->
+  <link name="imu_link"/>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0.05 0.08 0.594" rpy="0 0 0"/>
+  </joint>
+
+  <!-- GPS on the pole electronics shelf -->
+  <link name="gps_link"/>
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps_link"/>
+    <origin xyz="0.07 -0.02 0.60" rpy="0 0 0"/>
+  </joint>
+
+</robot>

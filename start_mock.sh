@@ -1,9 +1,13 @@
 #!/bin/bash
 #
-# start_mock.sh - run the ROS 2 software stack against mock hardware:
+# start_mock.sh - run the complete mock: the ROS 2 software stack against mock hardware:
 # the core software (docker-compose-ros.yml) plus the lightweight simulators in
 # mock/ (docker-compose-mock-hardware.yml) that stand in for the Teensy and the
 # YDLidar. No physical robot and no Gazebo required. See mock/README.md.
+#
+# Also layers docker-compose-model.yml: loads the Blender-built robot model
+# (model/robomo.urdf) and serves its meshes over HTTP so the robot is visible in
+# Foxglove Studio (connect to ws://localhost:9090). See model/README.md.
 #
 # Usage:
 #   ./start_mock.sh [up]    Start everything (detached). Default.
@@ -25,7 +29,7 @@ else
   exit 1
 fi
 
-FILES="-f docker-compose-ros.yml -f docker-compose-mock-hardware.yml"
+FILES="-f docker-compose-ros.yml -f docker-compose-mock-hardware.yml -f docker-compose-model.yml"
 
 case "${1:-up}" in
   up)
@@ -46,6 +50,8 @@ case "${1:-up}" in
     echo
     echo "Up. Next:"
     echo "  ./ros_bash.sh         # then: ros2 topic list / ros2 topic echo /scan"
+    echo "  Foxglove: connect to ws://localhost:9090, add a 3D panel,"
+    echo "            then Custom layers -> URDF -> /robot_description to see the robot"
     echo "  ./start_mock.sh logs  # follow logs"
     echo "  ./start_mock.sh down  # stop everything"
     ;;
