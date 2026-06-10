@@ -26,6 +26,7 @@ ansible-playbook -i production ros_hardware.yml  # Deploy hardware services only
 ```bash
 docker compose -f docker-compose-ros.yml up -d           # Start ROS software services
 docker compose -f docker-compose-ros-hardware.yml up -d  # Start hardware interface services
+./start_ros.sh                                           # Run the software stack HERE against the physical robot's hardware (running on tx2.local); takes up|down|logs
 ./start_mock.sh                                          # Run software stack against mock hardware (no robot/Gazebo); takes up|down|logs. See mock/
 ./start_tools.sh                                         # Start n8n + Code-Server dev tools
 ```

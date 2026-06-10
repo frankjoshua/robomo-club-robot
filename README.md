@@ -90,6 +90,33 @@ docker run -it \
     frankjoshua/ros2-urdf
 ```
 
+# Running the software here against the physical robot
+
+To develop the ROS 2 brains on this laptop while the **real** robot provides the sensors and
+motors, run the hardware drivers on the robot and the software stack here. The two machines
+discover each other over DDS, so they must be on the same LAN and `ROS_DOMAIN_ID` (default 0).
+
+On the robot (`tx2.local`), bring up **only** the hardware — not its own software stack, or
+you'll have two nav2/slam nodes on one DDS domain:
+
+```bash
+ssh tx2.local
+cd robomo-club-robot && docker compose -f docker-compose-ros-hardware.yml up -d
+```
+
+Then here:
+
+```bash
+./start_ros.sh          # 'up' (default), 'down', or 'logs'
+```
+
+This runs the software stack (`docker-compose-ros.yml`) — slam_toolbox, nav2,
+diff_drive_controller, the urdf/TF publisher, rosbridge and the MCP server — against the robot's
+sensors and motors.
+
+> ⚠️ This drives the **real** motors — publishing `/cmd_vel` turns the wheels. Develop against
+> `./start_mock.sh` first and always end a motion sequence with a zero Twist.
+
 # Containers
 
 The robot is a set of single-purpose Docker containers, split across compose files by
