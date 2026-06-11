@@ -116,7 +116,8 @@ Then here:
 
 This runs the software stack (`docker-compose-ros.yml`) — slam_toolbox, nav2,
 diff_drive_controller, the urdf/TF publisher, rosbridge and the MCP server — against the robot's
-sensors and motors. As with `start_mock.sh`, `up` aborts if a session of the other mode is still
+sensors and motors, plus the robot-model overlay (`docker-compose-model.yml`) so the robot
+renders in Foxglove. As with `start_mock.sh`, `up` aborts if a session of the other mode is still
 up (even one auto-restarted by a reboot) so fake and real sensor topics never mix.
 
 > ⚠️ This drives the **real** motors — publishing `/cmd_vel` turns the wheels. Develop against
@@ -170,12 +171,20 @@ Stand-ins so the full software stack runs with **no physical robot** — plain `
 ### Robot model overlay — `docker-compose-model.yml`
 
 Layers the Blender-built robot model (see [`model/`](model/)) onto the stack so the robot
-renders in Foxglove Studio. Included by `start_mock.sh`.
+renders in Foxglove Studio. Included by both `start_mock.sh` and `start_ros.sh`.
 
 | Container | What it does |
 |-----------|--------------|
 | `ros2_urdf` (override) | Swaps the image to plain `ros:humble-ros-base` running `robot_state_publisher` on the bind-mounted `model/robomo.urdf`. |
-| `model_meshes` | Serves `model/meshes/` over HTTP on port **8100** — rosbridge can't resolve `package://` mesh URIs, so the URDF references `http://localhost:8100/...` and Foxglove fetches them directly. |
+| `model_meshes` | Serves `model/meshes/` over HTTP on port **8100** — rosbridge can't resolve `package://` mesh URIs, so the URDF references `http://localhost:8100/...` and Foxglove fetches them directly. Also serves the URDF itself at `http://localhost:8100/robomo.urdf`. |
+
+In Foxglove, point the 3D panel's **URDF layer at that URL**, not at the `/robot_description`
+topic: the topic is published once (latched) by `robot_state_publisher`, and rosbridge never
+replays latched messages to websocket clients that subscribe later — so the topic source only
+renders if Foxglove was already connected when `ros2_urdf` started, while the URL always works.
+Easiest is to import [`foxglove_layout.json`](foxglove_layout.json) (Foxglove → Layout →
+**Import from file**): a preconfigured 3D panel with the URDF layer, `/scan`, `/map`, `/plan`,
+and click-to-publish nav2 goals on `/goal_pose`.
 
 ### Dev tools — `docker-compose-tools.yml` (`./start_tools.sh`)
 

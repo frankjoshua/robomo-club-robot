@@ -78,5 +78,6 @@ set `false` to keep the scene fixed even when `/odom` is present), `LASER_FRAME`
 (`laser_frame`), `BASE_FRAME` (`base_link`), `SCAN_HZ` (`10`), `SCAN_SAMPLES` (`720`),
 `RANGE_MIN` (`0.12`), `RANGE_MAX` (`12.0`), `ROOM_WIDTH` (`20.0`), `ROOM_LENGTH` (`16.0`),
 `OBSTACLES` (JSON list of `["box", cx, cy, w, h]` / `["circle", cx, cy, r]` in metres;
-defaults to a built-in furnished-room layout), `PUBLISH_LASER_TF` (`true` — set `false`
-when the `urdf` container already provides the `base_link`→`laser_frame` transform).
+defaults to a built-in furnished-room layout), `PUBLISH_LASER_TF` (`true`, but
+`docker-compose-mock-hardware.yml` sets it `false` since the `urdf` container provides the
+`base_link`→`laser_frame` transform — flip it back on only when running the mocks alone).

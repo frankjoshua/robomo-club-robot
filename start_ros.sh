@@ -8,7 +8,8 @@
 # machines discover each other over ROS 2 DDS - they must be on the same LAN and the same
 # ROS_DOMAIN_ID (default 0, which nothing here overrides). The laptop then runs the brains:
 # slam_toolbox, nav2, diff_drive_controller, the urdf/TF publisher, rosbridge and the MCP
-# server (docker-compose-ros.yml).
+# server (docker-compose-ros.yml), plus the Blender robot model + mesh server
+# (docker-compose-model.yml) so the robot renders in Foxglove.
 #
 # Before this is useful, the robot must be running ITS hardware drivers - and ONLY those,
 # not its own software stack, or you get two nav2/slam_toolbox nodes fighting on one DDS
@@ -42,7 +43,7 @@ else
   exit 1
 fi
 
-FILES="-f docker-compose-ros.yml"
+FILES="-f docker-compose-ros.yml -f docker-compose-model.yml"
 ROBOT_HOST="${ROBOT_HOST:-tx2.local}"
 
 case "${1:-up}" in
@@ -82,8 +83,8 @@ case "${1:-up}" in
     echo
     echo "Up. Next:"
     echo "  ./ros_bash.sh         # then: ros2 topic list / ros2 topic echo /scan"
-    echo "  Foxglove: connect to ws://localhost:9090, add a 3D panel,"
-    echo "            then Custom layers -> URDF -> /robot_description to see the robot"
+    echo "  Foxglove: connect to ws://localhost:9090 (Rosbridge), then Layout ->"
+    echo "            Import from file -> foxglove_layout.json to see the robot"
     echo "  ./start_ros.sh logs   # follow logs"
     echo "  ./start_ros.sh down   # stop everything"
     ;;

@@ -59,8 +59,8 @@ case "${1:-up}" in
     echo
     echo "Up. Next:"
     echo "  ./ros_bash.sh         # then: ros2 topic list / ros2 topic echo /scan"
-    echo "  Foxglove: connect to ws://localhost:9090, add a 3D panel,"
-    echo "            then Custom layers -> URDF -> /robot_description to see the robot"
+    echo "  Foxglove: connect to ws://localhost:9090 (Rosbridge), then Layout ->"
+    echo "            Import from file -> foxglove_layout.json to see the robot"
     echo "  ./start_mock.sh logs  # follow logs"
     echo "  ./start_mock.sh down  # stop everything"
     ;;

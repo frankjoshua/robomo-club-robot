@@ -1,0 +1,54 @@
+{
+  "configById": {
+    "3D!robomo": {
+      "cameraState": {
+        "perspective": true,
+        "distance": 14,
+        "phi": 55,
+        "thetaOffset": 45,
+        "target": [0, 0, 0],
+        "targetOffset": [0, 0, 0],
+        "targetOrientation": [0, 0, 0, 1],
+        "fovy": 45,
+        "near": 0.5,
+        "far": 5000
+      },
+      "followMode": "follow-pose",
+      "followTf": "map",
+      "scene": {},
+      "transforms": {},
+      "topics": {
+        "/scan": { "visible": true },
+        "/map": { "visible": true },
+        "/plan": { "visible": true }
+      },
+      "layers": {
+        "9d8f3a2e-6b1c-4e5a-8f7d-2c3b4a5d6e7f": {
+          "visible": true,
+          "frameLocked": true,
+          "label": "Robot model (URDF)",
+          "instanceId": "9d8f3a2e-6b1c-4e5a-8f7d-2c3b4a5d6e7f",
+          "layerId": "foxglove.Urdf",
+          "sourceType": "url",
+          "url": "http://localhost:8100/robomo.urdf",
+          "filePath": "",
+          "parameter": "",
+          "topic": "",
+          "framePrefix": "",
+          "displayMode": "auto",
+          "order": 1
+        }
+      },
+      "publish": {
+        "type": "pose",
+        "poseTopic": "/goal_pose",
+        "pointTopic": "/clicked_point",
+        "poseEstimateTopic": "/initialpose"
+      }
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "playbackConfig": { "speed": 1 },
+  "layout": "3D!robomo"
+}

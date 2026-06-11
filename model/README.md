@@ -15,17 +15,20 @@ is visible in **Foxglove Studio** and RViz.
 | `meshes/robomo.glb` | Same body, glTF binary — nicer PBR materials (alternate). |
 | `robomo.urdf` | Visual + TF model: root `base_link`, frames `laser_frame` / `camera_link` (+ optical) / `imu_link` / `gps_link` matching the live stack. |
 | `rsp.launch.py` | `robot_state_publisher` for the URDF — reads the plain all-fixed-joint URDF directly (no xacro, no joint_state_publisher), with the `ParameterValue(value_type=str)` wrap. |
-| `serve_meshes.py` | Tiny CORS HTTP server for `meshes/` (port 8100). |
+| `serve_meshes.py` | Tiny CORS HTTP server for `meshes/` and the URDF itself (port 8100). |
 
 ## How it loads into the stack
-`../docker-compose-model.yml` layers three things onto the ROS stack:
+`../docker-compose-model.yml` layers two things onto the ROS stack:
 1. swaps `ros2_urdf` to plain `ros:humble-ros-base` running `robot_state_publisher` on the
    bind-mounted `robomo.urdf` (the published `frankjoshua/ros2-urdf` image is currently
    Jazzy-built, and a Jazzy node's Fast DDS wire format corrupts the Humble stack's discovery),
-2. runs `model_meshes` to serve `meshes/` over HTTP on `:8100`,
-3. turns off the mock lidar's `base_link->laser_frame` TF (the URDF now owns it at ~1.23 m).
+2. runs `model_meshes` to serve `meshes/` + the URDF over HTTP on `:8100`.
 
-It's included in `../start_mock.sh`, so `./start_mock.sh up` brings it up with the rest.
+The URDF owns `base_link->laser_frame` at the real ~1.23 m scan height, so the mock lidar's own
+laser TF is off by default in `../docker-compose-mock-hardware.yml`.
+
+It's included in both `../start_mock.sh` and `../start_ros.sh`, so either `up` brings it up with
+the rest — the model renders in Foxglove against the mock and the real robot alike.
 
 ### Why HTTP meshes (not `package://`)
 `robot_state_publisher` only embeds the URDF text and publishes TF — it never resolves mesh
@@ -38,10 +41,20 @@ URIs; that's the viewer's job. The stack's bridge is **rosbridge**, which (unlik
 > `ParameterValue(..., value_type=str)` wrap in `rsp.launch.py`.
 
 ## See it in Foxglove
-1. `./start_mock.sh up`
+1. `./start_mock.sh up` (or `./start_ros.sh up` against the real robot)
 2. Foxglove → Open connection → **Rosbridge** → `ws://localhost:9090`
-3. Add a **3D** panel → settings → **Custom layers** → **+** → **URDF** → Source = Topic `/robot_description`
-4. Set the display frame to `map` (or `odom`). Optionally add `/scan` and `/map`.
+3. Layout → **Import from file** → [`../foxglove_layout.json`](../foxglove_layout.json) — done:
+   3D panel with the robot model, `/scan`, `/map`, `/plan`, and click-to-publish nav2 goals
+   (`/goal_pose`).
+
+Or configure it by hand: add a **3D** panel → settings → **Custom layers** → **+** → **URDF** →
+Source = **URL** `http://localhost:8100/robomo.urdf`, then set the display frame to `map` (or
+`odom`) and add `/scan` / `/map`.
+
+> Why URL rather than the `/robot_description` topic? rosbridge never replays a latched
+> message to websocket clients that subscribe after `robot_state_publisher`'s single startup
+> publish, so the topic source stays empty unless Foxglove happened to be subscribed when
+> `ros2_urdf` (re)started. The URL works no matter when you connect.
 
 If the model looks flat or sideways, switch the `<mesh filename=...>` in `robomo.urdf` to
 `robomo.glb` and recreate `ros2_urdf`.

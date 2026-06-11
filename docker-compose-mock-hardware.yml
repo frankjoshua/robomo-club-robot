@@ -56,4 +56,8 @@ services:
   mock_ydlidar_x4:
     <<: *mock-common
     container_name: mock_ydlidar_x4
+    # The urdf container owns base_link->laser_frame (at the real ~1.23 m scan height), so
+    # don't publish it here too. Set "true" if you run the mocks alone and need the TF.
+    environment:
+      PUBLISH_LASER_TF: "false"
     command: bash -c "source /opt/ros/humble/setup.bash && exec python3 -u /mock/mock_ydlidar.py"

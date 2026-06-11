@@ -6,9 +6,9 @@
 # rosbridge cannot resolve package:// mesh URIs, so the URDF references
 # http://localhost:8100/robomo.dae and the model_meshes service below serves model/meshes/.
 #
-# Layer it on top of the ros + mock-hardware stacks (the mock_ydlidar override below needs
-# that service to exist):
-#   docker compose -f docker-compose-ros.yml -f docker-compose-mock-hardware.yml -f docker-compose-model.yml up -d
+# Layer it on top of the ros stack - works with the mock hardware or against the real robot
+# (start_mock.sh and start_ros.sh both include it):
+#   docker compose -f docker-compose-ros.yml [-f docker-compose-mock-hardware.yml] -f docker-compose-model.yml up -d
 #
 # Then in Foxglove: connect to ws://localhost:9090, add a 3D panel, and add the URDF from the
 # /robot_description topic (see model/README.md).
@@ -29,14 +29,12 @@ services:
       - ./model:/model:ro
     command: ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && ros2 launch /model/rsp.launch.py"]
 
-  # The URDF now owns base_link->laser_frame at the real ~1.23 m scan height, so stop the
-  # mock lidar from also publishing that static transform.
-  mock_ydlidar_x4:
-    environment:
-      PUBLISH_LASER_TF: "false"
-
   # Static HTTP server for the meshes (Foxglove fetches them by URL). Reuses the already-pulled
   # ros image; only needs the host network so the port is reachable at localhost:8100.
+  # Also serves the URDF itself (http://localhost:8100/robomo.urdf) for Foxglove's URDF layer
+  # "URL" source: rosbridge never replays the latched /robot_description to clients that
+  # subscribe after robot_state_publisher's one startup publish, so the topic source only
+  # works for already-connected clients - the URL always works.
   model_meshes:
     image: ros:humble-ros-base
     container_name: model_meshes
@@ -44,6 +42,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./model/meshes:/meshes:ro
+      - ./model/robomo.urdf:/robomo.urdf:ro
       - ./model/serve_meshes.py:/serve_meshes.py:ro
     command: ["python3", "/serve_meshes.py"]
     logging:
