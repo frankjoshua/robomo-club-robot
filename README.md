@@ -58,7 +58,7 @@ ssh robot
 
 # Simulating the robot
 
-Run the full ROS 2 software stack against lightweight mock hardware — a fake Teensy that echoes `/cmd_vel` back as `/vel`, and a world-locked fake YDLidar that publishes a box-shaped room on `/scan`. No physical robot and no Gazebo required: slam_toolbox maps the room and nav2 can navigate it. See [`mock/`](mock/) for details and tunables.
+Run the full ROS 2 software stack against lightweight mock hardware — a fake Teensy that echoes `/cmd_vel` back as `/vel`, and a world-locked fake YDLidar that publishes a box-shaped room on `/scan`. No physical robot and no Gazebo required: slam_toolbox maps the room and nav2 can navigate it. See [`mock/`](mock/) for details and tunables. The Blender-built robot model ([`model/`](model/)) is layered in as well, so the robot renders in Foxglove Studio (Rosbridge connection, `ws://localhost:9090`).
 
 ```bash
 ./start_mock.sh          # 'up' (default), 'down', or 'logs'
@@ -124,6 +124,12 @@ concern. Images are published under [`frankjoshua/`](https://hub.docker.com/u/fr
 on Docker Hub and built from the linked source repos. All use host networking/IPC/PID for
 ROS 2 DDS discovery; see [CLAUDE.md](CLAUDE.md) for resource limits.
 
+Every ROS compose file also `include:`s the one-shot `dds_shm_clean` service
+(`docker-compose-dds-clean.yml`), which purges orphaned Fast DDS shared-memory segments from
+`/dev/shm` before any node starts — leftover segments from a previous run otherwise OOM-kill
+nodes (typically rosbridge) on startup. It only runs on `docker compose up`, so prefer a full
+`down`/`up` over restarting containers in place.
+
 ### Core ROS 2 software — `docker-compose-ros.yml`
 
 | Container | Source | What it does |
@@ -155,6 +161,16 @@ Stand-ins so the full software stack runs with **no physical robot** — plain `
 |-----------|--------------|
 | `mock_micro_ros_agent` | Fake Teensy — echoes `/cmd_vel`→`/vel` (perfect velocity tracking + a 0.4 s command watchdog). |
 | `mock_ydlidar_x4` | Fake lidar — a world-locked 20×16 m room with obstacles, published on `/scan`. |
+
+### Robot model overlay — `docker-compose-model.yml`
+
+Layers the Blender-built robot model (see [`model/`](model/)) onto the stack so the robot
+renders in Foxglove Studio. Included by `start_mock.sh`.
+
+| Container | What it does |
+|-----------|--------------|
+| `ros2_urdf` (override) | Swaps the image to plain `ros:humble-ros-base` running `robot_state_publisher` on the bind-mounted `model/robomo.urdf`. |
+| `model_meshes` | Serves `model/meshes/` over HTTP on port **8100** — rosbridge can't resolve `package://` mesh URIs, so the URDF references `http://localhost:8100/...` and Foxglove fetches them directly. |
 
 ### Dev tools — `docker-compose-tools.yml` (`./start_tools.sh`)
 

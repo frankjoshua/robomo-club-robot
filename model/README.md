@@ -14,12 +14,14 @@ is visible in **Foxglove Studio** and RViz.
 | `meshes/robomo.dae` | Body mesh, Collada/Z-up — reliably oriented in Foxglove/RViz (the URDF default). |
 | `meshes/robomo.glb` | Same body, glTF binary — nicer PBR materials (alternate). |
 | `robomo.urdf` | Visual + TF model: root `base_link`, frames `laser_frame` / `camera_link` (+ optical) / `imu_link` / `gps_link` matching the live stack. |
-| `rsp.launch.py` | `robot_state_publisher` for the URDF, with the `ParameterValue(value_type=str)` wrap. |
+| `rsp.launch.py` | `robot_state_publisher` for the URDF — reads the plain all-fixed-joint URDF directly (no xacro, no joint_state_publisher), with the `ParameterValue(value_type=str)` wrap. |
 | `serve_meshes.py` | Tiny CORS HTTP server for `meshes/` (port 8100). |
 
 ## How it loads into the stack
 `../docker-compose-model.yml` layers three things onto the ROS stack:
-1. points `ros2_urdf`'s `robot_state_publisher` at `robomo.urdf` (bind-mount, no image rebuild),
+1. swaps `ros2_urdf` to plain `ros:humble-ros-base` running `robot_state_publisher` on the
+   bind-mounted `robomo.urdf` (the published `frankjoshua/ros2-urdf` image is currently
+   Jazzy-built, and a Jazzy node's Fast DDS wire format corrupts the Humble stack's discovery),
 2. runs `model_meshes` to serve `meshes/` over HTTP on `:8100`,
 3. turns off the mock lidar's `base_link->laser_frame` TF (the URDF now owns it at ~1.23 m).
 

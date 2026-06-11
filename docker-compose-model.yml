@@ -14,11 +14,20 @@
 # /robot_description topic (see model/README.md).
 
 services:
-  # Point robot_state_publisher at the Blender-built URDF (bind-mount; no image rebuild).
+  # Point robot_state_publisher at the Blender-built URDF (bind-mounted).
+  #
+  # Override the image to plain Humble. The dedicated frankjoshua/ros2-urdf image was rebuilt
+  # on Jazzy (its "Updated to jazzy" commit), and a Jazzy node's Fast DDS wire format is
+  # incompatible with this Humble stack: it corrupts discovery (ParticipantEntitiesInfo
+  # bad_alloc) and its TF never reaches slam, so every scan is dropped as "queue full".
+  # ros:humble-ros-base ships robot_state_publisher, which - with rsp.launch.py reading the
+  # plain, all-fixed-joint URDF directly (no xacro / joint_state_publisher) - is all this node
+  # needs. Source Humble explicitly rather than trusting the image's interactive bashrc.
   ros2_urdf:
+    image: ros:humble-ros-base
     volumes:
       - ./model:/model:ro
-    command: ["/bin/bash", "-i", "-c", "ros2 launch /model/rsp.launch.py"]
+    command: ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && ros2 launch /model/rsp.launch.py"]
 
   # The URDF now owns base_link->laser_frame at the real ~1.23 m scan height, so stop the
   # mock lidar from also publishing that static transform.
