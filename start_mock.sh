@@ -33,14 +33,23 @@ FILES="-f docker-compose-ros.yml -f docker-compose-mock-hardware.yml -f docker-c
 
 case "${1:-up}" in
   up)
-    # Warn if the real hardware drivers are up - they'd fight the mocks for topics.
-    clash=$(docker ps --format '{{.Names}}' \
-      | grep -E '^(ros2_micro_ros_agent|ros2_ydlidar_x4)$' || true)
-    if [ -n "$clash" ]; then
-      echo "WARNING: real hardware containers are running: $clash"
-      echo "They publish the same topics as the mocks. Stop them first with:"
-      echo "    $DC -f docker-compose-ros-hardware.yml down"
-      echo
+    # The robot's real drivers publish the same topics (/vel, /scan) as the mocks - refuse
+    # to mix a real-robot session in. Compose labels every container with the file set that
+    # created it: created with the ros (or local ros-hardware) files but WITHOUT the
+    # mock-hardware file means a ./start_ros.sh session or local hardware drivers. The label
+    # survives a reboot's auto-resurrection (restart: unless-stopped), where no start script
+    # ever ran to warn.
+    project="$(basename "$PWD" | tr '[:upper:]' '[:lower:]')"
+    real_up=$(docker ps --filter "label=com.docker.compose.project=$project" \
+      --format '{{.Names}}\t{{.Label "com.docker.compose.project.config_files"}}' \
+      | awk -F'\t' '$2 ~ /docker-compose-ros(-hardware)?\.yml/ && $2 !~ /docker-compose-mock-hardware\.yml/ {print $1}' \
+      | tr '\n' ' ')
+    if [ -n "$real_up" ]; then
+      echo "ERROR: a real-robot session is still up: $real_up"
+      echo "The robot's real drivers publish the same topics (/vel, /scan) as the mocks. Stop it first:"
+      echo "    ./start_ros.sh down"
+      echo "    $DC -f docker-compose-ros-hardware.yml down   # if the hardware drivers run here"
+      exit 1
     fi
 
     echo "Starting ROS 2 software stack + mock hardware (first run pulls ros:humble-ros-base)..."

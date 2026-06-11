@@ -48,14 +48,20 @@ ROBOT_HOST="${ROBOT_HOST:-tx2.local}"
 case "${1:-up}" in
   up)
     # The mock hardware publishes the same topics (/vel, /scan) as the robot's real drivers -
-    # running both means two sources fighting over every sensor/actuator topic.
-    clash=$(docker ps --format '{{.Names}}' \
-      | grep -E '^(mock_micro_ros_agent|mock_ydlidar_x4)$' || true)
-    if [ -n "$clash" ]; then
-      echo "WARNING: mock hardware containers are running: $clash"
-      echo "They publish the same topics (/vel, /scan) as the robot's real hardware. Stop them first:"
+    # running both means two sources fighting over every sensor/actuator topic. Compose labels
+    # every container with the file set that created it, so anything carrying the mock-hardware
+    # file is a ./start_mock.sh session - including one a reboot auto-resurrected
+    # (restart: unless-stopped), where no start script ever ran to warn.
+    project="$(basename "$PWD" | tr '[:upper:]' '[:lower:]')"
+    mock_up=$(docker ps --filter "label=com.docker.compose.project=$project" \
+      --format '{{.Names}}\t{{.Label "com.docker.compose.project.config_files"}}' \
+      | awk -F'\t' '$2 ~ /docker-compose-mock-hardware\.yml/ {print $1}' \
+      | tr '\n' ' ')
+    if [ -n "$mock_up" ]; then
+      echo "ERROR: a mock session (./start_mock.sh) is still up: $mock_up"
+      echo "Its fake /vel and /scan would fight the robot's real drivers. Stop it first:"
       echo "    ./start_mock.sh down"
-      echo
+      exit 1
     fi
 
     # Non-fatal: is the robot reachable? Its hardware drivers must be up for the stack to see

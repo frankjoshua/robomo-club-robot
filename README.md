@@ -64,6 +64,10 @@ Run the full ROS 2 software stack against lightweight mock hardware — a fake T
 ./start_mock.sh          # 'up' (default), 'down', or 'logs'
 ```
 
+The mock and real-robot modes refuse to mix: `up` aborts if a `start_ros.sh` session (or the
+hardware drivers) is still up — both modes fight over the same `/vel` and `/scan` topics — and
+tells you which `down` to run. This also catches sessions a reboot auto-restarted.
+
 Or bring up individual software containers by hand:
 
 ```bash
@@ -112,7 +116,8 @@ Then here:
 
 This runs the software stack (`docker-compose-ros.yml`) — slam_toolbox, nav2,
 diff_drive_controller, the urdf/TF publisher, rosbridge and the MCP server — against the robot's
-sensors and motors.
+sensors and motors. As with `start_mock.sh`, `up` aborts if a session of the other mode is still
+up (even one auto-restarted by a reboot) so fake and real sensor topics never mix.
 
 > ⚠️ This drives the **real** motors — publishing `/cmd_vel` turns the wheels. Develop against
 > `./start_mock.sh` first and always end a motion sequence with a zero Twist.
