@@ -210,9 +210,9 @@ vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
     │
     └─ USB ─┬─ Teensy 4.0 ........ /dev/teensy   (16c0:0483)   drive motors + wheel encoders
             ├─ YDLidar X4 ........ /dev/ttyUSB0  (CP210x)      360° laser  → /scan
-            ├─ Intel RealSense ... (USB, Intel)                RGB-D camera
-            ├─ Pico + IMU ........ /dev/imu      (239a:8120)   heading     → /heading
-            └─ u-blox GPS ........ /dev/gps      (1546:01a7)   GNSS fix
+            ├─ Intel RealSense ... (planned)                   RGB-D camera — future addition
+            ├─ Pico + IMU ........ /dev/imu      (239a:8120)   WIP — not yet hooked up
+            └─ u-blox GPS ........ /dev/gps      (1546:01a7)   u-blox 7 · GNSS fix
 ```
 
 ## Compute
@@ -234,14 +234,17 @@ the driver containers always find them regardless of enumeration order:
 |--------|-------------|----------------|------------------|---------------|
 | Teensy 4.0 (motors + encoders) | `16c0:0483` | `/dev/teensy` | `ros2_micro_ros_agent` | subscribes `/cmd_vel`, publishes `/vel` |
 | YDLidar X4 | CP210x | `/dev/ttyUSB0` | `ros2_ydlidar_x4` | `/scan`, `/point_cloud` |
-| Intel RealSense | Intel `8086:…` | (USB) | `ros2_realsense` | RGB-D camera topics |
-| IMU on a Pico / RP2040 | `239a:8120` | `/dev/imu` | `ros2_imu` | `/heading` |
-| u-blox GPS | `1546:01a7` | `/dev/gps` | `ros2_gps` | GNSS fix |
+| Intel RealSense _(planned)_ | Intel `8086:…` | (USB) | `ros2_realsense` | RGB-D camera — **future addition**, not yet on the robot |
+| IMU on a Pico / RP2040 _(WIP)_ | `239a:8120` | `/dev/imu` | `ros2_imu` | **not yet hooked up** — the Pico emits JSON over serial (work in progress) |
+| u-blox GPS (u-blox 7) | `1546:01a7` | `/dev/gps` | `ros2_gps` | GNSS fix |
 
 > The Teensy's bootloader enumerates separately as `16c0:0478` (NXP `1fc9:013x`);
 > [`reset_teensy.sh`](reset_teensy.sh) uses that to reset the Teensy with no physical access.
 
 ## Drive: motor control & wheel odometry
+
+The drive base is a salvaged **"Little Rascal" power-wheelchair base** — its 24 V
+gearmotors (specific model unknown) driven by the Sabertooth.
 
 The Teensy 4.0 runs the closed speed loop. It takes `/cmd_vel`, converts it to
 per-wheel targets (differential-drive kinematics), runs a PID against the encoder
@@ -267,6 +270,7 @@ Drive geometry (from the firmware [`src/main.cpp`](https://github.com/frankjoshu
 
 | Parameter | Value |
 |-----------|-------|
+| Drive base | salvaged "Little Rascal" power-wheelchair base (24 V gearmotors) |
 | Base type | differential drive |
 | Wheel diameter | 0.15 m |
 | Wheel track (left ↔ right) | 0.35 m |
@@ -280,7 +284,9 @@ Sabertooth configuration lives in [`sabertooth_settings/`](sabertooth_settings/)
 
 The Teensy ([micro-ros2-teensy-4-encoders-srf04](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04))
 reads the wheel encoders through a **dual LS7366R** quadrature counter board: two
-LS7366R chips (one per wheel) on a shared SPI bus with separate chip-selects.
+LS7366R chips (one per wheel) on a shared SPI bus with separate chip-selects. The
+encoders themselves are **HC-020K** slotted optical sensors mounted on the motors
+(ahead of the gearbox) — which is why the per-wheel count is so high (130000 in x4).
 
 ```text
   TEENSY 4.0                       DUAL LS7366R BOARD                  ENCODERS
@@ -326,22 +332,27 @@ The static sensor transforms come from the URDF
 |-------|--------|---------|--------|
 | `base_footprint` | `base_link` | 0, 0, 0 | ground projection |
 | `laser_frame` | `base_link` | 0.03, 0, 1.23 | YDLidar X4 |
-| `camera_link` | `base_link` | 0.31, 0, 0.28 | Intel RealSense |
-| `imu_link` | `base_link` | 0.05, 0.08, 0.594 | IMU |
+| `camera_link` | `base_link` | 0.31, 0, 0.28 | Intel RealSense _(planned)_ |
+| `imu_link` | `base_link` | 0.05, 0.08, 0.594 | IMU _(WIP)_ |
 | `gps_link` | `base_link` | 0.07, -0.02, 0.60 | GPS |
 
-Drive geometry: 0.15 m wheels on a 0.35 m track (see [Drive](#drive-motor-control--wheel-odometry) above).
+**Overall size:** ≈ 0.50 m W × 0.91 m L × 1.22 m H (19.5 × 36 × 48 in) — the 1.22 m
+height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
+0.35 m track (see [Drive](#drive-motor-control--wheel-odometry) above).
 
 ## Power
 
-> ⚠️ **TODO — not yet documented.** Battery (chemistry / voltage / capacity), power
-> distribution (what feeds the Jetson, the Sabertooth + motors, the Teensy, and the
-> USB sensors), any regulators / fusing, the main power switch, and approximate run
-> time. Add a power-distribution diagram here.
+- **Battery:** two 12 V lead-acid batteries in series → a **24 V** pack (the
+  wheelchair base's batteries).
+- **Motors:** the 24 V pack feeds the Sabertooth, which drives the wheelchair gearmotors.
+- **Logic (Jetson TX2, Teensy, USB sensors):** stepped down from the 24 V pack — the
+  specific DC-DC converter(s), fusing, and main switch are **not yet documented** (TODO).
 
-# Links
-
-[https://www.dimensionengineering.com/datasheets/KangarooManual.pdf](https://www.dimensionengineering.com/datasheets/KangarooManual.pdf)
+```text
+  2 x 12 V lead-acid  ─►  24 V pack ─┬─►  Sabertooth ─►  L / R wheelchair motors
+                                     │
+                                     └─►  DC-DC (TODO) ─►  Jetson TX2 ─USB─► Teensy · YDLidar · GPS
+```
 
 # Contributors:
 
