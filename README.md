@@ -196,13 +196,91 @@ and click-to-publish nav2 goals on `/goal_pose`.
 To control the running stack (drive, send nav2 goals, echo topics), see the
 [`run-robomo-club-robot`](.claude/skills/run-robomo-club-robot/SKILL.md) skill.
 
-# Wheel encoder wiring (Teensy ↔ dual LS7366R)
+# Hardware
+
+A tall differential-drive robot: a **Jetson TX2** running the ROS 2 stack, a
+**Teensy 4.0** handling the real-time drivetrain, and a set of USB sensors. A
+vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
+
+## System block diagram
+
+```text
+  Jetson TX2  "robmo-club-robot"  ·  Ubuntu 18.04 / L4T  ·  Docker  ·  ROS 2 Humble
+  (runs the containers listed under "Containers" above)
+    │
+    └─ USB ─┬─ Teensy 4.0 ........ /dev/teensy   (16c0:0483)   drive motors + wheel encoders
+            ├─ YDLidar X4 ........ /dev/ttyUSB0  (CP210x)      360° laser  → /scan
+            ├─ Intel RealSense ... (USB, Intel)                RGB-D camera
+            ├─ Pico + IMU ........ /dev/imu      (239a:8120)   heading     → /heading
+            └─ u-blox GPS ........ /dev/gps      (1546:01a7)   GNSS fix
+```
+
+## Compute
+
+| | |
+|---|---|
+| Board | NVIDIA Jetson TX2 — hostname `robmo-club-robot`, arm64 |
+| OS | Ubuntu 18.04 / L4T |
+| Runtime | Docker 20.10; the ROS 2 Humble stack runs as the containers in [Containers](#containers) |
+| Network | reached at `tx2.local` (192.168.8.x at Arch Reactor) |
+
+## USB / serial devices
+
+Each device is pinned to a stable `/dev` symlink by the udev rules in
+[`ansible/files/udev/`](ansible/files/udev/) (matched on USB vendor/product ID), so
+the driver containers always find them regardless of enumeration order:
+
+| Device | USB VID:PID | `/dev` symlink | Driver container | ROS interface |
+|--------|-------------|----------------|------------------|---------------|
+| Teensy 4.0 (motors + encoders) | `16c0:0483` | `/dev/teensy` | `ros2_micro_ros_agent` | subscribes `/cmd_vel`, publishes `/vel` |
+| YDLidar X4 | CP210x | `/dev/ttyUSB0` | `ros2_ydlidar_x4` | `/scan`, `/point_cloud` |
+| Intel RealSense | Intel `8086:…` | (USB) | `ros2_realsense` | RGB-D camera topics |
+| IMU on a Pico / RP2040 | `239a:8120` | `/dev/imu` | `ros2_imu` | `/heading` |
+| u-blox GPS | `1546:01a7` | `/dev/gps` | `ros2_gps` | GNSS fix |
+
+> The Teensy's bootloader enumerates separately as `16c0:0478` (NXP `1fc9:013x`);
+> [`reset_teensy.sh`](reset_teensy.sh) uses that to reset the Teensy with no physical access.
+
+## Drive: motor control & wheel odometry
+
+The Teensy 4.0 runs the closed speed loop. It takes `/cmd_vel`, converts it to
+per-wheel targets (differential-drive kinematics), runs a PID against the encoder
+feedback, and commands the **Sabertooth** motor driver over **`Serial2` at 9600 baud
+in Sabertooth "Simplified Serial"** — one byte per side (left = Sabertooth M1 = bytes
+1–127, right = M2 = bytes 128–255). It reads the wheel encoders through the dual
+LS7366R and publishes the measured wheel velocity as `/vel`, which
+`diff_drive_controller` integrates into `/odom`.
+
+```text
+  /cmd_vel ─► micro_ros_agent ─► Teensy 4.0 ───────────────► Sabertooth ─► L / R motors
+   (Twist)      (USB serial)     kinematics + PID             Serial2 9600     │
+                                      ▲                                         │ turn
+                                      │ measured wheel speed                    ▼
+                                 Dual LS7366R ◄── quadrature A/B ◄──── wheel encoders
+                                  (SPI counts)
+                                      │
+   /vel  ◄── Teensy publishes ───────┘
+   /odom ◄── diff_drive_controller ◄── /vel
+```
+
+Drive geometry (from the firmware [`src/main.cpp`](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04/blob/master/src/main.cpp), "indoor robot" preset):
+
+| Parameter | Value |
+|-----------|-------|
+| Base type | differential drive |
+| Wheel diameter | 0.15 m |
+| Wheel track (left ↔ right) | 0.35 m |
+| Max motor RPM | 80 |
+| Encoder counts / rev (x4) | 130000 |
+
+Sabertooth configuration lives in [`sabertooth_settings/`](sabertooth_settings/)
+(Dimension Engineering DEScribe `.tooth` files).
+
+## Wheel encoder wiring (Teensy ↔ dual LS7366R)
 
 The Teensy ([micro-ros2-teensy-4-encoders-srf04](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04))
-runs the motors and reads the wheel encoders — it is the `ros2_micro_ros_agent`
-container above (`/cmd_vel` in, `/vel` out). It reads the encoders through a
-**dual LS7366R** quadrature counter board: two LS7366R chips (one per wheel) on a
-shared SPI bus with separate chip-selects.
+reads the wheel encoders through a **dual LS7366R** quadrature counter board: two
+LS7366R chips (one per wheel) on a shared SPI bus with separate chip-selects.
 
 ```text
   TEENSY 4.0                       DUAL LS7366R BOARD                  ENCODERS
@@ -227,6 +305,39 @@ shared SPI bus with separate chip-selects.
 Full pin table and firmware details (x4 mode, `TICKS_PER_REVOLUTION`, the
 SuperDroid Encoder-Buffer-Library) are in the
 [Teensy firmware README](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04#hardware-dual-ls7366r-quadrature-encoder-buffer).
+
+## Coordinate frames & dimensions
+
+The static sensor transforms come from the URDF
+([`model/robomo.urdf`](model/robomo.urdf)); `slam_toolbox` adds `map`→`odom` and
+`diff_drive_controller` adds `odom`→`base_link`, so the full chain is
+`map → odom → base_link → sensors`.
+
+```text
+  map ─► odom ─► base_link ─┬─ base_footprint   ( 0.00,  0.00, 0.00 )  ground projection
+   (slam) (diff_drive)      ├─ laser_frame      ( 0.03,  0.00, 1.23 )  YDLidar, top of pole
+                            ├─ camera_link      ( 0.31,  0.00, 0.28 )  RealSense, front, fwd
+                            │    └─ camera_optical_frame               REP-103 optical frame
+                            ├─ imu_link         ( 0.05,  0.08, 0.594)  electronics shelf
+                            └─ gps_link         ( 0.07, -0.02, 0.60 )  electronics shelf
+```
+
+| Frame | Parent | xyz (m) | Sensor |
+|-------|--------|---------|--------|
+| `base_footprint` | `base_link` | 0, 0, 0 | ground projection |
+| `laser_frame` | `base_link` | 0.03, 0, 1.23 | YDLidar X4 |
+| `camera_link` | `base_link` | 0.31, 0, 0.28 | Intel RealSense |
+| `imu_link` | `base_link` | 0.05, 0.08, 0.594 | IMU |
+| `gps_link` | `base_link` | 0.07, -0.02, 0.60 | GPS |
+
+Drive geometry: 0.15 m wheels on a 0.35 m track (see [Drive](#drive-motor-control--wheel-odometry) above).
+
+## Power
+
+> ⚠️ **TODO — not yet documented.** Battery (chemistry / voltage / capacity), power
+> distribution (what feeds the Jetson, the Sabertooth + motors, the Teensy, and the
+> USB sensors), any regulators / fusing, the main power switch, and approximate run
+> time. Add a power-distribution diagram here.
 
 # Links
 
