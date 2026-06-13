@@ -248,7 +248,7 @@ gearmotors (specific model unknown) driven by the Sabertooth.
 
 The Teensy 4.0 runs the closed speed loop. It takes `/cmd_vel`, converts it to
 per-wheel targets (differential-drive kinematics), runs a PID against the encoder
-feedback, and commands the **Sabertooth** motor driver over **`Serial2` at 9600 baud
+feedback, and commands the **Sabertooth 2x32** motor driver over **`Serial2` at 9600 baud
 in Sabertooth "Simplified Serial"** — one byte per side (left = Sabertooth M1 = bytes
 1–127, right = M2 = bytes 128–255). It reads the wheel encoders through the dual
 LS7366R and publishes the measured wheel velocity as `/vel`, which
@@ -344,14 +344,14 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
 
 - **Battery:** two 12 V lead-acid batteries in series → a **24 V** pack (the
   wheelchair base's batteries).
-- **Motors:** the 24 V pack feeds the Sabertooth, which drives the wheelchair gearmotors.
-- **Logic (Jetson TX2, Teensy, USB sensors):** stepped down from the 24 V pack — the
-  specific DC-DC converter(s), fusing, and main switch are **not yet documented** (TODO).
+- **Motors:** the 24 V pack feeds the **Sabertooth 2x32**, which drives the wheelchair gearmotors.
+- **Electronics:** a **24 V → 5 V, 10 A DC-DC converter** powers the Jetson TX2, the
+  Teensy, and the USB sensors.
 
 ```text
-  2 x 12 V lead-acid  ─►  24 V pack ─┬─►  Sabertooth ─►  L / R wheelchair motors
+  2 x 12 V lead-acid  ─►  24 V pack ─┬─►  Sabertooth 2x32 ──►  L / R wheelchair motors
                                      │
-                                     └─►  DC-DC (TODO) ─►  Jetson TX2 ─USB─► Teensy · YDLidar · GPS
+                                     └─►  5 V / 10 A DC-DC ──►  Jetson TX2 ─USB─► Teensy · YDLidar · GPS
 ```
 
 # Contributors:
