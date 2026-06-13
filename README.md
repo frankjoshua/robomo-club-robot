@@ -196,6 +196,38 @@ and click-to-publish nav2 goals on `/goal_pose`.
 To control the running stack (drive, send nav2 goals, echo topics), see the
 [`run-robomo-club-robot`](.claude/skills/run-robomo-club-robot/SKILL.md) skill.
 
+# Wheel encoder wiring (Teensy ↔ dual LS7366R)
+
+The Teensy ([micro-ros2-teensy-4-encoders-srf04](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04))
+runs the motors and reads the wheel encoders — it is the `ros2_micro_ros_agent`
+container above (`/cmd_vel` in, `/vel` out). It reads the encoders through a
+**dual LS7366R** quadrature counter board: two LS7366R chips (one per wheel) on a
+shared SPI bus with separate chip-selects.
+
+```text
+  TEENSY 4.0                       DUAL LS7366R BOARD                  ENCODERS
+  ──────────                       ──────────────────                  ────────
+
+  pin 13  SCK  ─────────────►  SCK  ┐
+  pin 11  MOSI ─────────────►  MOSI ├── one SPI bus, shared by both chips
+  pin 12  MISO ◄─────────────  MISO ┘
+  3V3          ─────────────►  VCC      power both chips at 3.3 V
+  GND          ─────────────►  GND
+
+  pin 6   CS   ─────────────►  SS1 ──► LS7366R #1 (LEFT)  ──► A B (I) ──► LEFT  encoder
+  pin 5   CS   ─────────────►  SS2 ──► LS7366R #2 (RIGHT) ──► A B (I) ──► RIGHT encoder
+
+  Arrows show signal direction.  A/B = quadrature channels, I = index (optional).
+  SCK/MOSI/MISO/VCC/GND are common to both chips; only the CS lines differ.
+```
+
+> ⚠️ The Teensy 4.0's pins are **not 5 V tolerant** — run the board logic at 3.3 V
+> or level-shift the SPI lines.
+
+Full pin table and firmware details (x4 mode, `TICKS_PER_REVOLUTION`, the
+SuperDroid Encoder-Buffer-Library) are in the
+[Teensy firmware README](https://github.com/frankjoshua/micro-ros2-teensy-4-encoders-srf04#hardware-dual-ls7366r-quadrature-encoder-buffer).
+
 # Links
 
 [https://www.dimensionengineering.com/datasheets/KangarooManual.pdf](https://www.dimensionengineering.com/datasheets/KangarooManual.pdf)
