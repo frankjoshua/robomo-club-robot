@@ -16,8 +16,12 @@ Our website is at http://robomo.club
 
 These instructions assume you are installing from a linux computer. And that you are on the same network as your robot.
 
-Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
-/ansible/production --> Has hostname and ip address of the robot
+Ansible is used to install and update software on the robot. You must have it installed on your
+workstation, and you must complete the [SSH setup](#ssh-setup-assuming-you-are-working-from-a-linux-computer)
+below **first**: the inventory refers to the robot only by the ssh alias `robot`, so Ansible can't
+reach it until that alias exists in your `~/.ssh/config`.
+
+/ansible/production --> Inventory. Addresses the robot only as the ssh alias "robot" (no IP in this file); also sets local_user "operator". (Its ros_ip/ros_master_uri vars are stale ROS 1 leftovers.)
 /ansible/robot.yml --> Playbook for robot software
 /ansible/ssh.yml --> Installs ssh keys for user "operator" (the local_user set in /ansible/production)
 /ansible/files/ssh_keys --> Public and private keys for user "operator"
@@ -40,15 +44,24 @@ cp ./ansible/files/ssh_keys/robot_id_rsa ~/.ssh/
 chmod 400 ~/.ssh/robot_id_rsa
 ```
 
-Then edit the file ~/.ssh/config (create if it doesn't exist).
-Add the following lines to the file replacing <IP_OF_ROBOT> with the address of the robot computer (the club robot answers at `tx2.local`). Or use 127.0.0.1 if you are installing on the local system.
+Then edit the file ~/.ssh/config (create if it doesn't exist) and add the following lines.
+`robmo-club-robot.local` is the robot's mDNS name (from its hostname) — unlike a raw IP it
+survives DHCP changes and moving between networks, so prefer it. (Substitute a raw IP only if
+mDNS is blocked on your network, or use 127.0.0.1 if you are installing on the local system.)
 
 ```
 Host robot
-HostName <IP_OF_ROBOT>
+HostName robmo-club-robot.local
 User operator
 IdentityFile ~/.ssh/robot_id_rsa
 ```
+
+**Finding the robot:** the robot carries its own WiFi router (a GL.iNet, SSID `ROBOMO-ROBOT-5G`,
+LAN 192.168.8.0/24). Join that WiFi and the Jetson answers at `robmo-club-robot.local`. Verify
+with `ping robmo-club-robot.local` — if the name doesn't resolve, the robot is powered off /
+still booting, or you're on a different network than the robot. Note that mDNS doesn't cross the
+robot router's NAT: sitting on the makerspace LAN won't find a robot that's attached to its own
+router (or vice versa).
 
 Then you should be able to ssh into the robot without a password and run sudo commands. If not fix it.
 
@@ -100,11 +113,11 @@ To develop the ROS 2 brains on this laptop while the **real** robot provides the
 motors, run the hardware drivers on the robot and the software stack here. The two machines
 discover each other over DDS, so they must be on the same LAN and `ROS_DOMAIN_ID` (default 0).
 
-On the robot (`tx2.local`), bring up **only** the hardware — not its own software stack, or
-you'll have two nav2/slam nodes on one DDS domain:
+On the robot (`robmo-club-robot.local`), bring up **only** the hardware — not its own software
+stack, or you'll have two nav2/slam nodes on one DDS domain:
 
 ```bash
-ssh tx2.local
+ssh robot        # the ~/.ssh/config alias from SSH setup above
 cd robomo-club-robot && docker compose -f docker-compose-ros-hardware.yml up -d
 ```
 
@@ -198,14 +211,14 @@ To control the running stack (drive, send nav2 goals, echo topics), see the
 
 # Hardware
 
-A tall differential-drive robot: a **Jetson TX2** running the ROS 2 stack, a
+A tall differential-drive robot: a **Jetson Nano** running the ROS 2 stack, a
 **Teensy 4.0** handling the real-time drivetrain, and a set of USB sensors. A
 vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
 
 ## System block diagram
 
 ```text
-  Jetson TX2  "robmo-club-robot"  ·  Ubuntu 18.04 / L4T  ·  Docker  ·  ROS 2 Humble
+  Jetson Nano  "robmo-club-robot"  ·  Ubuntu 18.04 / L4T  ·  Docker  ·  ROS 2 Humble
   (runs the containers listed under "Containers" above)
     │
     └─ USB ─┬─ Teensy 4.0 ........ /dev/teensy   (16c0:0483)   drive motors + wheel encoders
@@ -219,10 +232,10 @@ vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
 
 | | |
 |---|---|
-| Board | NVIDIA Jetson TX2 — hostname `robmo-club-robot`, arm64 |
+| Board | NVIDIA Jetson Nano — hostname `robmo-club-robot`, arm64 |
 | OS | Ubuntu 18.04 / L4T |
 | Runtime | Docker 20.10; the ROS 2 Humble stack runs as the containers in [Containers](#containers) |
-| Network | reached at `tx2.local` (192.168.8.x at Arch Reactor) |
+| Network | carries its own GL.iNet WiFi router (SSID `ROBOMO-ROBOT-5G`, LAN 192.168.8.0/24) — join it and the Nano answers at `robmo-club-robot.local` (mDNS) |
 
 ## USB / serial devices
 
@@ -345,13 +358,13 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
 - **Battery:** two 12 V lead-acid batteries in series → a **24 V** pack (the
   wheelchair base's batteries).
 - **Motors:** the 24 V pack feeds the **Sabertooth 2x32**, which drives the wheelchair gearmotors.
-- **Electronics:** a **24 V → 5 V, 10 A DC-DC converter** powers the Jetson TX2, the
+- **Electronics:** a **24 V → 5 V, 10 A DC-DC converter** powers the Jetson Nano, the
   Teensy, and the USB sensors.
 
 ```text
   2 x 12 V lead-acid  ─►  24 V pack ─┬─►  Sabertooth 2x32 ──►  L / R wheelchair motors
                                      │
-                                     └─►  5 V / 10 A DC-DC ──►  Jetson TX2 ─USB─► Teensy · YDLidar · GPS
+                                     └─►  5 V / 10 A DC-DC ──►  Jetson Nano ─USB─► Teensy · YDLidar · GPS
 ```
 
 # Contributors:

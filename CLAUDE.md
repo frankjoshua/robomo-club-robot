@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Robomo.club Robot is a ROS 2 (Humble) mobile robot running on Jetson TX2 hardware (`tx2.local` on the LAN). The robot uses Docker containers for all ROS services and Ansible for deployment automation.
+Robomo.club Robot is a ROS 2 (Humble) mobile robot running on Jetson Nano hardware (`robmo-club-robot.local` on the LAN — the robot carries its own GL.iNet WiFi router, SSID `ROBOMO-ROBOT-5G`). The robot uses Docker containers for all ROS services and Ansible for deployment automation. (Not to be confused with `tx2.local` — that's Josh's personal TX2 robot, not this one.)
 
 ## Common Commands
 
@@ -26,7 +26,7 @@ ansible-playbook -i production ros_hardware.yml  # Deploy hardware services only
 ```bash
 docker compose -f docker-compose-ros.yml up -d           # Start ROS software services
 docker compose -f docker-compose-ros-hardware.yml up -d  # Start hardware interface services
-./start_ros.sh                                           # Run the software stack HERE against the physical robot's hardware (running on tx2.local); takes up|down|logs
+./start_ros.sh                                           # Run the software stack HERE against the physical robot's hardware (running on robmo-club-robot.local); takes up|down|logs
 ./start_mock.sh                                          # Run software stack against mock hardware (no robot/Gazebo); takes up|down|logs. See mock/
 ./start_tools.sh                                         # Start n8n + Code-Server dev tools
 ```
@@ -56,7 +56,7 @@ claude mcp add ros-mcp -s project -- uv run --no-sync \
 
 Then bring up a target and connect:
 - **Mock / local (safe, no motion):** `./start_mock.sh up`, then ask Claude to *"connect to robomo on 127.0.0.1:9090"*.
-- **Physical robot:** target `tx2.local:9090` (192.168.2.50 at the moment) — only after explicitly confirming you want real motion.
+- **Physical robot:** target `robmo-club-robot.local:9090` (join the robot's own `ROBOMO-ROBOT-5G` WiFi first; its IP varies by network) — only after explicitly confirming you want real motion.
 
 The `robomo` robot spec (`utils/robot_specifications/robomo.yaml` in the clone) pre-loads the topic map
 (`/cmd_vel`, `/scan`, `/odom`, `/map`, Realsense), Twist control examples, and safety rules.
@@ -96,7 +96,7 @@ Teensy encoders  -->  /vel  -->  diff_drive_controller  -->  /odom  +  odom->bas
 ```
 
 ### Ansible Structure
-- `ansible/production`: Inventory file (its 192.168.33.58 ros_ip is stale — the robot currently answers at `tx2.local`, 192.168.2.50)
+- `ansible/production`: Inventory file — addresses the robot only via the `robot` ssh alias from `~/.ssh/config` (its 192.168.33.58 ros_ip is a stale ROS 1 leftover; the robot answers at `robmo-club-robot.local` on its `ROBOMO-ROBOT-5G` WiFi, IP varies by network)
 - `ansible/all.yml`: Master playbook (ssh → robot → ros → ros_hardware)
 - `ansible/files/udev/`: Hardware device symlink rules (/dev/teensy, /dev/gps, /dev/imu)
 

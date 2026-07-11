@@ -4,7 +4,7 @@
 # robot's hardware running on the robot itself. The counterpart to start_mock.sh.
 #
 # Instead of the mock Teensy/lidar, the real sensors and motors come from the hardware
-# drivers (docker-compose-ros-hardware.yml) running ON THE ROBOT (tx2.local). The two
+# drivers (docker-compose-ros-hardware.yml) running ON THE ROBOT (robmo-club-robot.local). The two
 # machines discover each other over ROS 2 DDS - they must be on the same LAN and the same
 # ROS_DOMAIN_ID (default 0, which nothing here overrides). The laptop then runs the brains:
 # slam_toolbox, nav2, diff_drive_controller, the urdf/TF publisher, rosbridge and the MCP
@@ -14,7 +14,7 @@
 # Before this is useful, the robot must be running ITS hardware drivers - and ONLY those,
 # not its own software stack, or you get two nav2/slam_toolbox nodes fighting on one DDS
 # domain:
-#     ssh tx2.local
+#     ssh robot        # the ~/.ssh/config alias for operator@robmo-club-robot.local
 #     cd robomo-club-robot && docker compose -f docker-compose-ros-hardware.yml up -d
 #
 # /!\  This drives the REAL motors: publishing /cmd_vel turns the wheels. Develop against
@@ -25,8 +25,9 @@
 #   ./start_ros.sh down    Stop and remove it.
 #   ./start_ros.sh logs    Follow the combined logs.
 #
-# Override the robot host used for the reachability check / hints (tx2.local moved IPs once):
-#   ROBOT_HOST=192.168.2.50 ./start_ros.sh up
+# Override the robot host used for the reachability check / hints (the robot's IP varies by
+# network; the mDNS name only resolves from the robot's own LAN - its ROBOMO-ROBOT-5G WiFi):
+#   ROBOT_HOST=192.168.8.117 ./start_ros.sh up
 #
 set -euo pipefail
 
@@ -44,7 +45,7 @@ else
 fi
 
 FILES="-f docker-compose-ros.yml -f docker-compose-model.yml"
-ROBOT_HOST="${ROBOT_HOST:-tx2.local}"
+ROBOT_HOST="${ROBOT_HOST:-robmo-club-robot.local}"
 
 case "${1:-up}" in
   up)
