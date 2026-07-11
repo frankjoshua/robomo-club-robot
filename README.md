@@ -16,8 +16,12 @@ Our website is at http://robomo.club
 
 These instructions assume you are installing from a linux computer. And that you are on the same network as your robot.
 
-Ansible is used to install and update software on the robot. You must have it installed on your workstation and be able to ssh into the robot from your workstation before continuing.
-/ansible/production --> Has hostname and ip address of the robot
+Ansible is used to install and update software on the robot. You must have it installed on your
+workstation, and you must complete the [SSH setup](#ssh-setup-assuming-you-are-working-from-a-linux-computer)
+below **first**: the inventory refers to the robot only by the ssh alias `robot`, so Ansible can't
+reach it until that alias exists in your `~/.ssh/config`.
+
+/ansible/production --> Inventory. Addresses the robot only as the ssh alias "robot" (no IP in this file); also sets local_user "operator". (Its ros_ip/ros_master_uri vars are stale ROS 1 leftovers.)
 /ansible/robot.yml --> Playbook for robot software
 /ansible/ssh.yml --> Installs ssh keys for user "operator" (the local_user set in /ansible/production)
 /ansible/files/ssh_keys --> Public and private keys for user "operator"
@@ -40,15 +44,24 @@ cp ./ansible/files/ssh_keys/robot_id_rsa ~/.ssh/
 chmod 400 ~/.ssh/robot_id_rsa
 ```
 
-Then edit the file ~/.ssh/config (create if it doesn't exist).
-Add the following lines to the file replacing <IP_OF_ROBOT> with the address of the robot computer (the club robot answers at `tx2.local`). Or use 127.0.0.1 if you are installing on the local system.
+Then edit the file ~/.ssh/config (create if it doesn't exist) and add the following lines.
+`robmo-club-robot.local` is the robot's mDNS name (from its hostname) — unlike a raw IP it
+survives DHCP changes and moving between networks, so prefer it. (Substitute a raw IP only if
+mDNS is blocked on your network, or use 127.0.0.1 if you are installing on the local system.)
 
 ```
 Host robot
-HostName <IP_OF_ROBOT>
+HostName robmo-club-robot.local
 User operator
 IdentityFile ~/.ssh/robot_id_rsa
 ```
+
+**Finding the robot:** the robot carries its own WiFi router (a GL.iNet, SSID `ROBOMO-ROBOT-5G`,
+LAN 192.168.8.0/24). Join that WiFi and the Jetson answers at `robmo-club-robot.local`. Verify
+with `ping robmo-club-robot.local` — if the name doesn't resolve, the robot is powered off /
+still booting, or you're on a different network than the robot. Note that mDNS doesn't cross the
+robot router's NAT: sitting on the makerspace LAN won't find a robot that's attached to its own
+router (or vice versa).
 
 Then you should be able to ssh into the robot without a password and run sudo commands. If not fix it.
 
@@ -100,11 +113,11 @@ To develop the ROS 2 brains on this laptop while the **real** robot provides the
 motors, run the hardware drivers on the robot and the software stack here. The two machines
 discover each other over DDS, so they must be on the same LAN and `ROS_DOMAIN_ID` (default 0).
 
-On the robot (`tx2.local`), bring up **only** the hardware — not its own software stack, or
-you'll have two nav2/slam nodes on one DDS domain:
+On the robot (`robmo-club-robot.local`), bring up **only** the hardware — not its own software
+stack, or you'll have two nav2/slam nodes on one DDS domain:
 
 ```bash
-ssh tx2.local
+ssh robot        # the ~/.ssh/config alias from SSH setup above
 cd robomo-club-robot && docker compose -f docker-compose-ros-hardware.yml up -d
 ```
 
@@ -198,14 +211,14 @@ To control the running stack (drive, send nav2 goals, echo topics), see the
 
 # Hardware
 
-A tall differential-drive robot: a **Jetson TX2** running the ROS 2 stack, a
+A tall differential-drive robot: a **Jetson Nano** running the ROS 2 stack, a
 **Teensy 4.0** handling the real-time drivetrain, and a set of USB sensors. A
 vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
 
 ## System block diagram
 
 ```text
-  Jetson TX2  "robmo-club-robot"  ·  Ubuntu 18.04 / L4T  ·  Docker  ·  ROS 2 Humble
+  Jetson Nano  "robmo-club-robot"  ·  Ubuntu 18.04 / L4T  ·  Docker  ·  ROS 2 Humble
   (runs the containers listed under "Containers" above)
     │
     └─ USB ─┬─ Teensy 4.0 ........ /dev/teensy   (16c0:0483)   drive motors + wheel encoders
@@ -215,14 +228,18 @@ vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
             └─ u-blox GPS ........ /dev/gps      (1546:01a7)   u-blox 7 · GNSS fix
 ```
 
+The USB devices fan out of a **j5create USB 3.0 hub** (clear parts tray on the mid
+shelf). For the robot's face there's an **Acer monitor** on the mast (video from the
+Jetson) plus a **Logitech K400 Plus** wireless keyboard/touchpad for on-robot debugging.
+
 ## Compute
 
 | | |
 |---|---|
-| Board | NVIDIA Jetson TX2 — hostname `robmo-club-robot`, arm64 |
+| Board | NVIDIA Jetson Nano — hostname `robmo-club-robot`, arm64 |
 | OS | Ubuntu 18.04 / L4T |
 | Runtime | Docker 20.10; the ROS 2 Humble stack runs as the containers in [Containers](#containers) |
-| Network | reached at `tx2.local` (192.168.8.x at Arch Reactor) |
+| Network | carries its own GL.iNet WiFi router (SSID `ROBOMO-ROBOT-5G`, LAN 192.168.8.0/24) — join it and the Nano answers at `robmo-club-robot.local` (mDNS) |
 
 ## USB / serial devices
 
@@ -343,16 +360,88 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
 ## Power
 
 - **Battery:** two 12 V lead-acid batteries in series → a **24 V** pack (the
-  wheelchair base's batteries).
-- **Motors:** the 24 V pack feeds the **Sabertooth 2x32**, which drives the wheelchair gearmotors.
-- **Electronics:** a **24 V → 5 V, 10 A DC-DC converter** powers the Jetson TX2, the
-  Teensy, and the USB sensors.
+  wheelchair base's batteries). An onboard **24 V lead-acid charger** rides on the
+  lower shelf — its AC cord plugs into the wall and it feeds the pack through an
+  XLR charge port.
+- **Distribution:** the pack lands on labeled screw-terminal bus strips under the
+  top deck — **`24V`** and **`GND`** — with an inline fuse block and a DC wattmeter
+  (V / A / W / Wh LCD) on the 24 V side.
+- **Motors:** the 24 V bus feeds the **Sabertooth 2x32** (`B+`/`B-`), which drives
+  the wheelchair gearmotors. The red twist-release **E-stop** mushroom on the top
+  deck cuts motor drive.
+- **5 V rail:** 24 V runs up the mast to the mid-pole power board: a **TOBSUN
+  EA50-5V** (24 V → 5 V, 10 A) whose output passes through an LC noise-filter board
+  (two toroids + electrolytics — scrubs converter/motor hash off the rail) and past
+  a 3-digit LED voltmeter, then back down to deck bus strips labeled **`5V`** /
+  **`GND`**. That rail powers the Jetson Nano and the GL.iNet router; the Teensy
+  and the USB sensors draw from the Jetson over USB.
+- **Display:** a second DC-DC brick under the top deck (black, "DC Input / DC
+  Output" label) powers the Acer monitor.
 
 ```text
-  2 x 12 V lead-acid  ─►  24 V pack ─┬─►  Sabertooth 2x32 ──►  L / R wheelchair motors
-                                     │
-                                     └─►  5 V / 10 A DC-DC ──►  Jetson TX2 ─USB─► Teensy · YDLidar · GPS
+  wall AC ─► 24 V lead-acid charger ─► XLR charge port ─┐
+             (rides on the lower shelf)                 │
+                                                        ▼
+  2 × 12 V lead-acid, in series (inside the base) ─► 24 V pack
+                                                        │
+                           [24V] · [GND] bus strips ────┤ ◄── fuse block · DC wattmeter (V·A·W·Wh)
+                           (under the top deck)         │
+       ┌────────────────────────────┬───────────────────┴───┐
+       ▼                            ▼                       ▼
+  Sabertooth 2x32             DC-DC brick (? V)       24 V up the mast (mid-pole power board)
+   │   ▲ stop ◄── E-stop            │                       │
+   ▼   (top deck)                   ▼                       ▼
+  L / R gearmotors             Acer monitor      TOBSUN EA50-5V (24 V → 5 V, 10 A)
+                                                            │
+                                          LC noise filter ─► "5.15" LED voltmeter
+                                                            │
+                                                [5V] · [GND] deck bus strips
+                                                            │
+                                       ┌────────────────────┴───┐
+                                       ▼                        ▼
+                                 Jetson Nano              GL.iNet router
+                                       │
+                                       └─ USB ─► hub ─► Teensy · YDLidar · GPS  (bus-powered)
 ```
+
+> ⚠️ Traced from photos (July 2026) — worth verifying with a meter before trusting:
+> the fuse block's rating and exact position, what the E-stop actually interrupts
+> (drawn on the Sabertooth's signal-side stop input), the second DC-DC brick's
+> output voltage, the LC filter's position (drawn on the 5 V output side), and
+> whether the router really feeds from the 5 V rail.
+
+## Bill of materials
+
+As built, July 2026 (photo survey + repo docs). Quantities are per robot; salvage
+and shop-stock items have no meaningful part number.
+
+| Subsystem | Part | Qty | Notes |
+|-----------|------|-----|-------|
+| Drive | Salvaged "Little Rascal" power-wheelchair base — frame, 2 × 24 V gearmotors, drive wheels, casters | 1 | donates the whole drivetrain |
+| Drive | 12 V sealed lead-acid battery | 2 | in series → 24 V pack, live inside the base (capacity unrecorded) |
+| Drive | Dimension Engineering **Sabertooth 2x32** dual motor driver | 1 | under the top deck; Simplified Serial 9600 baud from the Teensy; config in [`sabertooth_settings/`](sabertooth_settings/) |
+| Drive | HC-020K slotted optical encoder | 2 | on the motor shafts, ahead of the gearboxes |
+| Control | **Teensy 4.0** on a screw-terminal breakout board | 1 | top deck; micro-ROS node at `/dev/teensy` |
+| Control | Dual **LS7366R** quadrature-counter board | 1 | SPI to the Teensy — see [encoder wiring](#wheel-encoder-wiring-teensy--dual-ls7366r) |
+| Compute | NVIDIA **Jetson Nano** dev kit | 1 | rear shelf in a laser-cut plywood case; runs the Docker stack |
+| Compute | GL.iNet travel router (SSID `ROBOMO-ROBOT-5G`) | 1 | the robot's own WiFi AP |
+| Compute | j5create USB 3.0 hub | 1 | clear parts tray, mid shelf — fans out the Jetson's USB |
+| Sensors | YDLidar **X4** + its USB adapter board | 1 | top of the mast (`laser_frame`, 1.23 m up) |
+| Sensors | u-blox 7 USB GPS | 1 | electronics shelf |
+| Sensors | Pico + IMU _(WIP)_ · Intel RealSense _(planned)_ | — | not wired in yet — see [USB / serial devices](#usb--serial-devices) |
+| Power | **TOBSUN EA50-5V** DC-DC converter (24 V → 5 V, 10 A) | 1 | mid-pole power board |
+| Power | LC noise-filter board (toroids + electrolytics) | 1 | mid-pole power board, on the 5 V output |
+| Power | 3-digit LED voltmeter | 1 | mid-pole power board — watches the 5 V rail (~5.15 V) |
+| Power | DC multifunction wattmeter (V / A / W / Wh, blue LCD) | 1 | under the top deck, on the 24 V side |
+| Power | DC-DC converter brick #2 ("DC Input / DC Output" label) | 1 | under the top deck → Acer monitor (output voltage unrecorded) |
+| Power | Inline fuse block (orange) | 1 | 24 V side — rating unrecorded |
+| Power | Twist-release E-stop mushroom button | 1 | top deck — cuts motor drive |
+| Power | 24 V lead-acid battery charger + XLR charge port | 1 | onboard, lower shelf — plug the robot into the wall to charge |
+| Power | Screw-terminal bus strips (`24V` · `GND` · `5V`) | 4+ | plus ring/fork crimps, wire nuts, split loom |
+| HMI | Acer LCD monitor (robot face) | 1 | pole-mounted behind a clear guard; video from the Jetson |
+| HMI | Logitech K400 Plus wireless keyboard + touchpad | 1 | USB receiver on the hub |
+| Structure | Plywood decks & mast boards (painted black), steel pipe mast + floor flange, U-bolt cable guide | — | shop-built |
+| Structure | Pool-noodle bumpers, zip ties, velcro | — | soft edges for demos |
 
 # Contributors:
 
