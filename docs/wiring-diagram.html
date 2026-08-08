@@ -86,7 +86,7 @@
     <span class="key"><span class="sw" style="border-color:var(--w5)"></span>5 V pair</span>
     <span class="key"><span class="sw" style="border-color:var(--w33)"></span>3.3 V</span>
     <span class="key"><span class="sw" style="border-color:var(--wg)"></span>GND / ? V</span>
-    <span class="key"><span class="sw" style="border-color:var(--wusb)"></span>USB</span>
+    <span class="key"><span class="sw" style="border-color:var(--wusb)"></span>USB / Ethernet</span>
     <span class="key"><span class="sw" style="border-color:var(--wser)"></span>Serial (UART)</span>
     <span class="key"><span class="sw" style="border-color:var(--wspi)"></span>SPI</span>
     <span class="key"><span class="sw" style="border-color:var(--wq)"></span>Quadrature</span>
@@ -96,7 +96,7 @@
 
   <div class="diagram">
   <svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="Robomo robot wiring diagram. The 24 volt battery pack lands on bus strips with a fuse and wattmeter, feeding the Sabertooth motor driver, a monitor DC-DC brick, and the TOBSUN 5 volt converter up the mast. The 5 volt rail passes an LC filter to deck bus strips powering the Jetson Nano and GL.iNet router. The Jetson fans USB out through a hub to the Teensy and sensors. The Teensy drives the Sabertooth over serial and reads wheel encoders through a dual LS7366R SPI board.">
+       aria-label="Robomo robot wiring diagram. The 24 volt battery pack lands on terminal bus strips with a fuse and wattmeter, feeding a monitor DC-DC brick, the TOBSUN 5 volt converter up the mast, and the Sabertooth motor driver through two series E-stops: a mushroom button and a remote keyfob kill switch, either of which cuts motor power. The 5 volt rail lands on deck bus strips powering the Jetson Nano and GL.iNet router; the Jetson also connects to the router by ethernet. The Jetson fans USB out through a hub to the Teensy and sensors, with the keyboard receiver plugged into the Jetson directly. The Teensy drives the Sabertooth over serial and reads wheel encoders through a dual LS7366R SPI board.">
     <defs>
       <marker id="m24" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c24"/></marker>
       <marker id="m5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c5"/></marker>
@@ -123,15 +123,16 @@
     <path class="w pw s24" d="M264,119 L324,119" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M430,154 L430,206" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M324,242 L264,242" marker-end="url(#m24)"/>
-    <path class="w pw s24" d="M400,306 L400,336" marker-end="url(#m24)"/>
-    <!-- 24V corridor to Sabertooth -->
-    <path class="halo" d="M536,242 L586,242 L586,676 L640,676"/>
-    <path class="w pw s24" d="M536,242 L586,242 L586,676 L640,676" marker-end="url(#m24)"/>
+    <path class="w pw s24" d="M400,306 L400,356" marker-end="url(#m24)"/>
+    <!-- 24V corridor to E-stop chain -> Sabertooth -->
+    <path class="halo" d="M536,242 L586,242 L586,530 L640,530"/>
+    <path class="w pw s24" d="M536,242 L586,242 L586,530 L640,530" marker-end="url(#m24)"/>
+    <path class="w pw s24" d="M730,554 L730,572" marker-end="url(#m24)"/>
+    <path class="w pw s24" d="M730,620 L730,640" marker-end="url(#m24)"/>
     <!-- monitor feed, unknown voltage -->
     <path class="w sg" d="M164,276 L164,312" marker-end="url(#mg)"/>
     <!-- 5V chain -->
-    <path class="w pw s5" d="M430,406 L430,442" marker-end="url(#m5)"/>
-    <path class="w pw s5" d="M430,504 L430,540" marker-end="url(#m5)"/>
+    <path class="w pw s5" d="M430,440 L430,540" marker-end="url(#m5)"/>
     <path class="w pw s5" d="M324,578 L264,578" marker-end="url(#m5)"/>
     <!-- 5V corridor to Jetson -->
     <path class="halo" d="M536,578 L610,578 L610,180 L640,180"/>
@@ -141,22 +142,24 @@
     <path class="w susb" d="M900,134 L960,134" marker-end="url(#musb)"/>
     <path class="w susb" d="M1120,112 L1146,112 L1146,93 L1180,93" marker-end="url(#musb)"/>
     <path class="w susb" d="M1120,126 L1152,126 L1152,179 L1180,179" marker-end="url(#musb)"/>
-    <path class="w susb" d="M1120,140 L1158,140 L1158,262 L1180,262" marker-end="url(#musb)"/>
+    <path class="halo" d="M900,220 L1150,220 L1150,262 L1180,262"/>
+    <path class="w susb" d="M900,220 L1150,220 L1150,262 L1180,262" marker-end="url(#musb)"/>
     <path class="w susb dash" d="M1120,154 L1164,154 L1164,341 L1180,341" marker-end="url(#musb)"/>
     <path class="w susb dash" d="M1120,168 L1170,168 L1170,419 L1180,419" marker-end="url(#musb)"/>
     <!-- USB: hub -> Teensy -->
     <path class="halo" d="M1040,170 L1040,560"/>
     <path class="w susb" d="M1040,170 L1040,560" marker-end="url(#musb)"/>
 
-    <!-- E-stop -->
-    <path class="w sg dash" d="M730,568 L730,600" marker-end="url(#mg)"/>
+    <!-- Ethernet: Jetson -> router -->
+    <path class="halo" d="M640,214 L598,214 L598,656 L164,656 L164,622"/>
+    <path class="w susb" d="M640,214 L598,214 L598,656 L164,656 L164,622" marker-end="url(#musb)"/>
 
     <!-- Serial: Teensy -> Sabertooth S1 -->
-    <path class="w sser" d="M900,690 L840,690" marker-end="url(#mser)"/>
+    <path class="w sser" d="M900,730 L840,730" marker-end="url(#mser)"/>
 
     <!-- Motor power -->
-    <path class="w pw sm" d="M688,770 L688,830" marker-end="url(#mm)"/>
-    <path class="w pw sm" d="M792,770 L792,830" marker-end="url(#mm)"/>
+    <path class="w pw sm" d="M688,800 L688,834" marker-end="url(#mm)"/>
+    <path class="w pw sm" d="M792,800 L792,834" marker-end="url(#mm)"/>
 
     <!-- SPI bus: Teensy <-> LS7366R -->
     <path class="w sspi" d="M1140,594 L1200,594" marker-end="url(#mspi)"/>
@@ -199,13 +202,10 @@
     <text class="bt md" x="164" y="340" text-anchor="middle">Acer monitor</text>
     <text class="bs" x="164" y="362" text-anchor="middle">robot face · video ← Jetson</text>
 
-    <rect class="blk" x="324" y="336" width="212" height="70" rx="10"/>
-    <text class="bt" x="430" y="364" text-anchor="middle">TOBSUN EA50-5V</text>
-    <text class="bs" x="430" y="386" text-anchor="middle">24 V → 5 V · 10 A · mid-pole</text>
-
-    <rect class="blk" x="324" y="442" width="212" height="62" rx="10"/>
-    <text class="bt md" x="430" y="468" text-anchor="middle">LC noise filter</text>
-    <text class="bs sm2" x="430" y="488" text-anchor="middle">toroids · LED voltmeter ~5.15 V</text>
+    <rect class="blk" x="324" y="356" width="212" height="84" rx="10"/>
+    <text class="bt" x="430" y="386" text-anchor="middle">TOBSUN EA50-5V</text>
+    <text class="bs" x="430" y="410" text-anchor="middle">24 V → 5 V · 10 A · mid-pole</text>
+    <text class="bs sm2" x="430" y="428" text-anchor="middle">LED voltmeter ~5.15 V</text>
 
     <rect class="blk" x="324" y="540" width="212" height="100" rx="10"/>
     <text class="bt sm2" x="430" y="558" text-anchor="middle">5 V terminal bus strips</text>
@@ -227,7 +227,6 @@
     <text class="bt" x="770" y="116" text-anchor="middle">NVIDIA Jetson Nano</text>
     <text class="bs" x="770" y="140" text-anchor="middle">robmo-club-robot · Ubuntu 18.04/L4T</text>
     <text class="bs" x="770" y="160" text-anchor="middle">ROS 2 Humble · Docker</text>
-    <text class="bs" x="770" y="180" text-anchor="middle">Wi-Fi ⇄ GL.iNet router</text>
 
     <rect class="blk" x="960" y="100" width="160" height="70" rx="10"/>
     <text class="bt md" x="1040" y="128" text-anchor="middle">j5create hub</text>
@@ -243,7 +242,7 @@
 
     <rect class="blk" x="1180" y="232" width="216" height="60" rx="10"/>
     <text class="bt md" x="1288" y="258" text-anchor="middle">K400 receiver</text>
-    <text class="bs sm2" x="1288" y="278" text-anchor="middle">Logitech wireless kbd</text>
+    <text class="bs sm2" x="1288" y="278" text-anchor="middle">wireless kbd · direct to Jetson</text>
 
     <rect class="blk future" x="1180" y="312" width="216" height="58" rx="10"/>
     <text class="bt md" x="1288" y="337" text-anchor="middle">Pico RP2040 + IMU</text>
@@ -255,24 +254,28 @@
 
     <!-- ============ DRIVETRAIN blocks ============ -->
 
-    <rect class="blk" x="640" y="510" width="180" height="58" rx="10"/>
-    <text class="bt md" x="730" y="534" text-anchor="middle">E-stop mushroom</text>
-    <text class="bs sm2" x="730" y="552" text-anchor="middle">cuts motor drive</text>
+    <rect class="blk" x="640" y="506" width="180" height="48" rx="10"/>
+    <text class="bt sm2" x="730" y="526" text-anchor="middle">E-stop mushroom</text>
+    <text class="bs sm2" x="730" y="544" text-anchor="middle">twist-release · top deck</text>
 
-    <rect class="blk" x="640" y="600" width="200" height="170" rx="10"/>
-    <text class="bt" x="740" y="630" text-anchor="middle">Sabertooth 2x32</text>
-    <text class="bs" x="740" y="650" text-anchor="middle">Simplified Serial</text>
-    <text class="pin c24" x="652" y="680">B+ / B−</text>
-    <text class="pin cser" x="828" y="680" text-anchor="end">S1</text>
-    <text class="pin cm" x="688" y="760" text-anchor="middle">M1</text>
-    <text class="pin cm" x="792" y="760" text-anchor="middle">M2</text>
+    <rect class="blk" x="640" y="572" width="180" height="48" rx="10"/>
+    <text class="bt sm2" x="730" y="592" text-anchor="middle">Remote kill switch</text>
+    <text class="bs sm2" x="730" y="610" text-anchor="middle">car-battery type · keyfobs</text>
 
-    <rect class="blk" x="640" y="830" width="96" height="60" rx="10"/>
-    <text class="bt sm2" x="688" y="854" text-anchor="middle">Left motor</text>
-    <text class="bs sm2" x="688" y="872" text-anchor="middle">24 V gearmotor</text>
-    <rect class="blk" x="744" y="830" width="96" height="60" rx="10"/>
-    <text class="bt sm2" x="792" y="854" text-anchor="middle">Right motor</text>
-    <text class="bs sm2" x="792" y="872" text-anchor="middle">24 V gearmotor</text>
+    <rect class="blk" x="640" y="640" width="200" height="160" rx="10"/>
+    <text class="pin c24" x="738" y="662">B+ / B−</text>
+    <text class="bt" x="740" y="700" text-anchor="middle">Sabertooth 2x32</text>
+    <text class="bs" x="740" y="720" text-anchor="middle">Simplified Serial</text>
+    <text class="pin cser" x="828" y="722" text-anchor="end">S1</text>
+    <text class="pin cm" x="688" y="788" text-anchor="middle">M1</text>
+    <text class="pin cm" x="792" y="788" text-anchor="middle">M2</text>
+
+    <rect class="blk" x="640" y="834" width="96" height="56" rx="10"/>
+    <text class="bt sm2" x="688" y="856" text-anchor="middle">Left motor</text>
+    <text class="bs sm2" x="688" y="874" text-anchor="middle">24 V gearmotor</text>
+    <rect class="blk" x="744" y="834" width="96" height="56" rx="10"/>
+    <text class="bt sm2" x="792" y="856" text-anchor="middle">Right motor</text>
+    <text class="bs sm2" x="792" y="874" text-anchor="middle">24 V gearmotor</text>
     <text class="cap" x="740" y="915" text-anchor="middle">salvaged “Little Rascal” wheelchair base</text>
 
     <rect class="blk" x="900" y="560" width="240" height="240" rx="10"/>
@@ -286,7 +289,7 @@
     <text class="pin" x="1130" y="694" text-anchor="end">5 CS</text>
     <text class="pin c33" x="1130" y="722" text-anchor="end">3V3</text>
     <text class="pin cg" x="1130" y="746" text-anchor="end">GND</text>
-    <text class="pin cser" x="916" y="694">Serial2 TX</text>
+    <text class="pin cser" x="916" y="734">Serial2 TX</text>
 
     <rect class="blk" x="1200" y="560" width="200" height="240" rx="10"/>
     <text class="pin" x="1210" y="598">SCK</text>
@@ -311,19 +314,21 @@
 
     <!-- ============ wire labels ============ -->
     <text class="wl c24" x="440" y="186">24 V</text>
-    <text class="wl c24" x="410" y="328">24 V · mast</text>
-    <text class="wl c24" x="596" y="460">24 V</text>
-    <text class="wl c5" x="440" y="430">5 V</text>
+    <text class="wl c24" x="410" y="336">24 V · mast</text>
+    <text class="wl c24" x="596" y="420">24 V</text>
+    <text class="wl c24 sm" x="742" y="567">either cuts 24 V</text>
+    <text class="wl c5" x="440" y="486">5 V</text>
     <text class="wl c5" x="294" y="570" text-anchor="middle">5 V</text>
     <text class="wl c5" x="620" y="390">5 V</text>
     <text class="wl cg" x="174" y="300">? V</text>
-    <text class="wl cg sm" x="738" y="592">stop</text>
     <text class="wl cusb" x="930" y="126" text-anchor="middle">USB</text>
     <text class="wl cusb" x="1052" y="490">USB · /dev/teensy</text>
-    <text class="wl cser" x="870" y="678" text-anchor="middle">Serial2</text>
-    <text class="wl cser sm" x="870" y="708" text-anchor="middle">9600 baud</text>
-    <text class="wl cm sm" x="678" y="804" text-anchor="end">M1A·M1B</text>
-    <text class="wl cm sm" x="802" y="804">M2A·M2B</text>
+    <text class="wl cusb sm" x="1000" y="212" text-anchor="middle">USB</text>
+    <text class="wl cusb" x="380" y="648" text-anchor="middle">Ethernet</text>
+    <text class="wl cser" x="870" y="718" text-anchor="middle">Serial2</text>
+    <text class="wl cser sm" x="870" y="748" text-anchor="middle">9600 baud</text>
+    <text class="wl cm sm" x="678" y="822" text-anchor="end">M1A·M1B</text>
+    <text class="wl cm sm" x="802" y="822">M2A·M2B</text>
     <text class="wl cq sm" x="1430" y="613" text-anchor="middle">A / B (I)</text>
     <text class="wl cq sm" x="1430" y="723" text-anchor="middle">A / B (I)</text>
   </svg>
@@ -331,10 +336,11 @@
 
   <ul class="notes">
     <li>Each power line represents a <strong>+ / − pair</strong>; both splits happen at labeled screw-terminal bus strips (24 V strips on the converter's input side, 5 V strips on its output side), and all grounds are common at those strips.</li>
-    <li>The fuse block and DC wattmeter sit on the <strong>24 V side</strong>; the LC filter and LED voltmeter clean and watch the <strong>5 V rail</strong> on the mid-pole power board.</li>
+    <li>The fuse block and DC wattmeter sit on the <strong>24 V side</strong>; an LED voltmeter watches the <strong>5 V rail</strong> at the mid-pole power board (the LC noise filter has been removed).</li>
+    <li>Motor power runs through <strong>two E-stops in series</strong> on the 24 V feed — the twist-release mushroom and a car-battery-style remote kill switch (keyfobs). Either one cuts the Sabertooth.</li>
     <li>⚠️ The Teensy 4.0's pins are <strong>3.3 V logic — not 5 V tolerant</strong>; the LS7366R board runs at 3.3 V.</li>
     <li>Left wheel = Sabertooth <code>M1</code> (bytes 1–127) · right wheel = <code>M2</code> (bytes 128–255), Simplified Serial at 9600 baud on <code>Serial2</code>.</li>
     <li>SS1 / SS2 chip-selects address LS7366R #1 (left) and #2 (right) on the shared SPI bus.</li>
-    <li>Power routing traced from photos (July 2026) — the fuse rating, E-stop wiring, and DC-DC brick #2's output voltage are unverified (see README § Power).</li>
+    <li>Power routing traced from photos (July 2026), corrected on-site 2026-08-08 — the fuse rating and DC-DC brick #2's output voltage remain unverified (see README § Power).</li>
   </ul>
 </div>

@@ -230,7 +230,8 @@ vertical pole carries the LIDAR (~1.23 m up) and an electronics shelf (~0.6 m).
 
 The USB devices fan out of a **j5create USB 3.0 hub** (clear parts tray on the mid
 shelf). For the robot's face there's an **Acer monitor** on the mast (video from the
-Jetson) plus a **Logitech K400 Plus** wireless keyboard/touchpad for on-robot debugging.
+Jetson) plus a **Logitech K400 Plus** wireless keyboard/touchpad for on-robot debugging
+(its USB receiver plugs straight into the Jetson, not the hub).
 
 ## Compute
 
@@ -239,7 +240,7 @@ Jetson) plus a **Logitech K400 Plus** wireless keyboard/touchpad for on-robot de
 | Board | NVIDIA Jetson Nano — hostname `robmo-club-robot`, arm64 |
 | OS | Ubuntu 18.04 / L4T |
 | Runtime | Docker 20.10; the ROS 2 Humble stack runs as the containers in [Containers](#containers) |
-| Network | carries its own GL.iNet WiFi router (SSID `ROBOMO-ROBOT-5G`, LAN 192.168.8.0/24) — join it and the Nano answers at `robmo-club-robot.local` (mDNS) |
+| Network | carries its own GL.iNet WiFi router (SSID `ROBOMO-ROBOT-5G`, LAN 192.168.8.0/24) — the Jetson is wired to it over ethernet; join the WiFi and the Nano answers at `robmo-club-robot.local` (mDNS) |
 
 ## USB / serial devices
 
@@ -367,14 +368,16 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
   top deck — **`24V`** and **`GND`** — with an inline fuse block and a DC wattmeter
   (V / A / W / Wh LCD) on the 24 V side.
 - **Motors:** the 24 V bus feeds the **Sabertooth 2x32** (`B+`/`B-`), which drives
-  the wheelchair gearmotors. The red twist-release **E-stop** mushroom on the top
-  deck cuts motor drive.
+  the wheelchair gearmotors. The 24 V motor feed runs through **two E-stops in
+  series** — the red twist-release **E-stop mushroom** on the top deck and a
+  **car-battery-style remote kill switch** (with keyfobs) — either one cuts motor
+  power.
 - **5 V rail:** 24 V runs up the mast to the mid-pole power board: a **TOBSUN
-  EA50-5V** (24 V → 5 V, 10 A) whose output passes through an LC noise-filter board
-  (two toroids + electrolytics — scrubs converter/motor hash off the rail) and past
-  a 3-digit LED voltmeter, then back down to deck bus strips labeled **`5V`** /
-  **`GND`**. That rail powers the Jetson Nano and the GL.iNet router; the Teensy
-  and the USB sensors draw from the Jetson over USB.
+  EA50-5V** (24 V → 5 V, 10 A) whose output runs past a 3-digit LED voltmeter,
+  then back down to deck bus strips labeled **`5V`** / **`GND`**. (An LC
+  noise-filter board used to sit on this rail but has been removed.) That rail
+  powers the Jetson Nano and the GL.iNet router; the Teensy and the USB sensors
+  draw from the Jetson over USB.
 - **Display:** a second DC-DC brick under the top deck (black, "DC Input / DC
   Output" label) powers the Acer monitor.
 
@@ -388,27 +391,27 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
                            (under the top deck)         │
        ┌────────────────────────────┬───────────────────┴───┐
        ▼                            ▼                       ▼
-  Sabertooth 2x32             DC-DC brick (? V)       24 V up the mast (mid-pole power board)
-   │   ▲ stop ◄── E-stop            │                       │
-   ▼   (top deck)                   ▼                       ▼
-  L / R gearmotors             Acer monitor      TOBSUN EA50-5V (24 V → 5 V, 10 A)
-                                                            │
-                                          LC noise filter ─► "5.15" LED voltmeter
-                                                            │
+  E-stop mushroom (top deck)  DC-DC brick (? V)       24 V up the mast (mid-pole power board)
+       ▼                            │                       │
+  remote kill switch (keyfobs)      ▼                       ▼
+       ▼                       Acer monitor      TOBSUN EA50-5V (24 V → 5 V, 10 A)
+  Sabertooth 2x32                                           │
+       ▼                                         "5.15" LED voltmeter
+  L / R gearmotors                                          │
                                                 [5V] · [GND] deck bus strips
                                                             │
                                        ┌────────────────────┴───┐
                                        ▼                        ▼
-                                 Jetson Nano              GL.iNet router
+                                 Jetson Nano ─ ethernet ─► GL.iNet router
                                        │
                                        └─ USB ─► hub ─► Teensy · YDLidar · GPS  (bus-powered)
 ```
 
-> ⚠️ Traced from photos (July 2026) — worth verifying with a meter before trusting:
-> the fuse block's rating and exact position, what the E-stop actually interrupts
-> (drawn on the Sabertooth's signal-side stop input), the second DC-DC brick's
-> output voltage, the LC filter's position (drawn on the 5 V output side), and
-> whether the router really feeds from the 5 V rail.
+> ⚠️ Still worth verifying with a meter: the fuse block's rating and exact
+> position, and the second DC-DC brick's output voltage. (Confirmed on-site
+> 2026-08-08: both E-stops sit in series in the 24 V motor feed and cut power —
+> the mushroom and the keyfob kill switch; the router runs from the 5 V rail; the
+> LC noise filter has been removed.)
 
 ## Bill of materials
 
@@ -430,16 +433,16 @@ and shop-stock items have no meaningful part number.
 | Sensors | u-blox 7 USB GPS | 1 | electronics shelf |
 | Sensors | Pico + IMU _(WIP)_ · Intel RealSense _(planned)_ | — | not wired in yet — see [USB / serial devices](#usb--serial-devices) |
 | Power | **TOBSUN EA50-5V** DC-DC converter (24 V → 5 V, 10 A) | 1 | mid-pole power board |
-| Power | LC noise-filter board (toroids + electrolytics) | 1 | mid-pole power board, on the 5 V output |
 | Power | 3-digit LED voltmeter | 1 | mid-pole power board — watches the 5 V rail (~5.15 V) |
 | Power | DC multifunction wattmeter (V / A / W / Wh, blue LCD) | 1 | under the top deck, on the 24 V side |
 | Power | DC-DC converter brick #2 ("DC Input / DC Output" label) | 1 | under the top deck → Acer monitor (output voltage unrecorded) |
 | Power | Inline fuse block (orange) | 1 | 24 V side — rating unrecorded |
-| Power | Twist-release E-stop mushroom button | 1 | top deck — cuts motor drive |
+| Power | Twist-release E-stop mushroom button | 1 | top deck — in series in the 24 V motor feed |
+| Power | Car-battery-style remote kill switch + keyfobs | 1 | in series with the mushroom — either one cuts motor power |
 | Power | 24 V lead-acid battery charger + XLR charge port | 1 | onboard, lower shelf — plug the robot into the wall to charge |
 | Power | Screw-terminal bus strips (`24V` · `GND` · `5V`) | 4+ | plus ring/fork crimps, wire nuts, split loom |
 | HMI | Acer LCD monitor (robot face) | 1 | pole-mounted behind a clear guard; video from the Jetson |
-| HMI | Logitech K400 Plus wireless keyboard + touchpad | 1 | USB receiver on the hub |
+| HMI | Logitech K400 Plus wireless keyboard + touchpad | 1 | USB receiver plugged straight into the Jetson |
 | Structure | Plywood decks & mast boards (painted black), steel pipe mast + floor flange, U-bolt cable guide | — | shop-built |
 | Structure | Pool-noodle bumpers, zip ties, velcro | — | soft edges for demos |
 
