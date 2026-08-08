@@ -376,10 +376,11 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
   EA50-5V** (24 V → 5 V, 10 A) whose output runs past a 3-digit LED voltmeter,
   then back down to deck bus strips labeled **`5V`** / **`GND`**. (An LC
   noise-filter board used to sit on this rail but has been removed.) That rail
-  powers the Jetson Nano and the GL.iNet router; the Teensy and the USB sensors
-  draw from the Jetson over USB.
+  powers the Jetson Nano, the GL.iNet router, and the **Teensy** (5 V straight
+  from the bus strips — its USB link to the hub is data only); the USB sensors
+  draw bus power from the Jetson/hub.
 - **Display:** a second DC-DC brick under the top deck (black, "DC Input / DC
-  Output" label) powers the Acer monitor.
+  Output" label, **24 V → 12 V**) powers the Acer monitor.
 
 ```text
   wall AC ─► 24 V lead-acid charger ─► XLR charge port ─┐
@@ -391,7 +392,7 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
                            (under the top deck)         │
        ┌────────────────────────────┬───────────────────┴───┐
        ▼                            ▼                       ▼
-  E-stop mushroom (top deck)  DC-DC brick (? V)       24 V up the mast (mid-pole power board)
+  E-stop mushroom (top deck)  DC-DC brick (24→12 V)   24 V up the mast (mid-pole power board)
        ▼                            │                       │
   remote kill switch (keyfobs)      ▼                       ▼
        ▼                       Acer monitor      TOBSUN EA50-5V (24 V → 5 V, 10 A)
@@ -400,18 +401,19 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
   L / R gearmotors                                          │
                                                 [5V] · [GND] deck bus strips
                                                             │
-                                       ┌────────────────────┴───┐
-                                       ▼                        ▼
-                                 Jetson Nano ─ ethernet ─► GL.iNet router
-                                       │
-                                       └─ USB ─► hub ─► Teensy · YDLidar · GPS  (bus-powered)
+                              ┌────────────────────────┼────────────────────┐
+                              ▼                        ▼                    ▼
+                        Jetson Nano ─ ethernet ─► GL.iNet router      Teensy VIN (5 V)
+                              │
+                              └─ USB ─► hub ─► Teensy(data) · YDLidar · GPS
 ```
 
 > ⚠️ Still worth verifying with a meter: the fuse block's rating and exact
-> position, and the second DC-DC brick's output voltage. (Confirmed on-site
-> 2026-08-08: both E-stops sit in series in the 24 V motor feed and cut power —
-> the mushroom and the keyfob kill switch; the router runs from the 5 V rail; the
-> LC noise filter has been removed.)
+> position. (Confirmed on-site 2026-08-08: both E-stops sit in series in the 24 V
+> motor feed and cut power — the mushroom and the keyfob kill switch; the router
+> runs from the 5 V rail; the Teensy is powered from the 5 V bus strips, USB is
+> data only; the monitor brick outputs 12 V; the LC noise filter has been
+> removed.)
 
 ## Bill of materials
 
@@ -424,7 +426,7 @@ and shop-stock items have no meaningful part number.
 | Drive | 12 V sealed lead-acid battery | 2 | in series → 24 V pack, live inside the base (capacity unrecorded) |
 | Drive | Dimension Engineering **Sabertooth 2x32** dual motor driver | 1 | under the top deck; Simplified Serial 9600 baud from the Teensy; config in [`sabertooth_settings/`](sabertooth_settings/) |
 | Drive | HC-020K slotted optical encoder | 2 | on the motor shafts, ahead of the gearboxes |
-| Control | **Teensy 4.0** on a screw-terminal breakout board | 1 | top deck; micro-ROS node at `/dev/teensy` |
+| Control | **Teensy 4.0** on a screw-terminal breakout board | 1 | top deck; micro-ROS node at `/dev/teensy`; powered from the 5 V bus strips (USB is data) |
 | Control | Dual **LS7366R** quadrature-counter board | 1 | SPI to the Teensy — see [encoder wiring](#wheel-encoder-wiring-teensy--dual-ls7366r) |
 | Compute | NVIDIA **Jetson Nano** dev kit | 1 | rear shelf in a laser-cut plywood case; runs the Docker stack |
 | Compute | GL.iNet travel router (SSID `ROBOMO-ROBOT-5G`) | 1 | the robot's own WiFi AP |
@@ -435,7 +437,7 @@ and shop-stock items have no meaningful part number.
 | Power | **TOBSUN EA50-5V** DC-DC converter (24 V → 5 V, 10 A) | 1 | mid-pole power board |
 | Power | 3-digit LED voltmeter | 1 | mid-pole power board — watches the 5 V rail (~5.15 V) |
 | Power | DC multifunction wattmeter (V / A / W / Wh, blue LCD) | 1 | under the top deck, on the 24 V side |
-| Power | DC-DC converter brick #2 ("DC Input / DC Output" label) | 1 | under the top deck → Acer monitor (output voltage unrecorded) |
+| Power | DC-DC converter brick #2 ("DC Input / DC Output" label) | 1 | under the top deck — 24 V → 12 V → Acer monitor |
 | Power | Inline fuse block (orange) | 1 | 24 V side — rating unrecorded |
 | Power | Twist-release E-stop mushroom button | 1 | top deck — in series in the 24 V motor feed |
 | Power | Car-battery-style remote kill switch + keyfobs | 1 | in series with the mushroom — either one cuts motor power |

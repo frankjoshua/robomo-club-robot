@@ -2,7 +2,7 @@
 <style>
   :root {
     --bg: #f4f5f7; --card: #ffffff; --ink: #1d2330; --muted: #5c6675; --border: #d5dae2;
-    --w24: #c93a3a; --w5: #d97b16; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
+    --w24: #c93a3a; --w5: #d97b16; --w12: #a8871a; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
     --wser: #2f8f5b; --wspi: #0f8f96; --wq: #bf3d9e; --wm: #96622d;
     --sans: system-ui, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
@@ -10,18 +10,18 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #14171d; --card: #1e232b; --ink: #e8ebf0; --muted: #9aa4b2; --border: #343c48;
-      --w24: #e46a6a; --w5: #e59a3d; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
+      --w24: #e46a6a; --w5: #e59a3d; --w12: #d4b34a; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
       --wser: #4fbf85; --wspi: #3bbcc4; --wq: #d977c0; --wm: #c08a4e;
     }
   }
   :root[data-theme="dark"] {
     --bg: #14171d; --card: #1e232b; --ink: #e8ebf0; --muted: #9aa4b2; --border: #343c48;
-    --w24: #e46a6a; --w5: #e59a3d; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
+    --w24: #e46a6a; --w5: #e59a3d; --w12: #d4b34a; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
     --wser: #4fbf85; --wspi: #3bbcc4; --wq: #d977c0; --wm: #c08a4e;
   }
   :root[data-theme="light"] {
     --bg: #f4f5f7; --card: #ffffff; --ink: #1d2330; --muted: #5c6675; --border: #d5dae2;
-    --w24: #c93a3a; --w5: #d97b16; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
+    --w24: #c93a3a; --w5: #d97b16; --w12: #a8871a; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
     --wser: #2f8f5b; --wspi: #0f8f96; --wq: #bf3d9e; --wm: #96622d;
   }
   body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0; }
@@ -62,6 +62,7 @@
   .halo { fill: none; stroke: var(--bg); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
   .s24 { stroke: var(--w24); } .c24 { fill: var(--w24); }
   .s5  { stroke: var(--w5);  } .c5  { fill: var(--w5);  }
+  .s12 { stroke: var(--w12); } .c12 { fill: var(--w12); }
   .s33 { stroke: var(--w33); } .c33 { fill: var(--w33); }
   .sg  { stroke: var(--wg);  } .cg  { fill: var(--wg);  }
   .susb{ stroke: var(--wusb);} .cusb{ fill: var(--wusb);}
@@ -84,8 +85,9 @@
   <div class="legend">
     <span class="key"><span class="sw" style="border-color:var(--w24)"></span>24 V pair</span>
     <span class="key"><span class="sw" style="border-color:var(--w5)"></span>5 V pair</span>
+    <span class="key"><span class="sw" style="border-color:var(--w12)"></span>12 V pair</span>
     <span class="key"><span class="sw" style="border-color:var(--w33)"></span>3.3 V</span>
-    <span class="key"><span class="sw" style="border-color:var(--wg)"></span>GND / ? V</span>
+    <span class="key"><span class="sw" style="border-color:var(--wg)"></span>GND</span>
     <span class="key"><span class="sw" style="border-color:var(--wusb)"></span>USB / Ethernet</span>
     <span class="key"><span class="sw" style="border-color:var(--wser)"></span>Serial (UART)</span>
     <span class="key"><span class="sw" style="border-color:var(--wspi)"></span>SPI</span>
@@ -96,10 +98,11 @@
 
   <div class="diagram">
   <svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="Robomo robot wiring diagram. The 24 volt battery pack lands on terminal bus strips with a fuse and wattmeter, feeding a monitor DC-DC brick, the TOBSUN 5 volt converter up the mast, and the Sabertooth motor driver through two series E-stops: a mushroom button and a remote keyfob kill switch, either of which cuts motor power. The 5 volt rail lands on deck bus strips powering the Jetson Nano and GL.iNet router; the Jetson also connects to the router by ethernet. The Jetson fans USB out through a hub to the Teensy and sensors, with the keyboard receiver plugged into the Jetson directly. The Teensy drives the Sabertooth over serial and reads wheel encoders through a dual LS7366R SPI board.">
+       aria-label="Robomo robot wiring diagram. The 24 volt battery pack lands on terminal bus strips with a fuse and wattmeter, feeding a monitor DC-DC brick, the TOBSUN 5 volt converter up the mast, and the Sabertooth motor driver through two series E-stops: a mushroom button and a remote keyfob kill switch, either of which cuts motor power. The 5 volt rail lands on deck bus strips powering the Jetson Nano and GL.iNet router; the Jetson also connects to the router by ethernet. The Jetson fans USB out through a hub to the Teensy and sensors, with the keyboard receiver plugged into the Jetson directly. A 12 volt DC-DC brick powers the monitor. The Teensy takes 5 volts from the terminal strips, drives the Sabertooth over serial, and reads wheel encoders through a dual LS7366R SPI board.">
     <defs>
       <marker id="m24" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c24"/></marker>
       <marker id="m5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c5"/></marker>
+      <marker id="m12" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c12"/></marker>
       <marker id="m33" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c33"/></marker>
       <marker id="mg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cg"/></marker>
       <marker id="musb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cusb"/></marker>
@@ -129,14 +132,17 @@
     <path class="w pw s24" d="M536,242 L586,242 L586,530 L640,530" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M730,554 L730,572" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M730,620 L730,640" marker-end="url(#m24)"/>
-    <!-- monitor feed, unknown voltage -->
-    <path class="w sg" d="M164,276 L164,312" marker-end="url(#mg)"/>
+    <!-- monitor feed -->
+    <path class="w pw s12" d="M164,276 L164,312" marker-end="url(#m12)"/>
     <!-- 5V chain -->
     <path class="w pw s5" d="M430,440 L430,540" marker-end="url(#m5)"/>
     <path class="w pw s5" d="M324,578 L264,578" marker-end="url(#m5)"/>
     <!-- 5V corridor to Jetson -->
     <path class="halo" d="M536,578 L610,578 L610,180 L640,180"/>
     <path class="w pw s5" d="M536,578 L610,578 L610,180 L640,180" marker-end="url(#m5)"/>
+    <!-- 5V to Teensy VIN -->
+    <path class="halo" d="M536,630 L900,630"/>
+    <path class="w pw s5" d="M536,630 L900,630" marker-end="url(#m5)"/>
 
     <!-- USB: Jetson -> hub -> devices -->
     <path class="w susb" d="M900,134 L960,134" marker-end="url(#musb)"/>
@@ -196,7 +202,7 @@
 
     <rect class="blk" x="64" y="206" width="200" height="70" rx="10"/>
     <text class="bt md" x="164" y="234" text-anchor="middle">DC-DC brick #2</text>
-    <text class="bs" x="164" y="256" text-anchor="middle">24 V → ? V</text>
+    <text class="bs" x="164" y="256" text-anchor="middle">24 V → 12 V</text>
 
     <rect class="blk" x="64" y="312" width="200" height="70" rx="10"/>
     <text class="bt md" x="164" y="340" text-anchor="middle">Acer monitor</text>
@@ -289,6 +295,7 @@
     <text class="pin" x="1130" y="694" text-anchor="end">5 CS</text>
     <text class="pin c33" x="1130" y="722" text-anchor="end">3V3</text>
     <text class="pin cg" x="1130" y="746" text-anchor="end">GND</text>
+    <text class="pin c5" x="916" y="634">VIN 5V</text>
     <text class="pin cser" x="916" y="734">Serial2 TX</text>
 
     <rect class="blk" x="1200" y="560" width="200" height="240" rx="10"/>
@@ -320,7 +327,8 @@
     <text class="wl c5" x="440" y="486">5 V</text>
     <text class="wl c5" x="294" y="570" text-anchor="middle">5 V</text>
     <text class="wl c5" x="620" y="390">5 V</text>
-    <text class="wl cg" x="174" y="300">? V</text>
+    <text class="wl c12" x="174" y="300">12 V</text>
+    <text class="wl c5 sm" x="852" y="622">5 V</text>
     <text class="wl cusb" x="930" y="126" text-anchor="middle">USB</text>
     <text class="wl cusb" x="1052" y="490">USB · /dev/teensy</text>
     <text class="wl cusb sm" x="1000" y="212" text-anchor="middle">USB</text>
@@ -338,9 +346,10 @@
     <li>Each power line represents a <strong>+ / − pair</strong>; both splits happen at labeled screw-terminal bus strips (24 V strips on the converter's input side, 5 V strips on its output side), and all grounds are common at those strips.</li>
     <li>The fuse block and DC wattmeter sit on the <strong>24 V side</strong>; an LED voltmeter watches the <strong>5 V rail</strong> at the mid-pole power board (the LC noise filter has been removed).</li>
     <li>Motor power runs through <strong>two E-stops in series</strong> on the 24 V feed — the twist-release mushroom and a car-battery-style remote kill switch (keyfobs). Either one cuts the Sabertooth.</li>
+    <li>The Teensy is <strong>powered from the 5 V bus strips (VIN)</strong> — its USB link to the hub is data. (Feeding VIN with USB attached normally means the VUSB↔VIN pad on the Teensy 4.0 is cut.)</li>
     <li>⚠️ The Teensy 4.0's pins are <strong>3.3 V logic — not 5 V tolerant</strong>; the LS7366R board runs at 3.3 V.</li>
     <li>Left wheel = Sabertooth <code>M1</code> (bytes 1–127) · right wheel = <code>M2</code> (bytes 128–255), Simplified Serial at 9600 baud on <code>Serial2</code>.</li>
     <li>SS1 / SS2 chip-selects address LS7366R #1 (left) and #2 (right) on the shared SPI bus.</li>
-    <li>Power routing traced from photos (July 2026), corrected on-site 2026-08-08 — the fuse rating and DC-DC brick #2's output voltage remain unverified (see README § Power).</li>
+    <li>Power routing traced from photos (July 2026), corrected on-site 2026-08-08 — only the fuse rating remains unverified (see README § Power).</li>
   </ul>
 </div>
