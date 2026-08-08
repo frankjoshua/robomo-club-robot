@@ -1,0 +1,278 @@
+<title>Robomo Robot Wiring</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --card: #ffffff; --ink: #1d2330; --muted: #5c6675; --border: #d5dae2;
+    --w24: #c93a3a; --w5: #d97b16; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
+    --wser: #2f8f5b; --wspi: #0f8f96; --wq: #bf3d9e; --wm: #96622d;
+    --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171d; --card: #1e232b; --ink: #e8ebf0; --muted: #9aa4b2; --border: #343c48;
+      --w24: #e46a6a; --w5: #e59a3d; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
+      --wser: #4fbf85; --wspi: #3bbcc4; --wq: #d977c0; --wm: #c08a4e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171d; --card: #1e232b; --ink: #e8ebf0; --muted: #9aa4b2; --border: #343c48;
+    --w24: #e46a6a; --w5: #e59a3d; --w33: #a585ec; --wg: #8f99a8; --wusb: #5f9ae8;
+    --wser: #4fbf85; --wspi: #3bbcc4; --wq: #d977c0; --wm: #c08a4e;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f5f7; --card: #ffffff; --ink: #1d2330; --muted: #5c6675; --border: #d5dae2;
+    --w24: #c93a3a; --w5: #d97b16; --w33: #7a4bd6; --wg: #7b8494; --wusb: #2b6cc4;
+    --wser: #2f8f5b; --wspi: #0f8f96; --wq: #bf3d9e; --wm: #96622d;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 28px 24px 48px; }
+  header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 18px; }
+  .eyebrow { font: 600 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 600 26px/1.2 var(--sans); margin: 0; text-wrap: balance; }
+  .sub { font: 400 13px var(--mono); color: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 16px; margin-bottom: 16px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .key { display: inline-flex; align-items: center; gap: 7px; font: 500 11.5px var(--mono); color: var(--ink); }
+  .sw { width: 24px; height: 0; border-top: 3px solid; border-radius: 2px; }
+  .sw.dashed { border-top-style: dashed; border-color: var(--muted); }
+  .diagram { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    overflow-x: auto; padding: 8px; }
+  .diagram svg { display: block; width: 100%; min-width: 1160px; height: auto; }
+  .notes { margin: 18px 0 0; padding: 0 0 0 1.2em; color: var(--muted); font: 400 13px/1.65 var(--sans); }
+  .notes li { margin-bottom: 4px; }
+  .notes code { font: 500 12px var(--mono); color: var(--ink); }
+
+  /* SVG */
+  .zone { fill: none; stroke: var(--border); stroke-dasharray: 3 6; rx: 14px; }
+  .zl { font: 600 11px var(--sans); letter-spacing: .14em; fill: var(--muted); }
+  .blk { fill: var(--card); stroke: var(--border); stroke-width: 1.4; }
+  .blk.future { stroke-dasharray: 5 4; }
+  .bt { font: 600 14.5px var(--sans); fill: var(--ink); }
+  .bs { font: 400 11px var(--mono); fill: var(--muted); }
+  .pin { font: 500 10.5px var(--mono); fill: var(--ink); }
+  .wl { font: 500 10.5px var(--mono); }
+  .wl.sm { font-size: 9.5px; }
+  .cap { font: 400 11px var(--mono); fill: var(--muted); }
+  .w { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pw { stroke-width: 2.6; }
+  .dash { stroke-dasharray: 6 5; }
+  .halo { fill: none; stroke: var(--bg); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+  .s24 { stroke: var(--w24); } .c24 { fill: var(--w24); }
+  .s5  { stroke: var(--w5);  } .c5  { fill: var(--w5);  }
+  .s33 { stroke: var(--w33); } .c33 { fill: var(--w33); }
+  .sg  { stroke: var(--wg);  } .cg  { fill: var(--wg);  }
+  .susb{ stroke: var(--wusb);} .cusb{ fill: var(--wusb);}
+  .sser{ stroke: var(--wser);} .cser{ fill: var(--wser);}
+  .sspi{ stroke: var(--wspi);} .cspi{ fill: var(--wspi);}
+  .sq  { stroke: var(--wq);  } .cq  { fill: var(--wq);  }
+  .sm  { stroke: var(--wm);  } .cm  { fill: var(--wm);  }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">robomo.club robot</span>
+    <h1>Wiring diagram</h1>
+    <span class="sub">power · drive · sensors · encoder bus — from README.md § Hardware</span>
+  </header>
+
+  <div class="legend">
+    <span class="key"><span class="sw" style="border-color:var(--w24)"></span>24 V pair</span>
+    <span class="key"><span class="sw" style="border-color:var(--w5)"></span>5 V pair</span>
+    <span class="key"><span class="sw" style="border-color:var(--w33)"></span>3.3 V</span>
+    <span class="key"><span class="sw" style="border-color:var(--wg)"></span>GND</span>
+    <span class="key"><span class="sw" style="border-color:var(--wusb)"></span>USB</span>
+    <span class="key"><span class="sw" style="border-color:var(--wser)"></span>Serial (UART)</span>
+    <span class="key"><span class="sw" style="border-color:var(--wspi)"></span>SPI</span>
+    <span class="key"><span class="sw" style="border-color:var(--wq)"></span>Quadrature</span>
+    <span class="key"><span class="sw" style="border-color:var(--wm)"></span>Motor power</span>
+    <span class="key"><span class="sw dashed"></span>planned / WIP</span>
+  </div>
+
+  <div class="diagram">
+  <svg viewBox="0 0 1400 910" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Robomo robot wiring diagram: 24 volt battery feeds the Sabertooth motor driver and a 5 volt converter; the converter powers the Jetson and router; the Jetson connects over USB to the Teensy and sensors; the Teensy drives the Sabertooth over serial and reads wheel encoders through a dual LS7366R SPI board.">
+    <defs>
+      <marker id="m24" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c24"/></marker>
+      <marker id="m5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c5"/></marker>
+      <marker id="m33" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="c33"/></marker>
+      <marker id="mg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cg"/></marker>
+      <marker id="musb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cusb"/></marker>
+      <marker id="mser" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cser"/></marker>
+      <marker id="mspi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cspi"/></marker>
+      <marker id="mq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cq"/></marker>
+      <marker id="mm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0L10,5L0,10z" class="cm"/></marker>
+    </defs>
+
+    <!-- zones -->
+    <rect class="zone" x="40" y="40" width="260" height="490" rx="14"/>
+    <text class="zl" x="56" y="66">POWER</text>
+    <rect class="zone" x="630" y="40" width="730" height="390" rx="14"/>
+    <text class="zl" x="646" y="66">COMPUTE &amp; SENSORS</text>
+    <rect class="zone" x="330" y="440" width="1040" height="440" rx="14"/>
+    <text class="zl" x="346" y="466">REAL-TIME DRIVETRAIN</text>
+
+    <!-- ============ wires (behind labels, after zones) ============ -->
+
+    <!-- 5V: DC-DC -> Jetson -->
+    <path class="w pw s5" d="M276,306 L696,306 L696,234" marker-end="url(#m5)"/>
+    <!-- network link router <-> jetson -->
+    <path class="halo" d="M276,479 L620,479 L620,196 L660,196"/>
+    <path class="w sg dash" d="M276,479 L620,479 L620,196 L660,196"/>
+    <!-- 24V: battery -> DC-DC, branch -> Sabertooth -->
+    <path class="w pw s24" d="M170,176 L170,262" marker-end="url(#m24)"/>
+    <path class="halo" d="M170,220 L316,220 L316,650 L352,650"/>
+    <path class="w pw s24" d="M170,220 L316,220 L316,650 L352,650" marker-end="url(#m24)"/>
+    <circle cx="170" cy="220" r="3.5" class="c24"/>
+    <!-- 5V: DC-DC -> router -->
+    <path class="w pw s5" d="M170,350 L170,444" marker-end="url(#m5)"/>
+
+    <!-- USB: Jetson -> sensors -->
+    <path class="w susb" d="M920,111 L1120,111" marker-end="url(#musb)"/>
+    <path class="w susb" d="M920,146 L1060,146 L1060,201 L1120,201" marker-end="url(#musb)"/>
+    <path class="w susb dash" d="M920,181 L1030,181 L1030,287 L1120,287" marker-end="url(#musb)"/>
+    <path class="w susb dash" d="M920,216 L1000,216 L1000,369 L1120,369" marker-end="url(#musb)"/>
+    <!-- USB: Jetson -> Teensy -->
+    <path class="halo" d="M790,234 L790,470"/>
+    <path class="w susb" d="M790,234 L790,470" marker-end="url(#musb)"/>
+
+    <!-- Serial: Teensy -> Sabertooth S1 -->
+    <path class="w sser" d="M660,610 L572,610" marker-end="url(#mser)"/>
+
+    <!-- Motor power: Sabertooth -> motors -->
+    <path class="w pw sm" d="M400,740 L400,782" marker-end="url(#mm)"/>
+    <path class="w pw sm" d="M520,740 L520,782" marker-end="url(#mm)"/>
+
+    <!-- SPI bus: Teensy <-> LS7366R -->
+    <path class="w sspi" d="M920,504 L1000,504" marker-end="url(#mspi)"/>
+    <path class="w sspi" d="M920,528 L1000,528" marker-end="url(#mspi)"/>
+    <path class="w sspi" d="M1000,552 L920,552" marker-end="url(#mspi)"/>
+    <path class="w sspi" d="M920,576 L1000,576" marker-end="url(#mspi)"/>
+    <path class="w sspi" d="M920,600 L1000,600" marker-end="url(#mspi)"/>
+    <path class="w s33" d="M920,628 L1000,628" marker-end="url(#m33)"/>
+    <path class="w sg" d="M920,652 L1000,652" marker-end="url(#mg)"/>
+
+    <!-- Quadrature: encoders -> LS7366R -->
+    <path class="w sq" d="M1268,541 L1210,541" marker-end="url(#mq)"/>
+    <path class="w sq" d="M1268,661 L1210,661" marker-end="url(#mq)"/>
+
+    <!-- ============ blocks ============ -->
+
+    <!-- Battery -->
+    <rect class="blk" x="64" y="84" width="212" height="92" rx="10"/>
+    <text class="bt" x="170" y="114" text-anchor="middle">Battery pack</text>
+    <text class="bs" x="170" y="136" text-anchor="middle">2 × 12 V lead-acid · series</text>
+    <text class="pin c24" x="170" y="158" text-anchor="middle">24 V pack</text>
+
+    <!-- DC-DC -->
+    <rect class="blk" x="64" y="262" width="212" height="88" rx="10"/>
+    <text class="bt" x="170" y="292" text-anchor="middle">DC-DC converter</text>
+    <text class="bs" x="170" y="316" text-anchor="middle">24 V → 5 V · 10 A</text>
+
+    <!-- Router -->
+    <rect class="blk" x="64" y="444" width="212" height="70" rx="10"/>
+    <text class="bt" x="170" y="472" text-anchor="middle">GL-iNet router</text>
+    <text class="bs" x="170" y="494" text-anchor="middle">ROBOMO-ROBOT-5G · 5 V</text>
+
+    <!-- Jetson -->
+    <rect class="blk" x="660" y="84" width="260" height="150" rx="10"/>
+    <text class="bt" x="790" y="122" text-anchor="middle">NVIDIA Jetson TX2</text>
+    <text class="bs" x="790" y="146" text-anchor="middle">robmo-club-robot · Ubuntu 18.04/L4T</text>
+    <text class="bs" x="790" y="166" text-anchor="middle">ROS 2 Humble · Docker</text>
+
+    <!-- Sensors -->
+    <rect class="blk" x="1120" y="76" width="224" height="70" rx="10"/>
+    <text class="bt" x="1232" y="104" text-anchor="middle">YDLidar X4</text>
+    <text class="bs" x="1232" y="126" text-anchor="middle">/dev/ttyUSB0 · 360° → /scan</text>
+
+    <rect class="blk" x="1120" y="166" width="224" height="70" rx="10"/>
+    <text class="bt" x="1232" y="194" text-anchor="middle">u-blox 7 GPS</text>
+    <text class="bs" x="1232" y="216" text-anchor="middle">/dev/gps · GNSS fix</text>
+
+    <rect class="blk future" x="1120" y="256" width="224" height="62" rx="10"/>
+    <text class="bt" x="1232" y="281" text-anchor="middle">Pico RP2040 + IMU</text>
+    <text class="bs" x="1232" y="301" text-anchor="middle">/dev/imu · WIP — not hooked up</text>
+
+    <rect class="blk future" x="1120" y="338" width="224" height="62" rx="10"/>
+    <text class="bt" x="1232" y="363" text-anchor="middle">Intel RealSense</text>
+    <text class="bs" x="1232" y="383" text-anchor="middle">RGB-D · planned</text>
+
+    <!-- Teensy -->
+    <rect class="blk" x="660" y="470" width="260" height="240" rx="10"/>
+    <text class="bt" x="676" y="500">Teensy 4.0</text>
+    <text class="bs" x="676" y="520">/dev/teensy · micro-ROS</text>
+    <text class="bs" x="676" y="538">kinematics + PID loop</text>
+    <text class="pin" x="910" y="508" text-anchor="end">13 SCK</text>
+    <text class="pin" x="910" y="532" text-anchor="end">11 MOSI</text>
+    <text class="pin" x="910" y="556" text-anchor="end">12 MISO</text>
+    <text class="pin" x="910" y="580" text-anchor="end">6 CS</text>
+    <text class="pin" x="910" y="604" text-anchor="end">5 CS</text>
+    <text class="pin c33" x="910" y="632" text-anchor="end">3V3</text>
+    <text class="pin cg" x="910" y="656" text-anchor="end">GND</text>
+    <text class="pin cser" x="676" y="627">Serial2 TX</text>
+
+    <!-- Sabertooth -->
+    <rect class="blk" x="352" y="560" width="220" height="180" rx="10"/>
+    <text class="bt" x="462" y="592" text-anchor="middle">Sabertooth 2x32</text>
+    <text class="bs" x="462" y="612" text-anchor="middle">Simplified Serial</text>
+    <text class="pin c24" x="364" y="654">B+ / B−</text>
+    <text class="pin cser" x="560" y="602" text-anchor="end">S1</text>
+    <text class="pin cm" x="400" y="728" text-anchor="middle">M1</text>
+    <text class="pin cm" x="520" y="728" text-anchor="middle">M2</text>
+
+    <!-- Motors -->
+    <rect class="blk" x="352" y="782" width="104" height="62" rx="10"/>
+    <text class="bt" x="404" y="808" text-anchor="middle" style="font-size:13px">Left motor</text>
+    <text class="bs" x="404" y="828" text-anchor="middle" style="font-size:10px">24 V gearmotor</text>
+    <rect class="blk" x="468" y="782" width="104" height="62" rx="10"/>
+    <text class="bt" x="520" y="808" text-anchor="middle" style="font-size:13px">Right motor</text>
+    <text class="bs" x="520" y="828" text-anchor="middle" style="font-size:10px">24 V gearmotor</text>
+    <text class="cap" x="462" y="868" text-anchor="middle">salvaged “Little Rascal” wheelchair base</text>
+
+    <!-- LS7366R -->
+    <rect class="blk" x="1000" y="470" width="210" height="240" rx="10"/>
+    <text class="pin" x="1010" y="508">SCK</text>
+    <text class="pin" x="1010" y="532">MOSI</text>
+    <text class="pin" x="1010" y="556">MISO</text>
+    <text class="pin" x="1010" y="580">SS1</text>
+    <text class="pin" x="1010" y="604">SS2</text>
+    <text class="pin c33" x="1010" y="632">VCC</text>
+    <text class="pin cg" x="1010" y="656">GND</text>
+    <text class="pin" x="1195" y="549" text-anchor="end">#1 LEFT</text>
+    <text class="pin" x="1195" y="669" text-anchor="end">#2 RIGHT</text>
+    <text class="bt" x="1105" y="686" text-anchor="middle" style="font-size:13px">Dual LS7366R</text>
+    <text class="bs" x="1105" y="703" text-anchor="middle" style="font-size:10px">quadrature counters · 3.3 V</text>
+
+    <!-- Encoders -->
+    <rect class="blk" x="1268" y="508" width="104" height="66" rx="10"/>
+    <text class="bt" x="1320" y="534" text-anchor="middle" style="font-size:12.5px">Left encoder</text>
+    <text class="bs" x="1320" y="554" text-anchor="middle" style="font-size:10px">HC-020K</text>
+    <rect class="blk" x="1268" y="628" width="104" height="66" rx="10"/>
+    <text class="bt" x="1320" y="654" text-anchor="middle" style="font-size:12.5px">Right encoder</text>
+    <text class="bs" x="1320" y="674" text-anchor="middle" style="font-size:10px">HC-020K</text>
+    <text class="cap" x="1320" y="716" text-anchor="middle" style="font-size:10px">on motors, pre-gearbox</text>
+
+    <!-- ============ wire labels ============ -->
+    <text class="wl c24" x="180" y="212">24 V</text>
+    <text class="wl c24" x="326" y="400">24 V</text>
+    <text class="wl c5" x="180" y="402">5 V</text>
+    <text class="wl c5" x="480" y="298" text-anchor="middle">5 V</text>
+    <text class="wl cg" x="440" y="471" text-anchor="middle">Wi-Fi / Ethernet</text>
+    <text class="wl cusb" x="1010" y="103" text-anchor="middle">USB</text>
+    <text class="wl cusb" x="800" y="356">USB · /dev/teensy</text>
+    <text class="wl cser" x="616" y="598" text-anchor="middle">Serial2</text>
+    <text class="wl cser sm" x="616" y="626" text-anchor="middle">9600 baud</text>
+    <text class="wl cm sm" x="392" y="766" text-anchor="end">M1A·M1B</text>
+    <text class="wl cm sm" x="528" y="766">M2A·M2B</text>
+    <text class="wl cq sm" x="1239" y="531" text-anchor="middle">A / B (I)</text>
+    <text class="wl cq sm" x="1239" y="651" text-anchor="middle">A / B (I)</text>
+  </svg>
+  </div>
+
+  <ul class="notes">
+    <li>Each power line represents a <strong>+ / − pair</strong>; all grounds are common at the battery / converter.</li>
+    <li>⚠️ The Teensy 4.0's pins are <strong>3.3 V logic — not 5 V tolerant</strong>; the LS7366R board runs at 3.3 V.</li>
+    <li>Left wheel = Sabertooth <code>M1</code> (bytes 1–127) · right wheel = <code>M2</code> (bytes 128–255), Simplified Serial at 9600 baud on <code>Serial2</code>.</li>
+    <li>SS1 / SS2 chip-selects address LS7366R #1 (left) and #2 (right) on the shared SPI bus.</li>
+    <li>The GL-iNet router isn't in the README's power section — shown on the shared 5 V rail per the current wiring.</li>
+  </ul>
+</div>
