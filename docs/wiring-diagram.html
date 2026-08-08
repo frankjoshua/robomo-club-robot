@@ -58,6 +58,9 @@
   .cap { font: 400 11px var(--mono); fill: var(--muted); }
   .w { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .pw { stroke-width: 2.6; }
+  .pw14 { stroke-width: 3.1; }
+  .pw12 { stroke-width: 3.7; }
+  .ga { font-size: 8.5px; opacity: .75; }
   .dash { stroke-dasharray: 6 5; }
   .halo { fill: none; stroke: var(--bg); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
   .s24 { stroke: var(--w24); } .c24 { fill: var(--w24); }
@@ -124,18 +127,18 @@
 
     <!-- 24V chain -->
     <path class="w pw s24" d="M264,119 L324,119" marker-end="url(#m24)"/>
-    <path class="w pw s24" d="M430,154 L430,206" marker-end="url(#m24)"/>
+    <path class="w pw12 s24" d="M430,154 L430,206" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M324,242 L264,242" marker-end="url(#m24)"/>
     <path class="w pw s24" d="M400,306 L400,356" marker-end="url(#m24)"/>
     <!-- 24V corridor to E-stop chain -> Sabertooth -->
     <path class="halo" d="M536,242 L586,242 L586,530 L640,530"/>
-    <path class="w pw s24" d="M536,242 L586,242 L586,530 L640,530" marker-end="url(#m24)"/>
-    <path class="w pw s24" d="M730,554 L730,572" marker-end="url(#m24)"/>
-    <path class="w pw s24" d="M730,620 L730,640" marker-end="url(#m24)"/>
+    <path class="w pw12 s24" d="M536,242 L586,242 L586,530 L640,530" marker-end="url(#m24)"/>
+    <path class="w pw12 s24" d="M730,554 L730,572" marker-end="url(#m24)"/>
+    <path class="w pw12 s24" d="M730,620 L730,640" marker-end="url(#m24)"/>
     <!-- monitor feed -->
     <path class="w pw s12" d="M164,276 L164,312" marker-end="url(#m12)"/>
     <!-- 5V chain -->
-    <path class="w pw s5" d="M430,440 L430,540" marker-end="url(#m5)"/>
+    <path class="w pw14 s5" d="M430,440 L430,540" marker-end="url(#m5)"/>
     <path class="w pw s5" d="M324,578 L264,578" marker-end="url(#m5)"/>
     <!-- 5V corridor to Jetson -->
     <path class="halo" d="M536,578 L610,578 L610,180 L640,180"/>
@@ -164,8 +167,8 @@
     <path class="w sser" d="M900,730 L840,730" marker-end="url(#mser)"/>
 
     <!-- Motor power -->
-    <path class="w pw sm" d="M688,800 L688,834" marker-end="url(#mm)"/>
-    <path class="w pw sm" d="M792,800 L792,834" marker-end="url(#mm)"/>
+    <path class="w pw12 sm" d="M688,800 L688,834" marker-end="url(#mm)"/>
+    <path class="w pw12 sm" d="M792,800 L792,834" marker-end="url(#mm)"/>
 
     <!-- SPI bus: Teensy <-> LS7366R -->
     <path class="w sspi" d="M1140,594 L1200,594" marker-end="url(#mspi)"/>
@@ -320,13 +323,13 @@
     <text class="cap" x="1515" y="788" text-anchor="middle" style="font-size:10px">on motors, pre-gearbox</text>
 
     <!-- ============ wire labels ============ -->
-    <text class="wl c24" x="440" y="186">24 V</text>
+    <text class="wl c24" x="440" y="186">24 V <tspan class="ga">12ga</tspan></text>
     <text class="wl c24" x="410" y="336">24 V · mast</text>
-    <text class="wl c24" x="596" y="420">24 V</text>
+    <text class="wl c24" x="596" y="420">24 V <tspan class="ga">12ga</tspan></text>
     <text class="wl c24 sm" x="742" y="567">either cuts 24 V</text>
-    <text class="wl c5" x="440" y="486">5 V</text>
+    <text class="wl c5" x="440" y="486">5 V <tspan class="ga">14ga</tspan></text>
     <text class="wl c5" x="294" y="570" text-anchor="middle">5 V</text>
-    <text class="wl c5" x="620" y="390">5 V</text>
+    <text class="wl c5" x="620" y="390">5 V <tspan class="ga">16ga</tspan></text>
     <text class="wl c12" x="174" y="300">12 V</text>
     <text class="wl c5 sm" x="852" y="622">5 V</text>
     <text class="wl cusb" x="930" y="126" text-anchor="middle">USB</text>
@@ -337,6 +340,7 @@
     <text class="wl cser sm" x="870" y="748" text-anchor="middle">9600 baud</text>
     <text class="wl cm sm" x="678" y="822" text-anchor="end">M1A·M1B</text>
     <text class="wl cm sm" x="802" y="822">M2A·M2B</text>
+    <text class="wl cm sm" x="740" y="822" text-anchor="middle"><tspan class="ga">12ga</tspan></text>
     <text class="wl cq sm" x="1430" y="613" text-anchor="middle">A / B (I)</text>
     <text class="wl cq sm" x="1430" y="723" text-anchor="middle">A / B (I)</text>
   </svg>
@@ -350,6 +354,7 @@
     <li>⚠️ The Teensy 4.0's pins are <strong>3.3 V logic — not 5 V tolerant</strong>; the LS7366R board runs at 3.3 V.</li>
     <li>Left wheel = Sabertooth <code>M1</code> (bytes 1–127) · right wheel = <code>M2</code> (bytes 128–255), Simplified Serial at 9600 baud on <code>Serial2</code>.</li>
     <li>SS1 / SS2 chip-selects address LS7366R #1 (left) and #2 (right) on the shared SPI bus.</li>
+    <li>Wire gauges (rewire spec, Aug 2026): <strong>12 AWG</strong> on the 24 V motor path (pack → strips → E-stops → Sabertooth → motors), <strong>14 AWG</strong> TOBSUN → 5 V strips, <strong>16 AWG</strong> strips → Nano barrel jack, <strong>18 AWG</strong> for every other power feed; signal wiring 22 AWG or lighter. Only the tagged runs deviate from 18 AWG.</li>
     <li>Power routing traced from photos (July 2026), corrected on-site 2026-08-08 — only the fuse rating remains unverified (see README § Power).</li>
   </ul>
 </div>

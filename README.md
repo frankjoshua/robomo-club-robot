@@ -381,6 +381,12 @@ height matches the lidar on top of the pole. Drive geometry: 0.15 m wheels on a
   draw bus power from the Jetson/hub.
 - **Display:** a second DC-DC brick under the top deck (black, "DC Input / DC
   Output" label, **24 V → 12 V**) powers the Acer monitor.
+- **Wire gauges (rewire spec, Aug 2026):** **12 AWG** on the 24 V motor path
+  (pack → strips → E-stops → Sabertooth → motors), **14 AWG** on the TOBSUN →
+  5 V-strip trunk, **16 AWG** from the strips to the Nano's barrel jack, and
+  **18 AWG** for the remaining DC feeds (converter inputs, router, monitor,
+  Teensy). Crimped ring terminals into the bus strips — no tinned strands under
+  screws.
 
 ```text
   wall AC ─► 24 V lead-acid charger ─► XLR charge port ─┐
