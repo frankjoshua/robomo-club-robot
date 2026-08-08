@@ -266,9 +266,11 @@ gearmotors (specific model unknown) driven by the Sabertooth.
 
 The Teensy 4.0 runs the closed speed loop. It takes `/cmd_vel`, converts it to
 per-wheel targets (differential-drive kinematics), runs a PID against the encoder
-feedback, and commands the **Sabertooth 2x32** motor driver over **`Serial2` at 9600 baud
-in Sabertooth "Simplified Serial"** — one byte per side (left = Sabertooth M1 = bytes
-1–127, right = M2 = bytes 128–255). It reads the wheel encoders through the dual
+feedback, and commands the **Sabertooth 2x32** motor driver over **`Serial2` (TX = pin 8)
+at 9600 baud in Sabertooth "Simplified Serial"** — one byte per side (left = Sabertooth
+M1 = bytes 1–127, right = M2 = bytes 128–255). (Heads-up when reading the firmware: the
+`Motor` constructor's first argument is unused — `leftMotor(2, 0)` / `rightMotor(1, 1)`
+look swapped, but the second argument selects the byte range, and it matches the above.) It reads the wheel encoders through the dual
 LS7366R and publishes the measured wheel velocity as `/vel`, which
 `diff_drive_controller` integrates into `/odom`.
 
