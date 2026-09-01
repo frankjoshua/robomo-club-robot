@@ -1,18 +1,19 @@
 [all:vars]
-#ros_ip='{{ ansible_default_ipv4.address }}'
-#ros_master_uri='http://{{ ansible_default_ipv4.address }}:11311'
-ros_ip='192.168.33.58'
-ros_master_uri='http://{{ ros_ip }}:11311'
 NOTEBOOK_LOCATION='/home/robot/robomo-club-robot/notebooks'
 local_user='operator'
-#ansible_ssh_user=robot
-# ansible_python_interpreter='/usr/bin/python3'
 
+# Two robots share this repo: 'robot' is the club robot (ssh alias from ~/.ssh/config;
+# answers at robmo-club-robot.local on its ROBOMO-ROBOT-5G WiFi, IP varies by network),
+# 'tx2' is Josh's home TX2 dev robot. Pick one with --limit, e.g.:
+#   ansible-playbook -i production all.yml --limit tx2
 [robots]
 robot
+tx2 ansible_host=tx2.local ansible_user=operator
 
 [jupyter_notebook]
 robot
+tx2
 
 [robot_hardware]
 robot
+tx2

@@ -51,7 +51,7 @@
       become: yes
 
     - name: ROS Hardware
-      community.docker.docker_compose:
+      community.docker.docker_compose_v2:
         project_src: '/home/{{ local_user }}/robomo-club-robot'
         files:
           - docker-compose-ros-hardware.yml

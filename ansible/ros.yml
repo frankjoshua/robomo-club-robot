@@ -1,5 +1,5 @@
 ---
-- hosts: robot
+- hosts: robots
   vars:
     pull_image: true
 
@@ -19,7 +19,7 @@
         dest: '/home/{{ local_user }}/robomo-club-robot'
 
     - name: ROS Software
-      community.docker.docker_compose:
+      community.docker.docker_compose_v2:
         project_src: '/home/{{ local_user }}/robomo-club-robot'
         files:
           - docker-compose-ros.yml

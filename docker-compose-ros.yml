@@ -34,6 +34,9 @@ services:
     <<: *common
     container_name: ros_mcp_server
     image: frankjoshua/ros-mcp-server
+    # ponytail: image CMD still says `fastmcp run server.py`, but upstream moved the FastMCP
+    # object to ros_mcp/main.py:mcp - crash loop. Drop this override once the image is rebuilt.
+    command: ["sh", "-lc", "fastmcp run ros_mcp/main.py:mcp --transport http --host 0.0.0.0 --port 8000"]
 
   ros2_slam_toolbox:
     <<: *common

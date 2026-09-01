@@ -1,5 +1,5 @@
 ---
-- hosts: robot
+- hosts: robots
 
   vars:
     jetson_groups:

@@ -20,7 +20,8 @@
 services:
   dds_shm_clean:
     image: ros:humble-ros-base
-    container_name: dds_shm_clean
+    # No container_name: each compose project (ros_software, ros_hardware, mock) runs its
+    # own copy - a fixed name makes the second project's `up` fail with a name conflict.
     pid: host                 # see which host PIDs still hold a segment
     network_mode: none        # touches files only; no network needed
     restart: "no"             # one-shot: run, report, exit
