@@ -1,4 +1,17 @@
+> **Legacy runtime model workflow.** Current photo-based assets are in
+> [club/models/](../robots/club/models/README.md). The
+> [personal model directory](../robots/personal/models/README.md) has no Blender
+> scene yet. This older ROS visualization model contains historical estimates;
+> do not use it as either robot's measured drivetrain or sensor specification.
+> `model/club_robot` and the club build-script path remain compatibility links.
+
 # Robot model (URDF + meshes)
+
+For the current club robot reconstructed from the eight local photographs, open
+[`club_robot/club_robot.blend`](club_robot/club_robot.blend). See
+[`club_robot/README.md`](club_robot/README.md) for previews, estimated dimensions,
+and the rebuild command. It models the club's wheelchair base, pipe mast, clear
+tray stack and Nano electronics. The older ROS mesh workflow below is separate.
 
 A clean-stylized 3D model of the robomo.club robot — a wheelchair-base diff-drive bot with a
 centered 3 ft extrusion mast, a 17" monitor "head" (VESA clamp), the YDLidar on top above the

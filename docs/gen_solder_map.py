@@ -1,0 +1,1 @@
+shared/hardware/gen_solder_map.py

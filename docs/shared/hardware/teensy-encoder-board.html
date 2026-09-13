@@ -1,0 +1,242 @@
+<title>Teensy + Encoder Carrier Board</title>
+<style>
+  :root {
+    --bg:#f4f5f7; --card:#fff; --ink:#1d2330; --muted:#5c6675; --border:#d5dae2;
+    --w5:#d97b16; --w33:#7a4bd6; --wg:#7b8494; --wspi:#0f8f96; --wser:#2f8f5b;
+    --wusb:#2b6cc4; --wi2c:#bf3d9e; --wrst:#c93a3a;
+    --sans:system-ui,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1e232b; --ink:#e8ebf0; --muted:#9aa4b2; --border:#343c48;
+    --w5:#e59a3d; --w33:#a585ec; --wg:#8f99a8; --wspi:#3bbcc4; --wser:#4fbf85;
+    --wusb:#5f9ae8; --wi2c:#d977c0; --wrst:#e46a6a;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#14171d; --card:#1e232b; --ink:#e8ebf0; --muted:#9aa4b2; --border:#343c48;
+    --w5:#e59a3d; --w33:#a585ec; --wg:#8f99a8; --wspi:#3bbcc4; --wser:#4fbf85;
+    --wusb:#5f9ae8; --wi2c:#d977c0; --wrst:#e46a6a;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);margin:0}
+  .wrap{max-width:1500px;margin:0 auto;padding:28px 24px 48px}
+  .eyebrow{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  h1{font:600 26px/1.2 var(--sans);margin:2px 0 0}
+  h2{font:600 17px var(--sans);margin:30px 0 10px}
+  .sub{font:400 13px var(--mono);color:var(--muted);margin-top:4px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px;margin:16px 0;
+    background:var(--card);border:1px solid var(--border);border-radius:10px}
+  .key{display:inline-flex;align-items:center;gap:7px;font:500 11.5px var(--mono)}
+  .sw{width:24px;height:0;border-top:3px solid;border-radius:2px}
+  .sw.d{border-top-style:dashed}
+  .diagram{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-x:auto;padding:8px}
+  .diagram svg{display:block;width:100%;min-width:1180px;height:auto}
+  table{border-collapse:collapse;width:100%;font:13px/1.5 var(--sans);margin-top:6px}
+  th,td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:var(--card);font-weight:600}
+  td code,th code{font:500 12px var(--mono);color:var(--ink)}
+  .notes{padding-left:1.2em;color:var(--muted);font:400 13px/1.7 var(--sans)}
+  .notes code{font:500 12px var(--mono);color:var(--ink)}
+  .warn{color:var(--wrst);font-weight:600}
+  /* svg */
+  .zl{font:600 11px var(--sans);letter-spacing:.12em;fill:var(--muted)}
+  .blk{fill:var(--card);stroke:var(--border);stroke-width:1.4}
+  .blk.opt{stroke-dasharray:5 4}
+  .bt{font:600 14px var(--sans);fill:var(--ink)}
+  .bs{font:400 10.5px var(--mono);fill:var(--muted)}
+  .pin{font:500 10.5px var(--mono);fill:var(--ink)}
+  .pinr{text-anchor:end}
+  .w{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .dot{stroke:none}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Robomo · motor-control carrier</div>
+  <h1>Teensy 4.0 + Dual LS7366R Carrier Board</h1>
+  <div class="sub">Adafruit Perma-Proto · everything on the SPI side is 3.3 V · pins verified against firmware (src/main.cpp, Motor.cpp)</div>
+
+  <div class="legend">
+    <span class="key"><span class="sw" style="border-color:var(--w5)"></span>5 V</span>
+    <span class="key"><span class="sw" style="border-color:var(--w33)"></span>3.3 V</span>
+    <span class="key"><span class="sw" style="border-color:var(--wg)"></span>GND</span>
+    <span class="key"><span class="sw" style="border-color:var(--wspi)"></span>SPI (3.3 V)</span>
+    <span class="key"><span class="sw" style="border-color:var(--wser)"></span>Serial → Sabertooth</span>
+    <span class="key"><span class="sw" style="border-color:var(--wi2c)"></span>I²C → OLED</span>
+    <span class="key"><span class="sw" style="border-color:var(--wusb)"></span>USB → Jetson</span>
+    <span class="key"><span class="sw" style="border-color:var(--wrst)"></span>Reset (On/Off)</span>
+    <span class="key"><span class="sw d" style="border-color:var(--muted)"></span>optional</span>
+  </div>
+
+  <div class="diagram">
+  <svg viewBox="0 0 1180 720" role="img" aria-label="Wiring diagram: a Teensy 4.0 at center wired to a dual LS7366R encoder board on the right over a shared 3.3 volt SPI bus (SCK pin 13, MOSI pin 11, MISO pin 12, chip selects pins 6 and 5). The Teensy takes 5 volts into VIN from the bus and outputs 3.3 volts to power the encoder board and the wheel encoders. Pin 8 sends serial to the Sabertooth S1 input. Pins 18 and 19 are an optional I2C link to an SSD1306 OLED. The On/Off pad goes to a tactile reset button to ground and to a Jetson GPIO through an NPN transistor for remote power-cycling. USB connects to the Jetson for data only.">
+
+    <!-- ============ external: left column ============ -->
+    <!-- 5V bus -->
+    <rect class="blk" x="20" y="60" width="150" height="54" rx="8"/>
+    <text class="bt" x="95" y="83" text-anchor="middle">5 V bus strip</text>
+    <text class="bs" x="95" y="100" text-anchor="middle">TOBSUN rail</text>
+
+    <!-- GND bus -->
+    <rect class="blk" x="20" y="128" width="150" height="46" rx="8"/>
+    <text class="bt" x="95" y="156" text-anchor="middle">GND bus</text>
+
+    <!-- Jetson -->
+    <rect class="blk" x="20" y="250" width="150" height="120" rx="8"/>
+    <text class="bt" x="95" y="276" text-anchor="middle">Jetson</text>
+    <text class="bs" x="95" y="293" text-anchor="middle">Nano / TX2</text>
+    <text class="pin pinr" x="160" y="322">USB</text>
+    <text class="pin pinr" x="160" y="352">GPIO (reset)</text>
+
+    <!-- Sabertooth -->
+    <rect class="blk" x="20" y="470" width="150" height="70" rx="8"/>
+    <text class="bt" x="95" y="498" text-anchor="middle">Sabertooth</text>
+    <text class="bs" x="95" y="514" text-anchor="middle">2x32</text>
+    <text class="pin pinr" x="160" y="533">S1 · 0V</text>
+
+    <!-- ============ Teensy ============ -->
+    <rect class="blk" x="360" y="70" width="220" height="470" rx="10"/>
+    <text class="bt" x="470" y="98" text-anchor="middle">Teensy 4.0</text>
+    <text class="bs" x="470" y="115" text-anchor="middle">micro-ROS · /dev/teensy</text>
+    <text class="bs" x="470" y="530" text-anchor="middle">VUSB↔VIN pad CUT (USB = data)</text>
+
+    <!-- left-edge pins -->
+    <text class="pin" x="372" y="150">VIN (5V)</text>
+    <text class="pin" x="372" y="180">GND</text>
+    <text class="pin" x="372" y="322">USB</text>
+    <text class="pin" x="372" y="360">8 · TX2</text>
+    <text class="pin" x="372" y="470">On/Off</text>
+
+    <!-- right-edge pins -->
+    <text class="pin pinr" x="568" y="150">3V3</text>
+    <text class="pin pinr" x="568" y="185">13 · SCK</text>
+    <text class="pin pinr" x="568" y="215">11 · MOSI</text>
+    <text class="pin pinr" x="568" y="245">12 · MISO</text>
+    <text class="pin pinr" x="568" y="275">6 · SS1</text>
+    <text class="pin pinr" x="568" y="305">5 · SS2</text>
+    <text class="pin pinr" x="568" y="360">18 · SDA</text>
+    <text class="pin pinr" x="568" y="390">19 · SCL</text>
+
+    <!-- ============ encoder board ============ -->
+    <rect class="blk" x="760" y="90" width="250" height="260" rx="10"/>
+    <text class="bt" x="885" y="116" text-anchor="middle">Dual LS7366R</text>
+    <text class="bs" x="885" y="132" text-anchor="middle">SuperDroid · 3.3 V</text>
+    <!-- left pins -->
+    <text class="pin" x="772" y="150">VCC</text>
+    <text class="pin" x="772" y="180">GND</text>
+    <text class="pin" x="772" y="205">SCK</text>
+    <text class="pin" x="772" y="230">MOSI</text>
+    <text class="pin" x="772" y="255">MISO</text>
+    <text class="pin" x="772" y="285">SS1</text>
+    <text class="pin" x="772" y="315">SS2</text>
+    <!-- right pins -->
+    <text class="pin pinr" x="998" y="200">CH1 A/B/I</text>
+    <text class="pin pinr" x="998" y="300">CH2 A/B/I</text>
+
+    <!-- wheel encoders -->
+    <rect class="blk" x="1050" y="160" width="110" height="56" rx="8"/>
+    <text class="bt" x="1105" y="184" text-anchor="middle">LEFT</text>
+    <text class="bs" x="1105" y="200" text-anchor="middle">wheel enc</text>
+    <rect class="blk" x="1050" y="262" width="110" height="56" rx="8"/>
+    <text class="bt" x="1105" y="286" text-anchor="middle">RIGHT</text>
+    <text class="bs" x="1105" y="302" text-anchor="middle">wheel enc</text>
+
+    <!-- ============ OLED (optional) ============ -->
+    <rect class="blk opt" x="760" y="420" width="230" height="90" rx="10"/>
+    <text class="bt" x="875" y="446" text-anchor="middle">OLED (optional)</text>
+    <text class="bs" x="875" y="462" text-anchor="middle">SSD1306 128×64 · I²C · 3.3 V</text>
+    <text class="pin" x="772" y="486">VCC GND</text>
+    <text class="pin" x="772" y="503">SDA SCL</text>
+
+    <!-- ============ reset button + transistor ============ -->
+    <rect class="blk" x="360" y="600" width="180" height="86" rx="10"/>
+    <text class="bt" x="450" y="626" text-anchor="middle">Reset</text>
+    <text class="bs" x="450" y="643" text-anchor="middle">4-pin tactile → GND</text>
+    <text class="bs" x="450" y="660" text-anchor="middle">wire ACROSS, not same side</text>
+    <text class="bs" x="450" y="677" text-anchor="middle">press = toggle power</text>
+
+    <rect class="blk" x="120" y="600" width="180" height="86" rx="10"/>
+    <text class="bt" x="210" y="626" text-anchor="middle">NPN</text>
+    <text class="bs" x="210" y="643" text-anchor="middle">GPIO→1kΩ→base</text>
+    <text class="bs" x="210" y="660" text-anchor="middle">collector→On/Off</text>
+    <text class="bs" x="210" y="677" text-anchor="middle">emitter→GND</text>
+
+    <!-- ============ WIRES ============ -->
+    <!-- 5V: bus -> VIN -->
+    <path class="w" style="stroke:var(--w5)" d="M170 87 H300 V145 H360"/>
+    <!-- 5V bus also nothing else -->
+    <!-- GND: bus -> Teensy GND -->
+    <path class="w" style="stroke:var(--wg)" d="M170 151 H320 V176 H360"/>
+    <!-- USB: Jetson -> Teensy USB -->
+    <path class="w" style="stroke:var(--wusb)" d="M170 318 H300 V318 H360"/>
+    <!-- Serial: Teensy 8 -> Sabertooth S1 (route down-left) -->
+    <path class="w" style="stroke:var(--wser)" d="M360 356 H250 V520 H170"/>
+    <!-- Reset GPIO: Jetson GPIO -> NPN -->
+    <path class="w" style="stroke:var(--wrst)" d="M170 348 H210 V600"/>
+    <!-- NPN collector -> Teensy On/Off -->
+    <path class="w" style="stroke:var(--wrst)" d="M300 643 H330 V466 H360"/>
+    <!-- Reset button -> On/Off (junction) -->
+    <path class="w" style="stroke:var(--wrst)" d="M360 643 H345 V466"/>
+    <circle class="dot" cx="345" cy="466" r="3.5" style="fill:var(--wrst)"/>
+
+    <!-- 3V3: Teensy 3V3 -> encoder VCC (also feeds OLED VCC via the 3V3 rail) -->
+    <path class="w" style="stroke:var(--w33)" d="M580 148 H710 V150 H760"/>
+    <!-- SPI SCK 13 -->
+    <path class="w" style="stroke:var(--wspi)" d="M582 185 H612 V205 H760"/>
+    <path class="w" style="stroke:var(--wspi)" d="M582 211 H624 V230 H760"/>
+    <path class="w" style="stroke:var(--wspi)" d="M582 241 H636 V255 H760"/>
+    <path class="w" style="stroke:var(--wspi)" d="M582 271 H648 V285 H760"/>
+    <path class="w" style="stroke:var(--wspi)" d="M582 301 H660 V315 H760"/>
+    <!-- encoder CH1/CH2 -> wheel encoders -->
+    <path class="w" style="stroke:var(--wspi)" d="M1010 196 H1050"/>
+    <path class="w" style="stroke:var(--wspi)" d="M1010 296 H1050"/>
+
+    <!-- I2C: SDA/SCL 18/19 -> OLED -->
+    <path class="w" style="stroke:var(--wi2c)" d="M582 356 H712 V490 H760"/>
+    <path class="w" style="stroke:var(--wi2c)" d="M582 386 H700 V503 H760"/>
+
+    <!-- power/GND are buses, not point-to-point: short taps + a caption -->
+    <path class="w" style="stroke:var(--w33)" d="M760 486 H735"/>
+    <path class="w" style="stroke:var(--wg)" d="M760 178 H735"/>
+    <text class="bs" x="732" y="181" text-anchor="end" fill="var(--wg)">GND rail</text>
+    <text class="bs" x="732" y="489" text-anchor="end" fill="var(--w33)">3V3</text>
+
+    <!-- labels on key wires -->
+    <text class="bs" x="305" y="80" fill="var(--w5)">5V</text>
+    <text class="bs" x="255" y="440" fill="var(--wser)">9600 8N1</text>
+    <text class="bs" x="628" y="142" fill="var(--w33)">3.3V</text>
+    <text class="cap" x="590" y="580" fill="var(--muted)" style="font:400 11px var(--mono)">VCC = Teensy 3V3 rail · every GND ties to one common rail (see table)</text>
+  </svg>
+  </div>
+
+  <h2>Connection list (solder from this)</h2>
+  <table>
+    <tr><th>Net</th><th>From</th><th>To</th><th>Note</th></tr>
+    <tr><td>5 V</td><td>5 V bus strip</td><td>Teensy <code>VIN</code></td><td>board power; confirm VUSB↔VIN pad is cut</td></tr>
+    <tr><td>GND</td><td>GND bus</td><td>Teensy <code>GND</code> → proto GND rail</td><td>one common ground for everything</td></tr>
+    <tr><td>3.3 V</td><td>Teensy <code>3V3</code></td><td>proto 3V3 rail → encoder <code>VCC</code></td><td>powers both LS7366R + the wheel encoders</td></tr>
+    <tr><td>SPI</td><td>Teensy <code>13</code></td><td>encoder <code>SCK</code></td><td>shared clock</td></tr>
+    <tr><td>SPI</td><td>Teensy <code>11</code></td><td>encoder <code>MOSI</code></td><td>shared</td></tr>
+    <tr><td>SPI</td><td>Teensy <code>12</code></td><td>encoder <code>MISO</code></td><td class="warn">the line that read 0x00 — inspect this joint</td></tr>
+    <tr><td>SPI</td><td>Teensy <code>6</code></td><td>encoder <code>SS1</code> (left)</td><td><code>EncoderCSLeft</code></td></tr>
+    <tr><td>SPI</td><td>Teensy <code>5</code></td><td>encoder <code>SS2</code> (right)</td><td><code>EncoderCSRight</code></td></tr>
+    <tr><td>Serial</td><td>Teensy <code>8</code> (TX2)</td><td>Sabertooth <code>S1</code></td><td>simplified serial 9600, one wire</td></tr>
+    <tr><td>GND</td><td>Teensy <code>GND</code></td><td>Sabertooth <code>0V</code></td><td>signal ground — required, easy to miss</td></tr>
+    <tr><td>Encoders</td><td>LEFT A/B/(I)/V+/GND</td><td>encoder <code>CH1</code></td><td>V+/GND from the board</td></tr>
+    <tr><td>Encoders</td><td>RIGHT A/B/(I)/V+/GND</td><td>encoder <code>CH2</code></td><td></td></tr>
+    <tr><td>USB</td><td>Teensy USB</td><td>Jetson hub</td><td>data only (off-board cable)</td></tr>
+    <tr><td>Reset</td><td>Teensy <code>On/Off</code></td><td>tactile switch → GND</td><td>press = power toggle</td></tr>
+    <tr><td>Reset</td><td>Teensy <code>On/Off</code></td><td>NPN collector (Jetson GPIO)</td><td>remote power-cycle; button in parallel</td></tr>
+    <tr><td>I²C</td><td>Teensy <code>18</code>/<code>19</code> + 3V3/GND</td><td>OLED SDA/SCL/VCC/GND</td><td>optional status display</td></tr>
+  </table>
+
+  <h2>Notes</h2>
+  <ul class="notes">
+    <li><span class="warn">3.3 V everywhere on the SPI side.</span> The Teensy 4.0 is not 5 V tolerant. Power the encoder board from the Teensy <code>3V3</code> pin so SCK/MOSI/MISO/CS are all 3.3 V. Only <code>VIN</code> (5 V bus) and the <code>pin 8</code> → Sabertooth serial live in the 5 V world.</li>
+    <li><span class="warn">Verify the encoder supply voltage.</span> The board runs at 3.3 V here. If your wheel encoders are 5 V parts they may misread on 3.3 V or over-drive the LS7366R inputs — check the encoder datasheet before closing the box.</li>
+    <li><b>Dead-encoder suspects.</b> Both chips read a flat <code>0x00</code>, which points at VCC / GND / MISO to the encoder board rather than the SPI bus. Give those joints extra care and re-run the firmware self-test (it reports each chip's config register on <code>/diagnostics</code>).</li>
+    <li><b>Reset = the On/Off pad, not RESET.</b> Pulling <code>On/Off</code> to GND toggles board power. Because the encoder board is fed from the Teensy's 3.3 V, an On/Off power-cycle also resets the encoder chips — one button fixes both the stuck micro-ROS session and a hung LS7366R.</li>
+    <li><b>4-pin tactile gotcha.</b> The two pins on the same side are permanently tied. Wire one side to <code>On/Off</code> and the <i>opposite</i> side to GND, or the switch does nothing / is always closed.</li>
+    <li><b>Remote reset (Tier 2).</b> Drive <code>On/Off</code> from a Jetson GPIO through an NPN (GPIO → 1 kΩ → base, collector → On/Off, emitter → GND) so the Jetson only switches the pad, never drives voltage into it. Then the reset script becomes "pulse a GPIO." The button stays wired in parallel.</li>
+    <li><b>Mount on headers.</b> Socket the Teensy and the encoder board on female headers, bring every off-board wire to screw terminals, so field service is tool-only and either board pulls out.</li>
+    <li><b>Optional OLED</b> on <code>18</code>/<code>19</code> shows session status, live encoder counts/RPM, LS7366R self-test, and later AUTO/MANUAL mode — diagnose the robot with no laptop.</li>
+  </ul>
+</div>

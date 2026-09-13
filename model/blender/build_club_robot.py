@@ -1,0 +1,1 @@
+../../robots/club/models/blender/build_club_robot.py
